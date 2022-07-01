@@ -54,6 +54,7 @@ jobs:
       - name: Mypy
         run: |
           pip install -r tests/requirements.txt
+          pip install mypy
           mypy .
   test:
     name: Tests
