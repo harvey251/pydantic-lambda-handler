@@ -42,7 +42,7 @@ jobs:
       - name: Check requirements
         run: |
           pip install safety
-          safety check -r src/requirements.txt -r tests/dev-requirements.txt
+          safety check -r src/requirements.txt -r tests/requirements.txt
   mypy:
     name: Mypy
     runs-on: ubuntu-latest
