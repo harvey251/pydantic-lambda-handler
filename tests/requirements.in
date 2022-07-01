@@ -8,3 +8,4 @@ pip-tools
 
 flit
 pytest
+nox

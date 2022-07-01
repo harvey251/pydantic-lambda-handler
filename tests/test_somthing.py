@@ -1,6 +1,6 @@
 import pytest
 
-from pydantic_lambda_hander import PydanticLambdaHander
+from src.pydantic_lambda_hander import PydanticLambdaHander
 
 app = PydanticLambdaHander()
 
