@@ -58,11 +58,3 @@ repos:
       name: pip-compile tests/requirements.in
       args: [tests/requirements.in]
       files: ^tests/requirements\.(in|txt)$
-    stages:
-      - push
-  - repo: https://github.com/sourcery-ai/sourcery
-    rev: v0.12.2b11+9a0f62fb # Get the latest tag from https://github.com/sourcery-ai/sourcery/tags
-    hooks:
-      - id: sourcery
-    stages:
-      - push
