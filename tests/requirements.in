@@ -1,3 +1,5 @@
+-c ../src/requirements.txt
+
 invoke
 boto3
 
