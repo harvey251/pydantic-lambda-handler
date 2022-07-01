@@ -11,4 +11,11 @@ classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
 
 [project.urls]
-Home = "https://github.com/harvey251"
+Home = "https://github.com/harvey251/pydantic-lambda-handler"
+
+[tool.semantic_release]
+version_variable = "dynamo_orm/__init__.py:__version__"
+build_command = "pip install flit && flit build"
+
+[tool.black]
+line-length = 120
