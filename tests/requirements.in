@@ -1,0 +1,11 @@
+-c ../src/requirements.txt
+
+invoke
+boto3
+
+aws-cdk-lib
+pip-tools
+
+flit
+pytest
+nox
