@@ -3,21 +3,12 @@ requires = ["flit_core >=3.2,<4"]
 build-backend = "flit_core.buildapi"
 
 [project]
-name = "pydantic-lambda-handler"
+name = "pydantic_lambda_handler"
 authors = [{name = "Mark Harvey", email = "inspiredharvey@gmail.com"}]
 readme = "README.md"
-classifiers = ["License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)"]
+license = {file = "LICENSE"}
+classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
-requires = []
-requires-python=">=3.10"
-description-file="README.md"
 
 [project.urls]
-Home = "https://github.com/harvey251/pydantic-lambda-handler"
-
-[tool.semantic_release]
-version_variable = "src/__init__.py:__version__"
-build_command = "pip install flit && flit build"
-
-[tool.black]
-line-length = 120
+Home = "https://github.com/harvey251"
