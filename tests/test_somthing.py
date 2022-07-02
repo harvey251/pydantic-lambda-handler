@@ -1,15 +1,14 @@
-import pytest
-
 from src.pydantic_lambda_hander import PydanticLambdaHander
 
 app = PydanticLambdaHander()
 
 
-def root():
+@app.get("/index")
+def hello_handler():
     return {"message": "Hello World"}
 
 
-@pytest.mark.xfail()
 def test_root():
-    response = root()
-    assert response == """body"""
+    response = hello_handler({}, None)
+    assert response["statusCode"] == 200
+    assert response["body"] == {"message": "Hello World"}

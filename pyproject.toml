@@ -19,3 +19,6 @@ build_command = "pip install flit && flit build"
 
 [tool.black]
 line-length = 120
+
+[tool.isort]
+profile = "black"

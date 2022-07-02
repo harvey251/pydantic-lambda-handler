@@ -26,3 +26,7 @@ def create_item(item: Item):
 
 ## MUST HAVE
 * creates open api schema
+
+API Gateway Lambda proxy integration
+https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
+
