@@ -114,8 +114,10 @@ tomli==2.0.1
     #   pytest
 tomli-w==1.0.0
     # via flit
-typing-extensions==4.2.0
-    # via jsii
+typing-extensions==4.3.0
+    # via
+    #   -c tests/../src/requirements.txt
+    #   jsii
 urllib3==1.26.9
     # via
     #   -c tests/../src/requirements.txt
