@@ -20,7 +20,7 @@ repos:
       - id: mixed-line-ending
       - id: detect-private-key
       - id: no-commit-to-branch
-        args: [ '--branch', 'master' ]
+        args: [ '--branch', 'main' ]
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.34.0
     hooks:
