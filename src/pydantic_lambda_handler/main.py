@@ -27,28 +27,13 @@ class PydanticLambdaHander:
 
         def create_response(func):
             @functools.wraps(func)
-            def wrapper_decorator(event, context):
+            def wrapper_decorator(*args, **kwargs):
+
                 sig = signature(func)
-
-                func_args = []
-                func_kwargs = {}
                 if sig.parameters:
-                    path_parameters = event.get("pathParameters", {}) or {}
-                    for param, param_info in sig.parameters.items():
-
-                        path_param = path_parameters.get(param)
-
-                        if param_info.annotation == param_info.empty:
-                            func_args.append(path_param)
-                        else:
-                            try:
-                                func_args.append(param_info.annotation(path_param))
-                            except ValueError:
-                                response = BaseOutput(body="", status_code=422)
-                                return orjson.loads(response.json())
-
+                    raise NotImplementedError
                     # Do something before
-                    body = func(*func_args, **func_kwargs)
+                    body = func(*args, **kwargs)
                 else:
                     body = func()
 
