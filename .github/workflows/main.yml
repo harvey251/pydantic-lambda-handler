@@ -68,9 +68,9 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: x64
-    - run: pip install nox==2019.11.9
-    - run: pip install poetry==1.0.5
-    - run: nox --session
+    - run: |
+        pip install nox==2022.1.7
+        nox --session
   release:
     name: Python Semantic Release
     runs-on: ubuntu-latest
