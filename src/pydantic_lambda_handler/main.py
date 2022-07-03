@@ -6,9 +6,9 @@ from http import HTTPStatus
 from inspect import signature
 from typing import Union
 
-from orjson import orjson
+from orjson import orjson  # type: ignore
 
-from src.models import BaseOutput
+from src.pydantic_lambda_handler.models import BaseOutput
 
 
 class PydanticLambdaHander:

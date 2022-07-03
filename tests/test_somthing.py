@@ -1,4 +1,4 @@
-from src.pydantic_lambda_hander import PydanticLambdaHander
+from pydantic_lambda_handler.main import PydanticLambdaHander
 
 app = PydanticLambdaHander()
 
