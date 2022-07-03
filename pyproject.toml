@@ -34,7 +34,7 @@ pythonpath = [
 ]
 
 [tool.semantic_release]
-version_variable = "dynamo_orm/__init__.py:__version__"
+version_variable = "src/pydantic_lambda_handler/__init__.py:__version__"
 build_command = "pip install flit && flit build"
 
 [tool.black]
