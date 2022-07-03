@@ -13,6 +13,8 @@ dynamic = ["version", "description"]
 [project.urls]
 Home = "https://github.com/harvey251/pydantic-lambda-handler"
 
+
+
 [tool.semantic_release]
 version_variable = "dynamo_orm/__init__.py:__version__"
 build_command = "pip install flit && flit build"
