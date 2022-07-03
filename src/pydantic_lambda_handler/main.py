@@ -8,7 +8,7 @@ from typing import Union
 
 from orjson import orjson
 
-from pydantic_lambda_handler.models import BaseOutput
+from src.pydantic_lambda_handler.models import BaseOutput
 
 
 class PydanticLambdaHander:

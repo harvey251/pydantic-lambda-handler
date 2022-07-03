@@ -47,14 +47,3 @@ repos:
     hooks:
       - id: flake8
         additional_dependencies: [ "flake8-docstrings"]
-  - repo: https://github.com/jazzband/pip-tools
-    rev: 6.8.0
-    hooks:
-    - id: pip-compile
-      name: pip-compile src/requirements.in
-      args: [src/requirements.in]
-      files: ^src/requirements\.(in|txt)$
-    - id: pip-compile
-      name: pip-compile tests/requirements.in
-      args: [tests/requirements.in]
-      files: ^tests/requirements\.(in|txt)$

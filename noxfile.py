@@ -18,5 +18,5 @@ def run_tests(session: nox.Session) -> None:
 
     https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtimes.html
     """
-    session.install("pytest")
+    session.install(".[tests]")
     session.run("pytest")
