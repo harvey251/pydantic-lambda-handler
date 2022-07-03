@@ -1,5 +1,7 @@
 from enum import Enum
 
+import pytest
+
 from pydantic_lambda_handler.main import PydanticLambdaHander
 
 app = PydanticLambdaHander(title="PydanticLambdaHander")
@@ -45,6 +47,7 @@ def test_path_parameters_with_enum_typehint():
     assert response["body"] == {"item_id": "dog"}
 
 
+@pytest.mark.xfail
 def test_path_parameters_with_enum_typehint_typeerror():
     event = {"pathParameters": {"item_id": "cat"}}
     response = handler_with_enum_type_hint(event, None)
