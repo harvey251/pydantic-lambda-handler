@@ -8,6 +8,7 @@ from inspect import signature
 from typing import Union
 
 from orjson import orjson  # type: ignore
+from pydantic import ValidationError, create_model
 
 from src.pydantic_lambda_handler.models import BaseOutput
 
@@ -41,25 +42,26 @@ class PydanticLambdaHander:
             def wrapper_decorator(event, context):
                 sig = signature(func)
 
-                func_args = []
-                func_kwargs = {}
                 if sig.parameters:
                     path_parameters = event.get("pathParameters", {}) or {}
+
+                    model_dict = {}
                     for param, param_info in sig.parameters.items():
-
-                        path_param = path_parameters.get(param)
-
                         if param_info.annotation == param_info.empty:
-                            func_args.append(path_param)
+                            model_dict[param] = str, ...
                         else:
-                            try:
-                                func_args.append(param_info.annotation(path_param))
-                            except ValueError:
-                                response = BaseOutput(body="", status_code=422)
-                                return orjson.loads(response.json())
+                            model_dict[param] = param_info.annotation, ...
+
+                    PathModel = create_model("PathModel", **model_dict)
+                    EventModel = create_model("EventModel", path=(PathModel, {}))
+                    try:
+                        event = EventModel(path=path_parameters)
+                    except ValidationError as e:
+                        response = BaseOutput(body={"detail": orjson.loads(e.json())}, status_code=422)
+                        return orjson.loads(response.json())
 
                     # Do something before
-                    body = func(*func_args, **func_kwargs)
+                    body = func(**event.path.dict())
                 else:
                     body = func()
 
