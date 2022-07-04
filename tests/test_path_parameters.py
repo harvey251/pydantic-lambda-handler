@@ -1,5 +1,7 @@
 from enum import Enum
 
+import pytest
+
 from pydantic_lambda_handler.main import PydanticLambdaHander
 
 app = PydanticLambdaHander(title="PydanticLambdaHander")
@@ -58,3 +60,12 @@ def test_path_parameters_with_typehint_typeerror():
             }
         ]
     }
+
+
+def test_path_parameters_with_path_default():
+    @app.get("/items/{item_id}")
+    def handler_with_path_default(item_id=2):
+        return {"item_id": item_id}
+
+    with pytest.raises(Exception):
+        handler_with_path_default({}, None)

@@ -47,6 +47,9 @@ class PydanticLambdaHander:
 
                     model_dict = {}
                     for param, param_info in sig.parameters.items():
+                        if param_info.default != param_info.empty:
+                            raise ValueError("Should not set default for path parameters")
+
                         if param_info.annotation == param_info.empty:
                             model_dict[param] = str, ...
                         else:
