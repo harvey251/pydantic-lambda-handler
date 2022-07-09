@@ -1,16 +1,4 @@
-from pydantic_lambda_handler.main import PydanticLambdaHander
-
-app = PydanticLambdaHander(title="PydanticLambdaHander")
-
-
-@app.get("/")
-def hello_handler():
-    return {"message": "Hello World"}
-
-
-@app.post("/")
-def create_handler():
-    return {"message": "success"}
+from tests.demo.demo_app import create_handler, hello_handler
 
 
 def test_get_response():
