@@ -2,6 +2,7 @@
 The main class which you import and use a decorator.
 """
 import functools
+import re
 from collections import defaultdict
 from http import HTTPStatus
 from inspect import signature
@@ -10,10 +11,10 @@ from typing import Union
 from orjson import orjson  # type: ignore
 from pydantic import ValidationError, create_model
 
-from src.pydantic_lambda_handler.models import BaseOutput
+from pydantic_lambda_handler.models import BaseOutput
 
 
-class PydanticLambdaHander:
+class PydanticLambdaHandler:
     """
     The decorator handle.
     """
@@ -32,35 +33,56 @@ class PydanticLambdaHander:
         """
         open_api_status_code = str(int(status_code))
         self.paths[url]["get"] = {
-            "responses": {
-                open_api_status_code: {"content": {"application/json": {}}, "description": "Successful Response"}
-            }
+            "responses": {open_api_status_code: {"content": {"application/json": {}}}},
+            "operationId": "GET HTTP",
         }
 
         def create_response(func):
+            sig = signature(func)
+
+            if sig.parameters:
+                model_dict = {}
+                for param, param_info in sig.parameters.items():
+                    if param_info.default != param_info.empty:
+                        raise ValueError("Should not set default for path parameters")
+
+                    if param_info.annotation == param_info.empty:
+                        model_dict[param] = str, ...
+                    else:
+                        model_dict[param] = param_info.annotation, ...
+
+                path_parameters = set(re.findall(r"\{(.*?)\}", url))
+
+                if path_parameters != set(model_dict.keys()):
+                    raise ValueError("Missing path parameters")
+
+                PathModel = create_model("PathModel", **model_dict)
+
+                path_schema_initial = PathModel.schema()
+                properties = []
+                for name, property_info in path_schema_initial.get("properties", {}).items():
+                    #  {"name": "petId", "in": "path", "required": True, "schema": {"type": "string"}}
+                    p = {"name": name, "in": "path", "schema": {"type": property_info.get("type", "string")}}
+                    if name in path_schema_initial.get("required", ()):
+                        p["required"] = True
+
+                    properties.append(p)
+
+                self.paths[url]["get"]["parameters"] = properties
+
+                EventModel = create_model("EventModel", path=(PathModel, {}))
+
             @functools.wraps(func)
             def wrapper_decorator(event, context):
-                sig = signature(func)
-
                 if sig.parameters:
                     path_parameters = event.get("pathParameters", {}) or {}
 
-                    model_dict = {}
-                    for param, param_info in sig.parameters.items():
-                        if param_info.default != param_info.empty:
-                            raise ValueError("Should not set default for path parameters")
-
-                        if param_info.annotation == param_info.empty:
-                            model_dict[param] = str, ...
-                        else:
-                            model_dict[param] = param_info.annotation, ...
-
-                    PathModel = create_model("PathModel", **model_dict)
-                    EventModel = create_model("EventModel", path=(PathModel, {}))
                     try:
                         event = EventModel(path=path_parameters)
                     except ValidationError as e:
-                        response = BaseOutput(body={"detail": orjson.loads(e.json())}, status_code=422)
+                        response = BaseOutput(
+                            body={"detail": orjson.loads(e.json())}, status_code=HTTPStatus.UNPROCESSABLE_ENTITY
+                        )
                         return orjson.loads(response.json())
 
                     # Do something before
@@ -124,9 +146,17 @@ class PydanticLambdaHander:
         return create_response
 
     def generate_open_api(self):
+        """
+        https://stackoverflow.com/questions/5910703/how-to-get-all-methods-of-a-python-class-with-given-decorator
+        :return:
+        """
         open_api = {
             "openapi": "3.0.2",
             "info": {"title": self.title, "version": self.version},
             "paths": dict(self.paths),
         }
+
+        # TODO: move out into a seperate module
+        # folder_dir = Path(__file__).parent
+        # inspect.getmodule()
         return open_api

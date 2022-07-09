@@ -2,9 +2,9 @@ from enum import Enum
 
 import pytest
 
-from pydantic_lambda_handler.main import PydanticLambdaHander
+from pydantic_lambda_handler.main import PydanticLambdaHandler
 
-app = PydanticLambdaHander(title="PydanticLambdaHander")
+app = PydanticLambdaHandler(title="PydanticLambdaHandler")
 
 
 @app.get("/items/{item_id}")
@@ -63,9 +63,11 @@ def test_path_parameters_with_typehint_typeerror():
 
 
 def test_path_parameters_with_path_default():
-    @app.get("/items/{item_id}")
-    def handler_with_path_default(item_id=2):
-        return {"item_id": item_id}
 
+    # Fix me should only error on run otherwise we block
+    # all the other handlers
     with pytest.raises(Exception):
-        handler_with_path_default({}, None)
+
+        @app.get("/items/{item_id}")
+        def handler_with_path_default(item_id=2):
+            return {"item_id": item_id}
