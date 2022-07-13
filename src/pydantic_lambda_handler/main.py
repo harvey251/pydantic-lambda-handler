@@ -19,12 +19,19 @@ class PydanticLambdaHandler:
     The decorator handle.
     """
 
-    def __init__(self, *, title, version=None):
+    def __init__(self, *, title="PydanticLambdaHandler", version="0.0.0"):
         self.title = title
         self.version = version
         self.paths = defaultdict(dict)
 
-    def get(self, url, *, status_code: Union[HTTPStatus, int] = HTTPStatus.OK):
+    def get(
+        self,
+        url,
+        *,
+        status_code: Union[HTTPStatus, int] = HTTPStatus.OK,
+        operation_id: str = None,
+        description: str = "Successful Response"
+    ):
         """Expect request with a GET method.
 
         :param url:
@@ -33,9 +40,11 @@ class PydanticLambdaHandler:
         """
         open_api_status_code = str(int(status_code))
         self.paths[url]["get"] = {
-            "responses": {open_api_status_code: {"content": {"application/json": {}}}},
-            "operationId": "GET HTTP",
+            "responses": {open_api_status_code: {"description": description, "content": {"application/json": {}}}},
         }
+
+        if operation_id:
+            self.paths[url]["get"]["operationId"] = operation_id
 
         def create_response(func):
             sig = signature(func)
@@ -97,7 +106,14 @@ class PydanticLambdaHandler:
 
         return create_response
 
-    def post(self, url, *, status_code: Union[HTTPStatus, int] = HTTPStatus.CREATED):
+    def post(
+        self,
+        url,
+        *,
+        status_code: Union[HTTPStatus, int] = HTTPStatus.CREATED,
+        operation_id: str = None,
+        description: str = "Successful Response"
+    ):
         """Expect request with a POST method.
 
         :param url:
@@ -106,10 +122,11 @@ class PydanticLambdaHandler:
         """
         open_api_status_code = str(int(status_code))
         self.paths[url]["post"] = {
-            "responses": {
-                open_api_status_code: {"content": {"application/json": {}}, "description": "Successful Response"}
-            }
+            "responses": {open_api_status_code: {"description": description, "content": {"application/json": {}}}},
         }
+
+        if operation_id:
+            self.paths[url]["get"]["operationId"] = operation_id
 
         def create_response(func):
             @functools.wraps(func)
@@ -144,19 +161,3 @@ class PydanticLambdaHandler:
             return wrapper_decorator
 
         return create_response
-
-    def generate_open_api(self):
-        """
-        https://stackoverflow.com/questions/5910703/how-to-get-all-methods-of-a-python-class-with-given-decorator
-        :return:
-        """
-        open_api = {
-            "openapi": "3.0.2",
-            "info": {"title": self.title, "version": self.version},
-            "paths": dict(self.paths),
-        }
-
-        # TODO: move out into a seperate module
-        # folder_dir = Path(__file__).parent
-        # inspect.getmodule()
-        return open_api

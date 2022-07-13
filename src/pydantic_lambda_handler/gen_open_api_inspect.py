@@ -5,7 +5,7 @@ import os
 import sys
 from copy import deepcopy
 from pathlib import Path
-from typing import Any, Optional
+from typing import Optional
 
 from pydantic_lambda_handler.main import PydanticLambdaHandler
 
@@ -38,8 +38,6 @@ def get_top_imported_names(file: str) -> set[str]:
 def gen_open_api_inspect(dir_path: Path):
     files = dir_path.rglob("*.py")
 
-    open_api: dict[str, Any] = {"openapi": "3.0.2"}
-
     app: Optional[PydanticLambdaHandler] = None
 
     for file in files:
@@ -52,12 +50,13 @@ def gen_open_api_inspect(dir_path: Path):
         spec.loader.exec_module(module)
         results = inspect.getmembers(module)
 
-        for i in range(0, len(results)):
+        for i in range(len(results)):
             if isinstance(results[i][1], PydanticLambdaHandler):
                 app = deepcopy(results[i][1])
 
     if app:
-        open_api["paths"] = app.paths
-        open_api["info"] = {"title": app.title}
-
-    return open_api
+        return {
+            "openapi": "3.0.2",
+            "info": {"title": app.title, "version": app.version},
+            "paths": app.paths,
+        }

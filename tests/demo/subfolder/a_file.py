@@ -11,6 +11,6 @@ def hello_teapot():
     return {"message": "I'm a teapot"}
 
 
-@app.get("/pets/{petId}")
+@app.get("/pets/{petId}", operation_id="Create Pet")
 def pets_handler(petId):
     return {"message": "Hello World"}
