@@ -36,6 +36,7 @@ pythonpath = [
 [tool.semantic_release]
 version_variable = "src/pydantic_lambda_handler/__init__.py:__version__"
 build_command = "pip install flit && flit build"
+branch = "main"
 
 [tool.black]
 line-length = 120
