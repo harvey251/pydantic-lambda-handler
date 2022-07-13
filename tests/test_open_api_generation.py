@@ -14,7 +14,7 @@ def test_generate_open_api_info():
     path = Path(__file__).parent.joinpath("demo")
     schema = gen_open_api_inspect(path)
 
-    assert schema["info"] == {"title": "PydanticLambdaHandler"}
+    assert schema["info"] == {"title": "PydanticLambdaHandler", "version": "0.0.0"}
 
 
 def test_generate_open_api_info_path_get():
@@ -49,3 +49,10 @@ def test_generate_open_api_path():
     assert schema["paths"]["/pets/{petId}"]["get"].get("parameters") == [
         {"name": "petId", "in": "path", "required": True, "schema": {"type": "string"}}
     ]
+
+
+def test_generate_open_operation_id():
+    path = Path(__file__).parent.joinpath("demo")
+    schema = gen_open_api_inspect(path)
+
+    assert schema["paths"]["/pets/{petId}"]["get"].get("operationId") == "Create Pet"
