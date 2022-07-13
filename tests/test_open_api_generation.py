@@ -14,7 +14,7 @@ def test_generate_open_api_info():
     path = Path(__file__).parent.joinpath("demo")
     schema = gen_open_api_inspect(path)
 
-    assert schema["info"] == {"title": "PydanticLambdaHandler"}
+    assert schema["info"] == {"title": "PydanticLambdaHandler", "version": "0.0.0"}
 
 
 def test_generate_open_api_info_path_get():
