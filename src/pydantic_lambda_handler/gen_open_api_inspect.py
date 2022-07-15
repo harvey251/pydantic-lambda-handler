@@ -1,10 +1,10 @@
-import ast
-import importlib.util
-import inspect
 import os
-import sys
+from ast import Import, ImportFrom, parse, walk
 from copy import deepcopy
+from importlib.util import module_from_spec, spec_from_file_location
+from inspect import getmembers
 from pathlib import Path
+from sys import modules
 from typing import Optional
 
 from pydantic_lambda_handler.main import PydanticLambdaHandler
@@ -20,13 +20,13 @@ def get_top_imported_names(file: str) -> set[str]:
         return set()
     with open(os.path.join(file), "rb") as f:
         content = f.read()
-    parsed = ast.parse(content)
+    parsed = parse(content)
     top_imported = set()
-    for node in ast.walk(parsed):
-        if isinstance(node, ast.Import):
+    for node in walk(parsed):
+        if isinstance(node, Import):
             for name in node.names:
                 top_imported.add(name.name.split(".")[0])
-        elif isinstance(node, ast.ImportFrom):
+        elif isinstance(node, ImportFrom):
             if node.level > 0:
                 # Relative imports always refer to the current package.
                 continue
@@ -42,13 +42,13 @@ def gen_open_api_inspect(dir_path: Path):
 
     for file in files:
         module_name = ".".join(str(file.relative_to(dir_path)).removesuffix(".py").split("/"))
-        spec = importlib.util.spec_from_file_location(module_name, file)
+        spec = spec_from_file_location(module_name, file)
         if not spec or not spec.loader:
             continue
-        module = importlib.util.module_from_spec(spec)
-        sys.modules[module_name] = module
+        module = module_from_spec(spec)
+        modules[module_name] = module
         spec.loader.exec_module(module)
-        results = inspect.getmembers(module)
+        results = getmembers(module)
 
         for i in range(len(results)):
             if isinstance(results[i][1], PydanticLambdaHandler):
