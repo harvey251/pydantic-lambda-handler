@@ -1,28 +1,12 @@
 # Vision
 
-Aim to create an easy to use
+Aim to create an easy-to-use decorator on a lambda for quick development of apis on AWS lambda using AWS Gateway.
 
-```python
-from typing import Union
+Inspired by, and attempting to match the [Fast API](https://fastapi.tiangolo.com) api.
 
-from fastapi import FastAPI
-from pydantic import BaseModel
+Currently, I'm working through the first steps to hit the basics.
 
-
-class Item(BaseModel):
-    name: str
-    description: Union[str, None] = None
-    price: float
-    tax: Union[float, None] = None
-
-
-app = FastAPI()
-
-
-@app.post("/items/")
-def create_item(item: Item):
-    return item
-```
+This is very much at the beginning of the project, so I could do with all the help I can get :D
 
 ## MUST HAVE
 * creates open api schema
