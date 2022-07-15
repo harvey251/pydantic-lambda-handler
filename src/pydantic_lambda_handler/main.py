@@ -8,7 +8,7 @@ from http import HTTPStatus
 from inspect import signature
 from typing import Union
 
-from orjson import orjson  # type: ignore
+from orjson import loads
 from pydantic import ValidationError, create_model
 
 from pydantic_lambda_handler.models import BaseOutput
@@ -90,9 +90,9 @@ class PydanticLambdaHandler:
                         event = EventModel(path=path_parameters)
                     except ValidationError as e:
                         response = BaseOutput(
-                            body={"detail": orjson.loads(e.json())}, status_code=HTTPStatus.UNPROCESSABLE_ENTITY
+                            body={"detail": loads(e.json())}, status_code=HTTPStatus.UNPROCESSABLE_ENTITY
                         )
-                        return orjson.loads(response.json())
+                        return loads(response.json())
 
                     # Do something before
                     body = func(**event.path.dict())
@@ -100,7 +100,7 @@ class PydanticLambdaHandler:
                     body = func()
 
                 response = BaseOutput(body=body, status_code=status_code)
-                return orjson.loads(response.json())
+                return loads(response.json())
 
             return wrapper_decorator
 
@@ -148,7 +148,7 @@ class PydanticLambdaHandler:
                                 func_args.append(param_info.annotation(path_param))
                             except ValueError:
                                 response = BaseOutput(body="", status_code=422)
-                                return orjson.loads(response.json())
+                                return loads(response.json())
 
                     # Do something before
                     body = func(*func_args, **func_kwargs)
@@ -156,7 +156,7 @@ class PydanticLambdaHandler:
                     body = func()
 
                 response = BaseOutput(body=body, status_code=status_code)
-                return orjson.loads(response.json())
+                return loads(response.json())
 
             return wrapper_decorator
 
