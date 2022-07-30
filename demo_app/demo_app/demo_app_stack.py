@@ -1,7 +1,7 @@
 """
 https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html#services-apigateway-tutorial-prereqs
 """
-from aws_cdk import BundlingOptions, Stack
+from aws_cdk import Stack
 from aws_cdk import aws_apigateway as _apigw
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda
