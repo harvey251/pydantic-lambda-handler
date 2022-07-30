@@ -23,6 +23,7 @@ tests = [
   'coverage>=5.0.3',
   'pytest',
   'pytest-benchmark[histogram]>=3.2.1',
+  'aws-cdk-lib'
 ]
 
 [project.urls]
@@ -30,7 +31,7 @@ Home = "https://github.com/harvey251/pydantic-lambda-handler"
 
 [tool.pytest.ini_options]
 pythonpath = [
-  ".", "src",
+ "./", "src/", "demo_app/demo_app/"
 ]
 
 [tool.semantic_release]
@@ -43,3 +44,4 @@ line-length = 120
 
 [tool.isort]
 profile = "black"
+skip = ["venv", "demo_app_requirements"]

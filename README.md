@@ -14,3 +14,8 @@ This is very much at the beginning of the project, so I could do with all the he
 API Gateway Lambda proxy integration
 https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html#api-gateway-simple-proxy-for-lambda-input-format
 
+https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html
+
+```commandline
+pip install --target ./demo_app ../.
+```
