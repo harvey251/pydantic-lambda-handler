@@ -1,6 +1,8 @@
 """
 https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html#services-apigateway-tutorial-prereqs
 """
+from pathlib import Path
+
 from aws_cdk import Stack
 from aws_cdk import aws_apigateway as _apigw
 from aws_cdk import aws_iam as iam
@@ -44,12 +46,11 @@ class DemoAppStack(Stack):
 
         iam.Role(self, "id_1234", role_name="lambda-apigateway-role", assumed_by=user)
 
+        repo_dir = Path(__file__).parents[2]
         base_lambda_layer = aws_lambda.LayerVersion(
             self,
             "base_layer",
-            code=aws_lambda.Code.from_asset(
-                "/Users/markharvey/PycharmProjects/pydantic-lambda-handler/demo_app_requirements",
-            ),
+            code=aws_lambda.Code.from_asset(str(repo_dir.joinpath("demo_app_requirements"))),
         )
 
         base_lambda = aws_lambda.Function(
@@ -59,7 +60,7 @@ class DemoAppStack(Stack):
             handler="subfolder.a_file.index_handler",
             layers=[base_lambda_layer],
             code=aws_lambda.Code.from_asset(
-                "/Users/markharvey/PycharmProjects/pydantic-lambda-handler/demo_app/demo_app",
+                str(repo_dir.joinpath("demo_app/demo_app")),
             ),
         )
 
