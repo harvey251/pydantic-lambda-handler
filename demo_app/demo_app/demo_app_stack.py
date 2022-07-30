@@ -33,7 +33,7 @@ class DemoAppStack(Stack):
 
         document = iam.PolicyDocument(statements=[policy_statement_1, policy_statement_2])
 
-        policy = iam.Policy(
+        iam.Policy(
             self,
             "id_123",
             policy_name="lambda-apigateway-policy",
@@ -42,7 +42,7 @@ class DemoAppStack(Stack):
 
         user = iam.User(self, "myuser")
 
-        myrole = iam.Role(self, "id_1234", role_name="lambda-apigateway-role", assumed_by=user)
+        iam.Role(self, "id_1234", role_name="lambda-apigateway-role", assumed_by=user)
 
         base_lambda_layer = aws_lambda.LayerVersion(
             self,
