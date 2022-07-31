@@ -9,6 +9,7 @@ from http import HTTPStatus
 from inspect import signature
 from typing import Union
 
+from orjson import loads
 from pydantic import ValidationError, create_model
 
 from pydantic_lambda_handler.models import BaseOutput
@@ -129,7 +130,7 @@ class PydanticLambdaHandler:
                             body=json.dumps({"detail": json.loads(e.json())}),
                             status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
                         )
-                        return json.loads(response.json())
+                        return loads(response.json())
 
                     # Do something before
                     body = func(**event.path.dict())
@@ -137,7 +138,7 @@ class PydanticLambdaHandler:
                     body = func()
 
                 response = BaseOutput(body=json.dumps(body), status_code=status_code)
-                return json.loads(response.json())
+                return loads(response.json())
 
             if "methods" in ret_dict:
                 ret_dict["methods"]["get"] = {
@@ -228,7 +229,7 @@ class PydanticLambdaHandler:
                                 func_args.append(param_info.annotation(path_param))
                             except ValueError:
                                 response = BaseOutput(body="", status_code=422)
-                                return json.loads(response.json())
+                                return loads(response.json())
 
                     # Do something before
                     body = func(*func_args, **func_kwargs)
@@ -236,7 +237,7 @@ class PydanticLambdaHandler:
                     body = func()
 
                 response = BaseOutput(body=json.dumps(body), status_code=status_code)
-                return json.loads(response.json())
+                return loads(response.json())
 
             if "methods" in ret_dict:
                 ret_dict["methods"]["post"] = {
