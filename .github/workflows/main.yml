@@ -43,6 +43,7 @@ jobs:
         run: |
           pip install -r tests/requirements.txt
           pip install mypy
+          pip install types-requests
           mypy .
   test:
     runs-on: ubuntu-latest

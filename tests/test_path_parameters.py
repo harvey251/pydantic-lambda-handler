@@ -1,3 +1,4 @@
+import json
 from enum import Enum
 
 import pytest
@@ -16,7 +17,7 @@ def test_path_parameters_without_typehint():
     event = {"pathParameters": {"item_id": "1"}}
     response = handler(event, None)
     assert response["statusCode"] == 200
-    assert response["body"] == {"item_id": "1"}
+    assert json.loads(response["body"]) == {"item_id": "1"}
 
 
 @app.get("/items/{item_id}")
@@ -28,7 +29,7 @@ def test_path_parameters_with_typehint():
     event = {"pathParameters": {"item_id": "1"}}
     response = handler_with_type_hint(event, None)
     assert response["statusCode"] == 200
-    assert response["body"] == {"item_id": 1}
+    assert json.loads(response["body"]) == {"item_id": 1}
 
 
 class Animals(str, Enum):
@@ -44,14 +45,14 @@ def test_path_parameters_with_enum_typehint():
     event = {"pathParameters": {"item_id": "dog"}}
     response = handler_with_enum_type_hint(event, None)
     assert response["statusCode"] == 200
-    assert response["body"] == {"item_id": "dog"}
+    assert json.loads(response["body"]) == {"item_id": "dog"}
 
 
 def test_path_parameters_with_typehint_typeerror():
     event = {"pathParameters": {"item_id": "cat"}}
     response = handler_with_type_hint(event, None)
     assert response["statusCode"] == 422
-    assert response["body"] == {
+    assert json.loads(response["body"]) == {
         "detail": [
             {
                 "loc": ["path", "item_id"],

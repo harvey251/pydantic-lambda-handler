@@ -1,11 +1,11 @@
-from tests.demo.app import app
+from handler_app import plh
 
 
-@app.get("/")
+@plh.get("/")
 def hello_handler():
     return {"message": "Hello World"}
 
 
-@app.post("/")
+@plh.post("/")
 def create_handler():
     return {"message": "success"}

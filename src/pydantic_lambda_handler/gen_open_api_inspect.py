@@ -60,3 +60,4 @@ def gen_open_api_inspect(dir_path: Path):
             "info": {"title": app.title, "version": app.version},
             "paths": app.paths,
         }
+    raise ValueError("App not found")
