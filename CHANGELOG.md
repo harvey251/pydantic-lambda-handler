@@ -2,6 +2,13 @@
 
 <!--next-version-placeholder-->
 
+## v0.2.0 (2022-07-31)
+### Feature
+* Add task to deploy ([#23](https://github.com/harvey251/pydantic-lambda-handler/issues/23)) ([`ea67f71`](https://github.com/harvey251/pydantic-lambda-handler/commit/ea67f71001552b4eeff8d08a9379c7e271be7921))
+
+### Documentation
+* Improve Vision statement ([#22](https://github.com/harvey251/pydantic-lambda-handler/issues/22)) ([`af7c95f`](https://github.com/harvey251/pydantic-lambda-handler/commit/af7c95f73b3d71b56948b50ddacf5aaa52e7ebd7))
+
 ## v0.1.0 (2022-07-13)
 ### Feature
 * Add open api spec ([`a6b5ff9`](https://github.com/harvey251/pydantic-lambda-handler/commit/a6b5ff96bf4695c6dd9ee2e73492a97134323361))
