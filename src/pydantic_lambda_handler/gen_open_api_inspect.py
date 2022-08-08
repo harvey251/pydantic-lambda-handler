@@ -55,9 +55,13 @@ def gen_open_api_inspect(dir_path: Path):
                 app = deepcopy(results[i][1])
 
     if app:
-        return {
-            "openapi": "3.0.2",
-            "info": {"title": app.title, "version": app.version},
-            "paths": app.paths,
-        }
+        return (
+            {
+                "openapi": "3.0.2",
+                "info": {"title": app.title, "version": app.version},
+                "paths": app.paths,
+            },
+            app.cdk_stuff,
+            app.testing_stuff,
+        )
     raise ValueError("App not found")

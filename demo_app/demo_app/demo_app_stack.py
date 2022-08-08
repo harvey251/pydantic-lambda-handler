@@ -1,13 +1,54 @@
 """
 https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html#services-apigateway-tutorial-prereqs
 """
+import subprocess
+import sys
 from pathlib import Path
+from tempfile import mkdtemp
 
 from aws_cdk import Stack
 from aws_cdk import aws_apigateway as _apigw
 from aws_cdk import aws_iam as iam
 from aws_cdk import aws_lambda
 from constructs import Construct
+
+from pydantic_lambda_handler.gen_open_api_inspect import gen_open_api_inspect
+
+
+def build_requirements():
+    requirements_dir = Path(mkdtemp())
+    root = Path(__file__).parents[2]
+
+    # https://aws.amazon.com/premiumsupport/knowledge-center/lambda-python-package-compatible/
+    # pip install \
+    #     --platform manylinux2014_x86_64 \
+    #     --target=my-lambda-function \
+    #     --implementation cp \
+    #     --python 3.9 \
+    #     --only-binary=:all: --upgrade \
+    #     pandas
+    subprocess.run(
+        (
+            f"{sys.executable}",
+            "-m",
+            "pip",
+            "install",
+            f"{root}",
+            "--upgrade",
+            "--target",
+            requirements_dir.joinpath("python"),
+            "--platform",
+            "manylinux2014_x86_64",
+            "--implementation",
+            "cp",
+            "--python",
+            "3.9",
+            "--only-binary=:all:",
+        ),
+        check=True,
+    )
+
+    return requirements_dir
 
 
 class DemoAppStack(Stack):
@@ -47,55 +88,60 @@ class DemoAppStack(Stack):
         iam.Role(self, "id_1234", role_name="lambda-apigateway-role", assumed_by=user)
 
         repo_dir = Path(__file__).parents[2]
-        base_lambda_layer = aws_lambda.LayerVersion(
-            self,
-            "base_layer",
-            code=aws_lambda.Code.from_asset(str(repo_dir.joinpath("demo_app_requirements"))),
-        )
 
-        base_lambda = aws_lambda.Function(
-            self,
-            "function",
-            runtime=aws_lambda.Runtime.PYTHON_3_9,
-            handler="subfolder.a_file.index_handler",
-            layers=[base_lambda_layer],
-            code=aws_lambda.Code.from_asset(
-                str(repo_dir.joinpath("demo_app/demo_app")),
-            ),
-        )
+        requirements_dir = build_requirements()
 
         base_api = _apigw.RestApi(self, "ApiGatewayWithCors", rest_api_name="ApiGatewayWithCors")
 
-        example_entity = base_api.root.add_resource(
-            "index",
-            default_cors_preflight_options=_apigw.CorsOptions(
-                allow_methods=["GET", "OPTIONS"], allow_origins=_apigw.Cors.ALL_ORIGINS
-            ),
+        base_lambda_layer = aws_lambda.LayerVersion(
+            self,
+            "base_layer",
+            code=aws_lambda.Code.from_asset(str(requirements_dir)),
         )
 
-        example_entity_lambda_integration = _apigw.LambdaIntegration(
-            base_lambda,
-            proxy=True,
-            integration_responses=[
-                _apigw.IntegrationResponse(
-                    status_code="200", response_parameters={"method.response.header.Access-Control-Allow-Origin": "'*'"}
+        app_dir = repo_dir.joinpath("demo_app/demo_app")
+        _, cdk_config, _ = gen_open_api_inspect(app_dir)
+
+        for resource_name, resource_info in sorted(cdk_config["resources"].items()):
+            print(resource_name)
+            resource = base_api.root.add_resource(
+                resource_name,
+                default_cors_preflight_options=_apigw.CorsOptions(
+                    allow_methods=list(resource_info.keys()), allow_origins=_apigw.Cors.ALL_ORIGINS
+                ),
+            )
+            print(resource_info)
+            for idx, (method, method_info) in enumerate(resource_info.items()):
+
+                func = aws_lambda.Function(
+                    self,
+                    f"{resource}function{idx}",
+                    runtime=aws_lambda.Runtime.PYTHON_3_9,
+                    handler=method_info["reference"],
+                    layers=[base_lambda_layer],
+                    code=aws_lambda.Code.from_asset(
+                        str(app_dir),
+                    ),
                 )
-            ],
-        )
 
-        example_entity.add_method(
-            "GET",
-            example_entity_lambda_integration,
-            method_responses=[
-                _apigw.MethodResponse(
-                    status_code="200", response_parameters={"method.response.header.Access-Control-Allow-Origin": True}
+                api_gw_lambda = _apigw.LambdaIntegration(
+                    func,
+                    proxy=True,
+                    integration_responses=[
+                        _apigw.IntegrationResponse(
+                            status_code=method_info["status_code"],
+                            response_parameters={"method.response.header.Access-Control-Allow-Origin": "'*'"},
+                        )
+                    ],
                 )
-            ],
-        )
 
-        # need to set endpoint type to regional
-
-        # needs to be a Proxy Intergration
-
-        # API gateway  -> Model schema needs to be declared
-        # API gateway  -> Documentation schema needs to be declared
+                resource.add_method(
+                    method.upper(),
+                    api_gw_lambda,
+                    method_responses=[
+                        _apigw.MethodResponse(
+                            status_code=method_info["status_code"],
+                            response_parameters={"method.response.header.Access-Control-Allow-Origin": True},
+                        )
+                    ],
+                )

@@ -1,58 +1,28 @@
-import json
-from enum import Enum
-
 import pytest
 
-from pydantic_lambda_handler.main import PydanticLambdaHandler
 
-app = PydanticLambdaHandler(title="PydanticLambdaHandler")
-
-
-@app.get("/items/{item_id}")
-def handler(item_id):
-    return {"item_id": item_id}
+def test_path_parameters_without_typehint(requests_client, base_url):
+    response = requests_client.get(f"{base_url}/pets/1")
+    assert response.status_code == 200
+    assert response.json() == {"pet_id": "1"}
 
 
-def test_path_parameters_without_typehint():
-    event = {"pathParameters": {"item_id": "1"}}
-    response = handler(event, None)
-    assert response["statusCode"] == 200
-    assert json.loads(response["body"]) == {"item_id": "1"}
+def test_path_parameters_with_typehint(requests_client, base_url):
+    response = requests_client.get(f"{base_url}/pets/1")
+    assert response.status_code == 200
+    assert response.json() == {"item_id": 1}
 
 
-@app.get("/items/{item_id}")
-def handler_with_type_hint(item_id: int):
-    return {"item_id": item_id}
+def test_path_parameters_with_enum_typehint(requests_client, base_url):
+    response = requests_client.get(f"{base_url}/item_enum/dog")
+    assert response.status_code == 200
+    assert response.json() == {"item_id": "dog"}
 
 
-def test_path_parameters_with_typehint():
-    event = {"pathParameters": {"item_id": "1"}}
-    response = handler_with_type_hint(event, None)
-    assert response["statusCode"] == 200
-    assert json.loads(response["body"]) == {"item_id": 1}
-
-
-class Animals(str, Enum):
-    dog = "dog"
-
-
-@app.get("/items/{item_id}")
-def handler_with_enum_type_hint(item_id: Animals):
-    return {"item_id": item_id}
-
-
-def test_path_parameters_with_enum_typehint():
-    event = {"pathParameters": {"item_id": "dog"}}
-    response = handler_with_enum_type_hint(event, None)
-    assert response["statusCode"] == 200
-    assert json.loads(response["body"]) == {"item_id": "dog"}
-
-
-def test_path_parameters_with_typehint_typeerror():
-    event = {"pathParameters": {"item_id": "cat"}}
-    response = handler_with_type_hint(event, None)
-    assert response["statusCode"] == 422
-    assert json.loads(response["body"]) == {
+def test_path_parameters_with_typehint_typeerror(requests_client, base_url):
+    response = requests_client.get(f"{base_url}/item_enum/dog")
+    assert response.status_code == 422
+    assert response.json() == {
         "detail": [
             {
                 "loc": ["path", "item_id"],

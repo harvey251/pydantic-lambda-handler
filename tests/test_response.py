@@ -3,19 +3,20 @@ import json
 from demo_app import create_handler, hello_handler  # type: ignore
 
 
-def test_get_response():
+def test_get_response(requests_client, base_url):
     """
-    test that the message is returned in the body
+    test that the message is returned to the body
     """
-    response = hello_handler({}, None)
-    assert response["statusCode"] == 200
-    assert json.loads(response["body"]) == {"message": "Hello World"}
+    # requests_client.get("/hello")
+    response = requests_client.get(f"{base_url}/hello")
+    assert response.status_code == 200
+    assert response.json() == {"message": "Hello World"}
 
 
-def test_post_response():
+def test_post_response(requests_client, base_url):
     """
-    test that the message is returned in the body
+    test that the message is returned to the body
     """
-    response = create_handler({}, None)
-    assert response["statusCode"] == 201
-    assert json.loads(response["body"]) == {"message": "success"}
+    response = requests_client.post(f"{base_url}/hello")
+    assert response.status_code == 201
+    assert response.json() == {"message": "success"}
