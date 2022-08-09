@@ -1,4 +1,5 @@
 import json
+import os
 import re
 from pathlib import Path
 
@@ -64,9 +65,7 @@ class RequestClient:
 
 @pytest.fixture(scope="function")
 def base_url(requests_client_type):
-    if requests_client_type == "real":
-        return "https://eeepzcccn0.execute-api.eu-west-2.amazonaws.com/prod"
-    return ""
+    return os.environ["BASE_URL"] if requests_client_type == "real" else ""
 
 
 @pytest.fixture(scope="function")
