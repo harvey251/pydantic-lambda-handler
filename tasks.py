@@ -13,7 +13,7 @@ def build_and_deploy(c):
     root = Path(__name__).parent
     demo_app_dir = root.joinpath("demo_app")
 
-    subprocess.run(f"cdk bootstrap", check=True, shell=True, cwd=demo_app_dir)
+    subprocess.run("cdk bootstrap", check=True, shell=True, cwd=demo_app_dir)
     subprocess.run("cdk deploy --require-approval never", check=True, shell=True, cwd=demo_app_dir)
 
     run_live_tests(c)

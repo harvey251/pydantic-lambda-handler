@@ -58,21 +58,6 @@ class PydanticLambdaHandler:
             "responses": {open_api_status_code: {"description": description, "content": {"application/json": {}}}},
         }
 
-        def add_resource(child_dict: dict, url):
-            part, found, remaining = url.partition("/")
-            if part:
-                if part in child_dict.get("resources", {}):
-                    return add_resource(child_dict["resources"][part], remaining)
-
-                last_resource: dict[str, dict] = {}
-                if "resources" not in child_dict:
-                    child_dict["resources"] = {part: last_resource}
-                else:
-                    child_dict["resources"].update({part: last_resource})
-
-                return add_resource(child_dict["resources"][part], remaining)
-            return child_dict
-
         ret_dict = add_resource(cls.cdk_stuff, url.lstrip("/"))
 
         testing_url = url.replace("{", "(?P<").replace("}", r">\w+)")
@@ -175,21 +160,6 @@ class PydanticLambdaHandler:
         if operation_id:
             cls.paths[url][post]["operationId"] = operation_id
 
-        def add_resource(child_dict: dict, url):
-            part, found, remaining = url.partition("/")
-            if part:
-                if part in child_dict.get("resources", {}):
-                    return add_resource(child_dict["resources"][part], remaining)
-
-                last_resource: dict[str, dict] = {}
-                if "resources" not in child_dict:
-                    child_dict["resources"] = {part: last_resource}
-                else:
-                    child_dict["resources"].update({part: last_resource})
-
-                return add_resource(child_dict["resources"][part], remaining)
-            return child_dict
-
         ret_dict = add_resource(cls.cdk_stuff, url.lstrip("/"))
 
         testing_url = url.replace("{", "(?P<").replace("}", r">\w+)")
@@ -253,3 +223,19 @@ def add_methods(method, func, ret_dict, function_name, open_api_status_code):
                 "function_name": function_name or to_camel_case(func.__name__),
             }
         }
+
+
+def add_resource(child_dict: dict, url):
+    part, found, remaining = url.partition("/")
+    if part:
+        if part in child_dict.get("resources", {}):
+            return add_resource(child_dict["resources"][part], remaining)
+
+        last_resource: dict[str, dict] = {}
+        if "resources" not in child_dict:
+            child_dict["resources"] = {part: last_resource}
+        else:
+            child_dict["resources"].update({part: last_resource})
+
+        return add_resource(child_dict["resources"][part], remaining)
+    return child_dict
