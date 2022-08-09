@@ -14,6 +14,14 @@ from pydantic import ValidationError, create_model
 from pydantic_lambda_handler.models import BaseOutput
 
 
+def to_camel_case(text):
+    s = text.replace("-", " ").replace("_", " ")
+    s = s.split()
+    if len(text) == 0:
+        return text.capitalize()
+    return "".join(i.capitalize() for i in s)
+
+
 class PydanticLambdaHandler:
     """
     The decorator handle.
@@ -35,6 +43,7 @@ class PydanticLambdaHandler:
         status_code: Union[HTTPStatus, int] = HTTPStatus.OK,
         operation_id: str = None,
         description: str = "Successful Response",
+        function_name=None,
     ):
         """Expect request with a GET method.
 
@@ -58,15 +67,17 @@ class PydanticLambdaHandler:
                     child_dict["resources"] = {part: last_resource}
                 else:
                     child_dict["resources"].update({part: last_resource})
-                return last_resource
+
+                return add_resource(child_dict["resources"][part], remaining)
             return child_dict
 
         ret_dict = add_resource(cls.cdk_stuff, url.lstrip("/"))
 
-        if url not in cls.testing_stuff["paths"]:
-            cls.testing_stuff["paths"][url] = {"get": {}}
+        testing_url = url.replace("{", "(?P<").replace("}", r">\w+)")
+        if testing_url not in cls.testing_stuff["paths"]:
+            cls.testing_stuff["paths"][testing_url] = {"get": {}}
         else:
-            cls.testing_stuff["paths"][url]["get"] = {}
+            cls.testing_stuff["paths"][testing_url]["get"] = {}
 
         if operation_id:
             cls.paths[url]["get"]["operationId"] = operation_id
@@ -128,15 +139,26 @@ class PydanticLambdaHandler:
                 response = BaseOutput(body=json.dumps(body), status_code=status_code)
                 return json.loads(response.json())
 
-            ret_dict["get"] = {
-                "reference": f"{func.__module__}.{func.__qualname__}",
-                "status_code": open_api_status_code,
-            }
-            cls.testing_stuff["paths"][url]["get"]["handler"]["function"] = func
+            if "methods" in ret_dict:
+                ret_dict["methods"]["get"] = {
+                    "reference": f"{func.__module__}.{func.__qualname__}",
+                    "status_code": open_api_status_code,
+                    "function_name": function_name or to_camel_case(func.__name__),
+                }
+            else:
+                ret_dict["methods"] = {
+                    "get": {
+                        "reference": f"{func.__module__}.{func.__qualname__}",
+                        "status_code": open_api_status_code,
+                        "function_name": function_name or to_camel_case(func.__name__),
+                    }
+                }
+
+            cls.testing_stuff["paths"][testing_url]["get"]["handler"]["function"] = func
 
             return wrapper_decorator
 
-        cls.testing_stuff["paths"][url]["get"]["handler"] = {"decorated_function": create_response}
+        cls.testing_stuff["paths"][testing_url]["get"]["handler"] = {"decorated_function": create_response}
         return create_response
 
     @classmethod
@@ -147,6 +169,7 @@ class PydanticLambdaHandler:
         status_code: Union[HTTPStatus, int] = HTTPStatus.CREATED,
         operation_id: str = None,
         description: str = "Successful Response",
+        function_name=None,
     ):
         """Expect request with a POST method.
 
@@ -173,15 +196,17 @@ class PydanticLambdaHandler:
                     child_dict["resources"] = {part: last_resource}
                 else:
                     child_dict["resources"].update({part: last_resource})
-                return last_resource
+
+                return add_resource(child_dict["resources"][part], remaining)
             return child_dict
 
         ret_dict = add_resource(cls.cdk_stuff, url.lstrip("/"))
 
-        if url not in cls.testing_stuff["paths"]:
-            cls.testing_stuff["paths"][url] = {"post": {}}
+        testing_url = url.replace("{", "(?P<").replace("}", r">\w+)")
+        if testing_url not in cls.testing_stuff["paths"]:
+            cls.testing_stuff["paths"][testing_url] = {"post": {}}
         else:
-            cls.testing_stuff["paths"][url]["post"] = {}
+            cls.testing_stuff["paths"][testing_url]["post"] = {}
 
         def create_response(func):
             @functools.wraps(func)
@@ -213,14 +238,24 @@ class PydanticLambdaHandler:
                 response = BaseOutput(body=json.dumps(body), status_code=status_code)
                 return json.loads(response.json())
 
-            ret_dict["post"] = {
-                "reference": f"{func.__module__}.{func.__qualname__}",
-                "status_code": open_api_status_code,
-            }
+            if "methods" in ret_dict:
+                ret_dict["methods"]["post"] = {
+                    "reference": f"{func.__module__}.{func.__qualname__}",
+                    "status_code": open_api_status_code,
+                    "function_name": function_name or to_camel_case(func.__name__),
+                }
+            else:
+                ret_dict["methods"] = {
+                    "post": {
+                        "reference": f"{func.__module__}.{func.__qualname__}",
+                        "status_code": open_api_status_code,
+                        "function_name": function_name or to_camel_case(func.__name__),
+                    }
+                }
 
-            cls.testing_stuff["paths"][url]["post"]["handler"]["function"] = func
+            cls.testing_stuff["paths"][testing_url]["post"]["handler"]["function"] = func
 
             return wrapper_decorator
 
-        cls.testing_stuff["paths"][url]["post"]["handler"] = {"decorated_function": create_response}
+        cls.testing_stuff["paths"][testing_url]["post"]["handler"] = {"decorated_function": create_response}
         return create_response

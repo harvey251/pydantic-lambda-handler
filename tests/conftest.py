@@ -1,4 +1,5 @@
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -31,17 +32,33 @@ class RequestClient:
     def get(self, url, *args, **kwargs):
         event = {}
         context = None
-        decorated_function_ = self._test["paths"][url]["get"]["handler"]["decorated_function"]
-        function_ = self._test["paths"][url]["get"]["handler"]["function"]
+
+        for comp_url, info in self._test["paths"].items():
+            print(comp_url)
+            match = re.fullmatch(comp_url, url)
+            if match:
+                decorated_function_ = info["get"]["handler"]["decorated_function"]
+                event["pathParameters"] = match.groupdict()
+                break
+        else:  # No break
+            raise ValueError
+
+        function_ = self._test["paths"][comp_url]["get"]["handler"]["function"]
         response = decorated_function_(function_)(event, context)
         return Response(response)
 
     def post(self, url, *args, **kwargs):
         event = {}
         context = None
-        response = self._test["paths"][url]["post"]["handler"]["decorated_function"](
-            self._test["paths"][url]["post"]["handler"]["function"]
-        )(event, context)
+        for comp_url, info in self._test["paths"].items():
+            match = re.fullmatch(url, comp_url)
+            if match:
+                decorated_function_ = info["post"]["handler"]["decorated_function"]
+                break
+        else:
+            raise ValueError
+        function_ = self._test["paths"][comp_url]["post"]["handler"]["function"]
+        response = decorated_function_(function_)(event, context)
         return Response(response)
 
 
@@ -59,10 +76,9 @@ def requests_client(requests_client_type):
 
 def pytest_generate_tests(metafunc):
     if "requests_client_type" in metafunc.fixturenames:
-        # types = ['mock']
-        # if metafunc.config.get.)
-        #     types.append('real')
-        types = ["real", "mock"]
+        types = ["mock"]
+        if metafunc.config.getoption("live"):
+            types.append("real")
         metafunc.parametrize("requests_client_type", types)
 
 

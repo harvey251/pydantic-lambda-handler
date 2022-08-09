@@ -8,9 +8,9 @@ def test_path_parameters_without_typehint(requests_client, base_url):
 
 
 def test_path_parameters_with_typehint(requests_client, base_url):
-    response = requests_client.get(f"{base_url}/pets/1")
+    response = requests_client.get(f"{base_url}/items/2")
     assert response.status_code == 200
-    assert response.json() == {"item_id": 1}
+    assert response.json() == {"item_id": 2}
 
 
 def test_path_parameters_with_enum_typehint(requests_client, base_url):
@@ -20,14 +20,15 @@ def test_path_parameters_with_enum_typehint(requests_client, base_url):
 
 
 def test_path_parameters_with_typehint_typeerror(requests_client, base_url):
-    response = requests_client.get(f"{base_url}/item_enum/dog")
+    response = requests_client.get(f"{base_url}/item_enum/cat")
     assert response.status_code == 422
     assert response.json() == {
         "detail": [
             {
+                "ctx": {"enum_values": ["dog"]},
                 "loc": ["path", "item_id"],
-                "msg": "value is not a valid integer",
-                "type": "type_error.integer",
+                "msg": "value is not a valid enumeration member; permitted: 'dog'",
+                "type": "type_error.enum",
             }
         ]
     }
