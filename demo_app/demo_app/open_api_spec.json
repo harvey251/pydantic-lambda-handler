@@ -5,7 +5,7 @@
         "version": "0.0.0"
     },
     "paths": {
-        "/": {
+        "/hello": {
             "get": {
                 "responses": {
                     "200": {
@@ -27,19 +27,7 @@
                 }
             }
         },
-        "/index/": {
-            "get": {
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                }
-            }
-        },
-        "/teapot/": {
+        "/teapot": {
             "get": {
                 "responses": {
                     "418": {
@@ -65,6 +53,50 @@
                 "parameters": [
                     {
                         "name": "petId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ]
+            }
+        },
+        "/items/{item_id}": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "item_id",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ]
+            }
+        },
+        "/item_enum/{item_id}": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "item_id",
                         "in": "path",
                         "schema": {
                             "type": "string"
