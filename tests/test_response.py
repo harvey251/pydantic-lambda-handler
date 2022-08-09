@@ -1,8 +1,3 @@
-import json
-
-from demo_app import create_handler, hello_handler  # type: ignore
-
-
 def test_get_response(requests_client, base_url):
     """
     test that the message is returned to the body

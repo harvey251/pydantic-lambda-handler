@@ -1,4 +1,5 @@
 import pytest
+from handler_app import plh
 
 
 def test_path_parameters_without_typehint(requests_client, base_url):
@@ -40,6 +41,6 @@ def test_path_parameters_with_path_default():
     # all the other handlers
     with pytest.raises(Exception):
 
-        @app.get("/items/{item_id}")
+        @plh.get("/items/{item_id}")
         def handler_with_path_default(item_id=2):
             return {"item_id": item_id}
