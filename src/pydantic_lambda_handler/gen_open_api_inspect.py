@@ -7,6 +7,7 @@ from pathlib import Path
 from sys import modules
 from typing import Optional
 
+from pydantic_lambda_handler.hooks.open_api_gen_hook import APIGenerationHook
 from pydantic_lambda_handler.main import PydanticLambdaHandler
 
 
@@ -38,6 +39,8 @@ def get_top_imported_names(file: str) -> set[str]:
 def gen_open_api_inspect(dir_path: Path):
     files = dir_path.rglob("*.py")
 
+    PydanticLambdaHandler.add_hook(APIGenerationHook)
+
     app: Optional[PydanticLambdaHandler] = None
 
     for file in files:
@@ -56,11 +59,7 @@ def gen_open_api_inspect(dir_path: Path):
 
     if app:
         return (
-            {
-                "openapi": "3.0.2",
-                "info": {"title": app.title, "version": app.version},
-                "paths": app.paths,
-            },
+            next(h for h in app._hooks if issubclass(h, APIGenerationHook)).generate(),  # type: ignore
             app.cdk_stuff,
             app.testing_stuff,
         )

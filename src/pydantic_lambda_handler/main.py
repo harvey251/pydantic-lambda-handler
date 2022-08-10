@@ -7,11 +7,12 @@ import re
 from collections import defaultdict
 from http import HTTPStatus
 from inspect import signature
-from typing import Union
+from typing import Iterable, Optional, Union
 
 from orjson import loads
 from pydantic import ValidationError, create_model
 
+from pydantic_lambda_handler.middleware import BaseHook
 from pydantic_lambda_handler.models import BaseOutput
 
 
@@ -28,17 +29,24 @@ class PydanticLambdaHandler:
     The decorator handle.
     """
 
-    paths: dict = defaultdict(dict)
     cdk_stuff: dict = defaultdict(dict)
     testing_stuff: dict = defaultdict(dict)
+    _hooks: list[type[BaseHook]] = []
 
-    def __init__(self, *, title="PydanticLambdaHandler", version="0.0.0"):
+    def __init__(
+        self, *, title="PydanticLambdaHandler", version="0.0.0", hooks: Optional[Iterable[type[BaseHook]]] = None
+    ):
         self.title = title
         self.version = version
+        if hooks:
+            PydanticLambdaHandler._hooks.extend(hooks)
 
     @classmethod
+    def add_hook(cls, hook: type[BaseHook]):
+        cls._hooks.append(hook)
+
     def get(
-        cls,
+        self,
         url,
         *,
         status_code: Union[HTTPStatus, int] = HTTPStatus.OK,
@@ -52,24 +60,22 @@ class PydanticLambdaHandler:
         :param status_code:
         :return:
         """
-        open_api_status_code = str(int(status_code))
-        get = "get"
-        cls.paths[url][get] = {
-            "responses": {open_api_status_code: {"description": description, "content": {"application/json": {}}}},
-        }
+        method = "get"
+        for hook in self._hooks:
+            hook.method_init(**locals())
 
-        ret_dict = add_resource(cls.cdk_stuff, url.lstrip("/"))
+        ret_dict = add_resource(self.cdk_stuff, url.lstrip("/"))
 
         testing_url = url.replace("{", "(?P<").replace("}", r">\w+)")
-        if testing_url not in cls.testing_stuff["paths"]:
-            cls.testing_stuff["paths"][testing_url] = {get: {}}
+        if testing_url not in self.testing_stuff["paths"]:
+            self.testing_stuff["paths"][testing_url] = {method: {}}
         else:
-            cls.testing_stuff["paths"][testing_url][get] = {}
-
-        if operation_id:
-            cls.paths[url][get]["operationId"] = operation_id
+            self.testing_stuff["paths"][testing_url][method] = {}
 
         def create_response(func):
+            for hook in self._hooks:
+                hook.pre_path(**locals())
+
             sig = signature(func)
 
             if sig.parameters:
@@ -90,22 +96,12 @@ class PydanticLambdaHandler:
 
                 PathModel = create_model("PathModel", **model_dict)
 
-                path_schema_initial = PathModel.schema()
-                properties = []
-                for name, property_info in path_schema_initial.get("properties", {}).items():
-                    #  {"name": "petId", "in": "path", "required": True, "schema": {"type": "string"}}
-                    p = {"name": name, "in": "path", "schema": {"type": property_info.get("type", "string")}}
-                    if name in path_schema_initial.get("required", ()):
-                        p["required"] = True
-
-                    properties.append(p)
-                # f"{func.__module__}.{func.__qualname__}"
-                cls.paths[url][get]["parameters"] = properties
-
                 EventModel = create_model("EventModel", path=(PathModel, {}))
 
             @functools.wraps(func)
             def wrapper_decorator(event, context):
+                for hook in self._hooks:
+                    event, context = hook.pre_func(event, context)
                 if sig.parameters:
                     path_parameters = event.get("pathParameters", {}) or {}
 
@@ -123,21 +119,23 @@ class PydanticLambdaHandler:
                 else:
                     body = func()
 
+                for hook in reversed(self._hooks):
+                    body = hook.post_func(body)
+
                 response = BaseOutput(body=json.dumps(body), status_code=status_code)
                 return loads(response.json())
 
-            add_methods(get, func, ret_dict, function_name, open_api_status_code)
+            add_methods(method, func, ret_dict, function_name, str(int(status_code)))
 
-            cls.testing_stuff["paths"][testing_url][get]["handler"]["function"] = func
+            self.testing_stuff["paths"][testing_url][method]["handler"]["function"] = func
 
             return wrapper_decorator
 
-        cls.testing_stuff["paths"][testing_url][get]["handler"] = {"decorated_function": create_response}
+        self.testing_stuff["paths"][testing_url][method]["handler"] = {"decorated_function": create_response}
         return create_response
 
-    @classmethod
     def post(
-        cls,
+        self,
         url,
         *,
         status_code: Union[HTTPStatus, int] = HTTPStatus.CREATED,
@@ -151,26 +149,49 @@ class PydanticLambdaHandler:
         :param status_code:
         :return:
         """
-        open_api_status_code = str(int(status_code))
-        post = "post"
-        cls.paths[url][post] = {
-            "responses": {open_api_status_code: {"description": description, "content": {"application/json": {}}}},
-        }
+        method = "post"
+        for hook in self._hooks:
+            hook.method_init(**locals())
 
-        if operation_id:
-            cls.paths[url][post]["operationId"] = operation_id
-
-        ret_dict = add_resource(cls.cdk_stuff, url.lstrip("/"))
+        ret_dict = add_resource(self.cdk_stuff, url.lstrip("/"))
 
         testing_url = url.replace("{", "(?P<").replace("}", r">\w+)")
-        if testing_url not in cls.testing_stuff["paths"]:
-            cls.testing_stuff["paths"][testing_url] = {post: {}}
+        if testing_url not in self.testing_stuff["paths"]:
+            self.testing_stuff["paths"][testing_url] = {method: {}}
         else:
-            cls.testing_stuff["paths"][testing_url][post] = {}
+            self.testing_stuff["paths"][testing_url][method] = {}
 
         def create_response(func):
+            for hook in self._hooks:
+                hook.pre_path(**locals())
+
+            sig = signature(func)
+
+            if sig.parameters:
+                model_dict = {}
+                for param, param_info in sig.parameters.items():
+                    if param_info.default != param_info.empty:
+                        raise ValueError("Should not set default for path parameters")
+
+                    if param_info.annotation == param_info.empty:
+                        model_dict[param] = str, ...
+                    else:
+                        model_dict[param] = param_info.annotation, ...
+
+                path_parameters = set(re.findall(r"\{(.*?)\}", url))
+
+                if path_parameters != set(model_dict.keys()):
+                    raise ValueError("Missing path parameters")
+
+                PathModel = create_model("PathModel", **model_dict)
+
+                EventModel = create_model("EventModel", path=(PathModel, {}))
+
             @functools.wraps(func)
             def wrapper_decorator(event, context):
+                for hook in self._hooks:
+                    event, context = hook.pre_func(event, context)
+
                 sig = signature(func)
 
                 func_args = []
@@ -191,20 +212,24 @@ class PydanticLambdaHandler:
                                 return loads(response.json())
 
                     # Do something before
+
                     body = func(*func_args, **func_kwargs)
                 else:
                     body = func()
 
+                for hook in reversed(self._hooks):
+                    body = hook.post_func(body)
+
                 response = BaseOutput(body=json.dumps(body), status_code=status_code)
                 return loads(response.json())
 
-            add_methods(post, func, ret_dict, function_name, open_api_status_code)
+            add_methods(method, func, ret_dict, function_name, str(int(status_code)))
 
-            cls.testing_stuff["paths"][testing_url][post]["handler"]["function"] = func
+            self.testing_stuff["paths"][testing_url][method]["handler"]["function"] = func
 
             return wrapper_decorator
 
-        cls.testing_stuff["paths"][testing_url][post]["handler"] = {"decorated_function": create_response}
+        self.testing_stuff["paths"][testing_url][method]["handler"] = {"decorated_function": create_response}
         return create_response
 
 
