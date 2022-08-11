@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.0 (2022-08-11)
+### Feature
+* Move gen open api spec into a hook ([#28](https://github.com/harvey251/pydantic-lambda-handler/issues/28)) ([`a2e34b8`](https://github.com/harvey251/pydantic-lambda-handler/commit/a2e34b8736a6303009a7d8ea64cefa2afd3a915a))
+
 ## v0.2.0 (2022-07-31)
 ### Feature
 * Add task to deploy ([#23](https://github.com/harvey251/pydantic-lambda-handler/issues/23)) ([`ea67f71`](https://github.com/harvey251/pydantic-lambda-handler/commit/ea67f71001552b4eeff8d08a9379c7e271be7921))
