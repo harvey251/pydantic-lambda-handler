@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.1 (2022-08-11)
+### Fix
+* Add check for redeclaration of path ([#29](https://github.com/harvey251/pydantic-lambda-handler/issues/29)) ([`a9671c6`](https://github.com/harvey251/pydantic-lambda-handler/commit/a9671c6f4c5ca6d61032e6ebbed986df3dae536b))
+
 ## v0.3.0 (2022-08-11)
 ### Feature
 * Move gen open api spec into a hook ([#28](https://github.com/harvey251/pydantic-lambda-handler/issues/28)) ([`a2e34b8`](https://github.com/harvey251/pydantic-lambda-handler/commit/a2e34b8736a6303009a7d8ea64cefa2afd3a915a))
