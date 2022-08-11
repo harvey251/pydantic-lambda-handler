@@ -77,7 +77,7 @@ class APIGenerationHook(BaseHook):
             if path_parameters != set(model_dict.keys()):
                 raise ValueError("Missing path parameters")
 
-            APIPathModel = create_model("PathModel", **model_dict)
+            APIPathModel = create_model("APIPathModel", **model_dict)
 
             path_schema_initial = APIPathModel.schema()
             properties = []
