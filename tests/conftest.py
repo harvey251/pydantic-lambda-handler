@@ -35,8 +35,13 @@ class RequestClient:
         context = None
 
         for comp_url, info in self._test["paths"].items():
-            print(comp_url)
-            match = re.fullmatch(comp_url, url)
+            try:
+                match = re.fullmatch(comp_url, url)
+            except Exception as e:
+                print(e)
+                # None breaking here
+                continue
+
             if match:
                 decorated_function_ = info["get"]["handler"]["decorated_function"]
                 event["pathParameters"] = match.groupdict()

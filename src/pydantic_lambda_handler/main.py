@@ -100,6 +100,7 @@ class PydanticLambdaHandler:
 
             @functools.wraps(func)
             def wrapper_decorator(event, context):
+                print(event)
                 for hook in self._hooks:
                     event, context = hook.pre_func(event, context)
                 if sig.parameters:
