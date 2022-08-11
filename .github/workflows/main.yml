@@ -44,7 +44,7 @@ jobs:
           pip install -r tests/requirements.txt
           pip install mypy
           pip install types-requests
-          mypy .
+          mypy src
   test:
     runs-on: ubuntu-latest
     strategy:
