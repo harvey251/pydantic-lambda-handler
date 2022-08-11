@@ -2,7 +2,6 @@ import json
 import subprocess
 from pathlib import Path
 
-import requests
 from invoke import task
 
 from pydantic_lambda_handler.gen_open_api_inspect import gen_open_api_inspect
