@@ -72,7 +72,11 @@ class APIGenerationHook(BaseHook):
                 else:
                     model_dict[param] = param_info.annotation, ...
 
-            path_parameters = set(re.findall(r"\{(.*?)\}", url))
+            path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
+
+            path_parameters = set(path_parameters_list)
+            if len(path_parameters_list) != len(path_parameters):
+                raise ValueError(f"re-declared path variable: {url}")
 
             if path_parameters != set(model_dict.keys()):
                 raise ValueError("Missing path parameters")
