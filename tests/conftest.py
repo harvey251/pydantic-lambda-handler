@@ -31,7 +31,7 @@ class RequestClient:
         self._spec, self._cdk_stuff, self._test = gen_open_api_inspect(path)
 
     def get(self, url, *args, **kwargs):
-        event = {}
+        event = {"queryStringParameters": kwargs.get("params", None)}
         context = None
 
         for comp_url, info in self._test["paths"].items():

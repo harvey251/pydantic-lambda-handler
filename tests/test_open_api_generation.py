@@ -30,3 +30,11 @@ def test_generate_open_api_path(schema):
 
 def test_generate_open_operation_id(schema):
     assert schema["paths"]["/pets/{petId}"]["get"].get("operationId") == "Create Pet"
+
+
+def test_query_options(schema):
+    assert "/query" in schema["paths"]
+    assert schema["paths"]["/query"]["get"].get("parameters") == [
+        {"in": "query", "name": "skip", "required": True, "schema": {"type": "integer"}},
+        {"in": "query", "name": "limit", "required": True, "schema": {"type": "integer"}},
+    ]

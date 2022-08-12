@@ -62,32 +62,36 @@ class APIGenerationHook(BaseHook):
             url = kwargs["url"]
             method = kwargs["method"]
 
-            model_dict = {}
-            for param, param_info in sig.parameters.items():
-                if param_info.default != param_info.empty:
-                    raise ValueError("Should not set default for path parameters")
-
-                if param_info.annotation == param_info.empty:
-                    model_dict[param] = str, ...
-                else:
-                    model_dict[param] = param_info.annotation, ...
+            path_model_dict = {}
+            query_model_dict = {}
 
             path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
-
             path_parameters = set(path_parameters_list)
             if len(path_parameters_list) != len(path_parameters):
                 raise ValueError(f"re-declared path variable: {url}")
 
-            if path_parameters != set(model_dict.keys()):
+            for param, param_info in sig.parameters.items():
+                if param_info.annotation == param_info.empty:
+                    annotations = str, ...
+                else:
+                    annotations = param_info.annotation, ...
+
+                if param in path_parameters:
+                    path_model_dict[param] = annotations
+                else:
+                    query_model_dict[param] = annotations
+
+            if path_parameters != set(path_model_dict.keys()):
                 raise ValueError("Missing path parameters")
 
-            APIPathModel = create_model("APIPathModel", **model_dict)  # type: ignore
+            APIPathModel = create_model("APIPathModel", **path_model_dict, **query_model_dict)  # type: ignore
 
             path_schema_initial = APIPathModel.schema()
             properties = []
             for name, property_info in path_schema_initial.get("properties", {}).items():
                 #  {"name": "petId", "in": "path", "required": True, "schema": {"type": "string"}}
-                p = {"name": name, "in": "path", "schema": {"type": property_info.get("type", "string")}}
+                in_ = "path" if name in path_parameters else "query"
+                p = {"name": name, "in": in_, "schema": {"type": property_info.get("type", "string")}}
                 if name in path_schema_initial.get("required", ()):
                     p["required"] = True
 
