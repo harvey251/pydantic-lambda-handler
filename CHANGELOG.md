@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.0 (2022-08-12)
+### Feature
+* Add query ([#30](https://github.com/harvey251/pydantic-lambda-handler/issues/30)) ([`fcfa161`](https://github.com/harvey251/pydantic-lambda-handler/commit/fcfa161d73cf78de5716a3449ac3ac33a84908c2))
+
 ## v0.3.1 (2022-08-11)
 ### Fix
 * Add check for redeclaration of path ([#29](https://github.com/harvey251/pydantic-lambda-handler/issues/29)) ([`a9671c6`](https://github.com/harvey251/pydantic-lambda-handler/commit/a9671c6f4c5ca6d61032e6ebbed986df3dae536b))
