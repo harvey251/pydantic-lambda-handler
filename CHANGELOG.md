@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.4.1 (2022-08-12)
+### Fix
+* Add pydantic core test ([#31](https://github.com/harvey251/pydantic-lambda-handler/issues/31)) ([`368deae`](https://github.com/harvey251/pydantic-lambda-handler/commit/368deae1976862a975bafaf23b18333e1ac3b68a))
+
 ## v0.4.0 (2022-08-12)
 ### Feature
 * Add query ([#30](https://github.com/harvey251/pydantic-lambda-handler/issues/30)) ([`fcfa161`](https://github.com/harvey251/pydantic-lambda-handler/commit/fcfa161d73cf78de5716a3449ac3ac33a84908c2))
