@@ -79,42 +79,7 @@ class PydanticLambdaHandler:
             sig = signature(func)
 
             if sig.parameters:
-                path_model_dict = {}
-                query_model_dict = {}
-
-                path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
-                path_parameters = set(path_parameters_list)
-                if len(path_parameters_list) != len(path_parameters):
-                    raise ValueError(f"re-declared path variable: {url}")
-
-                for param, param_info in sig.parameters.items():
-                    if param in path_parameters:
-                        if param_info.annotation == param_info.empty:
-                            annotations = str, ...
-                        else:
-                            annotations = param_info.annotation, ...
-                    else:
-
-                        default = ... if param_info.default == param_info.empty else param_info.default
-                        if param_info.annotation == param_info.empty:
-                            annotations = str, default
-                        else:
-                            annotations = param_info.annotation, default
-
-                    if param in path_parameters:
-                        if param_info.default != param_info.empty:
-                            raise ValueError("Should not set default for path parameters")
-                        path_model_dict[param] = annotations
-                    else:
-                        query_model_dict[param] = annotations
-
-                if path_parameters != set(path_model_dict.keys()):
-                    raise ValueError("Missing path parameters")
-
-                PathModel = create_model("PathModel", **path_model_dict)
-                QueryModel = create_model("QueryModel", **query_model_dict)
-
-                EventModel = create_model("EventModel", path=(PathModel, {}), query=(QueryModel, {}))
+                EventModel = self.generate_event_model(url, sig)
 
             @functools.wraps(func)
             def wrapper_decorator(event, context):
@@ -153,6 +118,40 @@ class PydanticLambdaHandler:
 
         self.testing_stuff["paths"][testing_url][method]["handler"] = {"decorated_function": create_response}
         return create_response
+
+    @staticmethod
+    def generate_event_model(url, sig):
+        path_model_dict = {}
+        query_model_dict = {}
+        path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
+        path_parameters = set(path_parameters_list)
+        if len(path_parameters_list) != len(path_parameters):
+            raise ValueError(f"re-declared path variable: {url}")
+        for param, param_info in sig.parameters.items():
+            if param in path_parameters:
+                if param_info.annotation == param_info.empty:
+                    annotations = str, ...
+                else:
+                    annotations = param_info.annotation, ...
+            else:
+
+                default = ... if param_info.default == param_info.empty else param_info.default
+                if param_info.annotation == param_info.empty:
+                    annotations = str, default
+                else:
+                    annotations = param_info.annotation, default
+
+            if param in path_parameters:
+                if param_info.default != param_info.empty:
+                    raise ValueError("Should not set default for path parameters")
+                path_model_dict[param] = annotations
+            else:
+                query_model_dict[param] = annotations
+        if path_parameters != set(path_model_dict.keys()):
+            raise ValueError("Missing path parameters")
+        PathModel = create_model("PathModel", **path_model_dict)
+        QueryModel = create_model("QueryModel", **query_model_dict)
+        return create_model("EventModel", path=(PathModel, {}), query=(QueryModel, {}))
 
     def post(
         self,
