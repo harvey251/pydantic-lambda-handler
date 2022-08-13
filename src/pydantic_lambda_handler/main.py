@@ -9,7 +9,7 @@ from http import HTTPStatus
 from inspect import signature
 from typing import Iterable, Optional, Union
 
-from orjson import loads
+from orjson import loads, orjson
 from pydantic import ValidationError, create_model
 
 from pydantic_lambda_handler.middleware import BaseHook
@@ -79,7 +79,7 @@ class PydanticLambdaHandler:
             sig = signature(func)
 
             if sig.parameters:
-                EventModel = self.generate_event_model(url, sig)
+                EventModel = self.generate_get_event_model(url, sig)
 
             @functools.wraps(func)
             def wrapper_decorator(event, context):
@@ -89,6 +89,7 @@ class PydanticLambdaHandler:
                 if sig.parameters:
                     path_parameters = event.get("pathParameters", {}) or {}
                     query_parameters = event.get("queryStringParameters", {}) or {}
+                    body = event.get("body")
 
                     try:
                         event = EventModel(path=path_parameters, query=query_parameters)
@@ -120,7 +121,7 @@ class PydanticLambdaHandler:
         return create_response
 
     @staticmethod
-    def generate_event_model(url, sig):
+    def generate_get_event_model(url, sig):
         path_model_dict = {}
         query_model_dict = {}
         path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
@@ -152,6 +153,47 @@ class PydanticLambdaHandler:
         PathModel = create_model("PathModel", **path_model_dict)
         QueryModel = create_model("QueryModel", **query_model_dict)
         return create_model("EventModel", path=(PathModel, {}), query=(QueryModel, {}))
+
+    @staticmethod
+    def generate_post_event_model(url, sig):
+        path_model_dict = {}
+        query_model_dict = {}
+        body_default = None
+        body_model = None
+        path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
+        path_parameters = set(path_parameters_list)
+        if len(path_parameters_list) != len(path_parameters):
+            raise ValueError(f"re-declared path variable: {url}")
+        for param, param_info in sig.parameters.items():
+            if param in path_parameters:
+                if param_info.annotation == param_info.empty:
+                    annotations = str, ...
+                else:
+                    annotations = param_info.annotation, ...
+            else:
+                default = ... if param_info.default == param_info.empty else param_info.default
+                if param_info.annotation == param_info.empty:
+                    annotations = str, default
+                else:
+                    annotations = param_info.annotation, default
+
+            if param in path_parameters:
+                if param_info.default != param_info.empty:
+                    raise ValueError("Should not set default for path parameters")
+                path_model_dict[param] = annotations
+            elif not body_model:
+                body_model, body_default = annotations
+                body_model._alias = param
+            else:
+                query_model_dict[param] = annotations
+        if path_parameters != set(path_model_dict.keys()):
+            raise ValueError("Missing path parameters")
+        PathModel = create_model("PathModel", **path_model_dict)
+        QueryModel = create_model("QueryModel", **query_model_dict)
+
+        return create_model(
+            "EventModel", **{"path": (PathModel, {}), "query": (QueryModel, {}), "body": (body_model, body_default)}
+        )
 
     def post(
         self,
@@ -187,57 +229,45 @@ class PydanticLambdaHandler:
             sig = signature(func)
 
             if sig.parameters:
-                model_dict = {}
-                for param, param_info in sig.parameters.items():
-                    if param_info.default != param_info.empty:
-                        raise ValueError("Should not set default for path parameters")
-
-                    if param_info.annotation == param_info.empty:
-                        model_dict[param] = str, ...
-                    else:
-                        model_dict[param] = param_info.annotation, ...
-
-                path_parameters = set(re.findall(r"\{(.*?)\}", url))
-
-                if path_parameters != set(model_dict.keys()):
-                    raise ValueError("Missing path parameters")
-
-                PathModel = create_model("PathModel", **model_dict)
-
-                EventModel = create_model("EventModel", path=(PathModel, {}))
+                EventModel = self.generate_post_event_model(url, sig)
 
             @functools.wraps(func)
             def wrapper_decorator(event, context):
+                print(event)
+
                 for hook in self._hooks:
                     event, context = hook.pre_func(event, context)
 
                 sig = signature(func)
 
-                func_args = []
-                func_kwargs = {}
                 if sig.parameters:
                     path_parameters = event.get("pathParameters", {}) or {}
-                    for param, param_info in sig.parameters.items():
+                    query_parameters = event.get("queryStringParameters", {}) or {}
+                    if event["body"] is not None:
+                        body = loads(event["body"])
+                    else:
+                        body = None
 
-                        path_param = path_parameters.get(param)
-
-                        if param_info.annotation == param_info.empty:
-                            func_args.append(path_param)
-                        else:
-                            try:
-                                func_args.append(param_info.annotation(path_param))
-                            except ValueError:
-                                response = BaseOutput(body="", status_code=422)
-                                return loads(response.json())
+                    try:
+                        event = EventModel(path=path_parameters, query=query_parameters, body=body)
+                    except ValidationError as e:
+                        response = BaseOutput(
+                            body=json.dumps({"detail": json.loads(e.json())}),
+                            status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
+                        )
+                        return loads(response.json())
 
                     # Do something before
 
-                    body = func(*func_args, **func_kwargs)
+                    body = func(**event.path.dict(), **event.query.dict(), **{event.body._alias: event.body})
                 else:
                     body = func()
 
                 for hook in reversed(self._hooks):
                     body = hook.post_func(body)
+
+                if hasattr(body, "json"):
+                    body = orjson.loads(body.json())
 
                 response = BaseOutput(body=json.dumps(body), status_code=status_code)
                 return loads(response.json())

@@ -54,11 +54,18 @@ class RequestClient:
         return Response(response)
 
     def post(self, url, *args, **kwargs):
-        event = {}
+        if "data" in kwargs:
+            body = kwargs["data"]
+        elif "json" in kwargs:
+            body = json.dumps(kwargs["json"])
+        else:
+            body = None
+
+        event = {"body": body, "queryStringParameters": kwargs.get("params", None)}
+
         context = None
         for comp_url, info in self._test["paths"].items():
-            match = re.fullmatch(url, comp_url)
-            if match:
+            if re.fullmatch(url, comp_url):
                 decorated_function_ = info["post"]["handler"]["decorated_function"]
                 break
         else:
