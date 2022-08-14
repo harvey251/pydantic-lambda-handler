@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.0 (2022-08-14)
+### Feature
+* Add post data ([#32](https://github.com/harvey251/pydantic-lambda-handler/issues/32)) ([`544b1e1`](https://github.com/harvey251/pydantic-lambda-handler/commit/544b1e16882de23c6ddd9d791dc7255ac9d46650))
+
 ## v0.4.1 (2022-08-12)
 ### Fix
 * Add pydantic core test ([#31](https://github.com/harvey251/pydantic-lambda-handler/issues/31)) ([`368deae`](https://github.com/harvey251/pydantic-lambda-handler/commit/368deae1976862a975bafaf23b18333e1ac3b68a))
