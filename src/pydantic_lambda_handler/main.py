@@ -40,6 +40,7 @@ class PydanticLambdaHandler:
         self.version = version
         if hooks:
             PydanticLambdaHandler._hooks.extend(hooks)
+        print("initializing")
 
     @classmethod
     def add_hook(cls, hook: type[BaseHook]):
@@ -60,12 +61,22 @@ class PydanticLambdaHandler:
         :param status_code:
         :return:
         """
+        print("get")
         method = "get"
+        return self.run_method(method, url, status_code, operation_id, description, function_name)
+
+    def run_method(
+        self,
+        method,
+        url,
+        status_code,
+        operation_id,
+        description,
+        function_name,
+    ):
         for hook in self._hooks:
             hook.method_init(**locals())
-
         ret_dict = add_resource(self.cdk_stuff, url.lstrip("/"))
-
         testing_url = url.replace("{", "(?P<").replace("}", r">\w+)")
         if testing_url not in self.testing_stuff["paths"]:
             self.testing_stuff["paths"][testing_url] = {method: {}}
@@ -73,6 +84,7 @@ class PydanticLambdaHandler:
             self.testing_stuff["paths"][testing_url][method] = {}
 
         def create_response(func):
+            print("create response")
             for hook in self._hooks:
                 hook.pre_path(**locals())
 
@@ -86,13 +98,19 @@ class PydanticLambdaHandler:
                 print(event)
                 for hook in self._hooks:
                     event, context = hook.pre_func(event, context)
+
+                sig = signature(func)
+
                 if sig.parameters:
                     path_parameters = event.get("pathParameters", {}) or {}
                     query_parameters = event.get("queryStringParameters", {}) or {}
-                    body = event.get("body")
+                    if event["body"] is not None:
+                        body = loads(event["body"])
+                    else:
+                        body = None
 
                     try:
-                        event = EventModel(path=path_parameters, query=query_parameters)
+                        event_model = EventModel(path=path_parameters, query=query_parameters, body=body)
                     except ValidationError as e:
                         response = BaseOutput(
                             body=json.dumps({"detail": json.loads(e.json())}),
@@ -101,12 +119,18 @@ class PydanticLambdaHandler:
                         return loads(response.json())
 
                     # Do something before
-                    body = func(**event.path.dict(), **event.query.dict())
+                    func_kwargs = {**event_model.path.dict(), **event_model.query.dict()}
+                    if hasattr(event_model, "body"):
+                        func_kwargs.update(**{event_model.body._alias: event_model.body})
+                    body = func(**func_kwargs)
                 else:
                     body = func()
 
                 for hook in reversed(self._hooks):
                     body = hook.post_func(body)
+
+                if hasattr(body, "json"):
+                    body = loads(body.json())
 
                 response = BaseOutput(body=json.dumps(body), status_code=status_code)
                 return loads(response.json())
@@ -122,8 +146,11 @@ class PydanticLambdaHandler:
 
     @staticmethod
     def generate_get_event_model(url, sig):
+        print("generate")
         path_model_dict = {}
         query_model_dict = {}
+        body_default = None
+        body_model = None
         path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
         path_parameters = set(path_parameters_list)
         if len(path_parameters_list) != len(path_parameters):
@@ -135,7 +162,6 @@ class PydanticLambdaHandler:
                 else:
                     annotations = param_info.annotation, ...
             else:
-
                 default = ... if param_info.default == param_info.empty else param_info.default
                 if param_info.annotation == param_info.empty:
                     annotations = str, default
@@ -147,12 +173,25 @@ class PydanticLambdaHandler:
                     raise ValueError("Should not set default for path parameters")
                 path_model_dict[param] = annotations
             else:
-                query_model_dict[param] = annotations
+                model, body_default = annotations
+                if issubclass(model, BaseModel):
+                    if body_model:
+                        raise ValueError("Can only use one Pydantic model for body only")
+                    body_model = model
+                    body_model._alias = param
+                else:
+                    query_model_dict[param] = annotations
+
         if path_parameters != set(path_model_dict.keys()):
             raise ValueError("Missing path parameters")
+
         PathModel = create_model("PathModel", **path_model_dict)
         QueryModel = create_model("QueryModel", **query_model_dict)
-        return create_model("EventModel", path=(PathModel, {}), query=(QueryModel, {}))
+        event_models = {"path": (PathModel, {}), "query": (QueryModel, {})}
+        if body_model:
+            event_models["body"] = (body_model, body_default)
+
+        return create_model("EventModel", **event_models)
 
     @staticmethod
     def generate_post_event_model(url, sig):
@@ -216,75 +255,14 @@ class PydanticLambdaHandler:
         :return:
         """
         method = "post"
-        for hook in self._hooks:
-            hook.method_init(**locals())
-
-        ret_dict = add_resource(self.cdk_stuff, url.lstrip("/"))
-
-        testing_url = url.replace("{", "(?P<").replace("}", r">\w+)")
-        if testing_url not in self.testing_stuff["paths"]:
-            self.testing_stuff["paths"][testing_url] = {method: {}}
-        else:
-            self.testing_stuff["paths"][testing_url][method] = {}
-
-        def create_response(func):
-            for hook in self._hooks:
-                hook.pre_path(**locals())
-
-            sig = signature(func)
-
-            if sig.parameters:
-                EventModel = self.generate_post_event_model(url, sig)
-
-            @functools.wraps(func)
-            def wrapper_decorator(event, context):
-                print(event)
-
-                for hook in self._hooks:
-                    event, context = hook.pre_func(event, context)
-
-                sig = signature(func)
-
-                if sig.parameters:
-                    path_parameters = event.get("pathParameters", {}) or {}
-                    query_parameters = event.get("queryStringParameters", {}) or {}
-                    if event["body"] is not None:
-                        body = loads(event["body"])
-                    else:
-                        body = None
-
-                    try:
-                        event = EventModel(path=path_parameters, query=query_parameters, body=body)
-                    except ValidationError as e:
-                        response = BaseOutput(
-                            body=json.dumps({"detail": json.loads(e.json())}),
-                            status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
-                        )
-                        return loads(response.json())
-
-                    # Do something before
-
-                    body = func(**event.path.dict(), **event.query.dict(), **{event.body._alias: event.body})
-                else:
-                    body = func()
-
-                for hook in reversed(self._hooks):
-                    body = hook.post_func(body)
-
-                if hasattr(body, "json"):
-                    body = loads(body.json())
-
-                response = BaseOutput(body=json.dumps(body), status_code=status_code)
-                return loads(response.json())
-
-            add_methods(method, func, ret_dict, function_name, str(int(status_code)))
-
-            self.testing_stuff["paths"][testing_url][method]["handler"]["function"] = func
-
-            return wrapper_decorator
-
-        self.testing_stuff["paths"][testing_url][method]["handler"] = {"decorated_function": create_response}
-        return create_response
+        return self.run_method(
+            method,
+            url,
+            status_code,
+            operation_id,
+            description,
+            function_name,
+        )
 
 
 def add_methods(method, func, ret_dict, function_name, open_api_status_code):
