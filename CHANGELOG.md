@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.5.1 (2022-08-14)
+### Fix
+* Merge post and get ([#33](https://github.com/harvey251/pydantic-lambda-handler/issues/33)) ([`f4cff6f`](https://github.com/harvey251/pydantic-lambda-handler/commit/f4cff6f68ad1185f120cbd542aa946cf128a6a75))
+
 ## v0.5.0 (2022-08-14)
 ### Feature
 * Add post data ([#32](https://github.com/harvey251/pydantic-lambda-handler/issues/32)) ([`544b1e1`](https://github.com/harvey251/pydantic-lambda-handler/commit/544b1e16882de23c6ddd9d791dc7255ac9d46650))
