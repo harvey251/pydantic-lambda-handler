@@ -10,7 +10,7 @@ from inspect import signature
 from typing import Iterable, Optional, Union
 
 from orjson import loads
-from pydantic import ValidationError, create_model
+from pydantic import BaseModel, ValidationError, create_model
 
 from pydantic_lambda_handler.middleware import BaseHook
 from pydantic_lambda_handler.models import BaseOutput
@@ -181,11 +181,16 @@ class PydanticLambdaHandler:
                 if param_info.default != param_info.empty:
                     raise ValueError("Should not set default for path parameters")
                 path_model_dict[param] = annotations
-            elif not body_model:
-                body_model, body_default = annotations
-                body_model._alias = param
             else:
-                query_model_dict[param] = annotations
+                model, body_default = annotations
+                if issubclass(model, BaseModel):
+                    if body_model:
+                        raise ValueError("Can only use one Pydantic model for body only")
+                    body_model = model
+                    body_model._alias = param
+                else:
+                    query_model_dict[param] = annotations
+
         if path_parameters != set(path_model_dict.keys()):
             raise ValueError("Missing path parameters")
         PathModel = create_model("PathModel", **path_model_dict)
