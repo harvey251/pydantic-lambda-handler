@@ -31,7 +31,21 @@ class RequestClient:
         self._spec, self._cdk_stuff, self._test = gen_open_api_inspect(path)
 
     def get(self, url, *args, **kwargs):
-        event = {"queryStringParameters": kwargs.get("params", None)}
+        return self._mock_request(url, "get", *args, **kwargs)
+
+    def post(self, url, *args, **kwargs):
+        return self._mock_request(url, "post", *args, **kwargs)
+
+    def _mock_request(self, url, method, *args, **kwargs):
+        if "data" in kwargs:
+            body = kwargs["data"]
+        elif "json" in kwargs:
+            body = json.dumps(kwargs["json"])
+        else:
+            body = None
+
+        event = {"body": body, "queryStringParameters": kwargs.get("params", None)}
+
         context = None
 
         for comp_url, info in self._test["paths"].items():
@@ -43,34 +57,13 @@ class RequestClient:
                 continue
 
             if match:
-                decorated_function_ = info["get"]["handler"]["decorated_function"]
+                decorated_function_ = info[method]["handler"]["decorated_function"]
                 event["pathParameters"] = match.groupdict()
                 break
         else:  # No break
             raise ValueError
 
-        function_ = self._test["paths"][comp_url]["get"]["handler"]["function"]
-        response = decorated_function_(function_)(event, context)
-        return Response(response)
-
-    def post(self, url, *args, **kwargs):
-        if "data" in kwargs:
-            body = kwargs["data"]
-        elif "json" in kwargs:
-            body = json.dumps(kwargs["json"])
-        else:
-            body = None
-
-        event = {"body": body, "queryStringParameters": kwargs.get("params", None)}
-
-        context = None
-        for comp_url, info in self._test["paths"].items():
-            if re.fullmatch(url, comp_url):
-                decorated_function_ = info["post"]["handler"]["decorated_function"]
-                break
-        else:
-            raise ValueError
-        function_ = self._test["paths"][comp_url]["post"]["handler"]["function"]
+        function_ = self._test["paths"][comp_url][method]["handler"]["function"]
         response = decorated_function_(function_)(event, context)
         return Response(response)
 
