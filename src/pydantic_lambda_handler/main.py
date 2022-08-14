@@ -9,7 +9,7 @@ from http import HTTPStatus
 from inspect import signature
 from typing import Iterable, Optional, Union
 
-from orjson import loads, orjson
+from orjson import loads
 from pydantic import ValidationError, create_model
 
 from pydantic_lambda_handler.middleware import BaseHook
@@ -267,7 +267,7 @@ class PydanticLambdaHandler:
                     body = hook.post_func(body)
 
                 if hasattr(body, "json"):
-                    body = orjson.loads(body.json())
+                    body = loads(body.json())
 
                 response = BaseOutput(body=json.dumps(body), status_code=status_code)
                 return loads(response.json())
