@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.1 (2022-08-15)
+### Fix
+* Add a space ([`8e4a006`](https://github.com/harvey251/pydantic-lambda-handler/commit/8e4a0066e649aa7ea126e9ce9ba53cee3709b46f))
+
 ## v0.6.0 (2022-08-15)
 ### Feature
 * Add request body to open api spec ([#35](https://github.com/harvey251/pydantic-lambda-handler/issues/35)) ([`47891da`](https://github.com/harvey251/pydantic-lambda-handler/commit/47891da9ec80bfe312dc8489b2565333f9e9ba3b))
