@@ -19,8 +19,8 @@ repos:
       - id: mixed-line-ending
       - id: detect-private-key
         exclude: ^demo_app_requirements/
-      - id: no-commit-to-branch
-        args: [ '--branch', 'main' ]
+#      - id: no-commit-to-branch
+#        args: [ '--branch', 'main' ]
   - repo: https://github.com/asottile/pyupgrade
     rev: v2.34.0
     hooks:
