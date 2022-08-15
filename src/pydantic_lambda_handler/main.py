@@ -40,7 +40,6 @@ class PydanticLambdaHandler:
         self.version = version
         if hooks:
             PydanticLambdaHandler._hooks.extend(hooks)
-        print("initializing")
 
     @classmethod
     def add_hook(cls, hook: type[BaseHook]):
@@ -61,7 +60,6 @@ class PydanticLambdaHandler:
         :param status_code:
         :return:
         """
-        print("get")
         method = "get"
         return self.run_method(method, url, status_code, operation_id, description, function_name)
 
@@ -84,7 +82,6 @@ class PydanticLambdaHandler:
             self.testing_stuff["paths"][testing_url][method] = {}
 
         def create_response(func):
-            print("create response")
             for hook in self._hooks:
                 hook.pre_path(**locals())
 
@@ -95,7 +92,6 @@ class PydanticLambdaHandler:
 
             @functools.wraps(func)
             def wrapper_decorator(event, context):
-                print(event)
                 for hook in self._hooks:
                     event, context = hook.pre_func(event, context)
 
@@ -146,7 +142,6 @@ class PydanticLambdaHandler:
 
     @staticmethod
     def generate_get_event_model(url, sig):
-        print("generate")
         path_model_dict = {}
         query_model_dict = {}
         body_default = None

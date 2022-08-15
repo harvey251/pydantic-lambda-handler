@@ -25,7 +25,8 @@ tests = [
   'pytest',
   'pytest-benchmark[histogram]>=3.2.1',
   'aws-cdk-lib',
-  'requests'
+  'requests',
+  'invoke'
 ]
 
 [project.urls]
