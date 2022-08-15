@@ -64,7 +64,7 @@ jobs:
     name: Python Semantic Release
     runs-on: ubuntu-latest
     concurrency: release
-    if: github.ref == 'refs/heads/main'
+#    if: github.ref == 'refs/heads/main'
     steps:
       - uses: actions/checkout@v2
         with:
@@ -74,7 +74,8 @@ jobs:
         uses: relekang/python-semantic-release@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          pypi_token: ${{ secrets.PYPI_TOKEN }}
+          repository_username: __token__
+          repository_password: ${{ secrets.PYPI_TOKEN }}
     needs:
       - black
       - flake8
