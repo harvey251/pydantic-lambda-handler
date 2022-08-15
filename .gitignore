@@ -1,0 +1,7 @@
+/dist/
+/.idea/
+*/.benchmarks/
+secret.txt
+/demo_app/demo_app/package/
+/demo_app_requirements/
+.env
