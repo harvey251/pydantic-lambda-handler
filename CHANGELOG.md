@@ -2,6 +2,11 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.2 (2022-08-15)
+### Fix
+* Add a space ([`fd182ac`](https://github.com/harvey251/pydantic-lambda-handler/commit/fd182acd14017b320d480a5cb8b7a6218501ac42))
+* Add a space ([`1cb8651`](https://github.com/harvey251/pydantic-lambda-handler/commit/1cb8651e67a116ff4e164bda94168dbd64ac620e))
+
 ## v0.6.1 (2022-08-15)
 ### Fix
 * Add a space ([`8e4a006`](https://github.com/harvey251/pydantic-lambda-handler/commit/8e4a0066e649aa7ea126e9ce9ba53cee3709b46f))
