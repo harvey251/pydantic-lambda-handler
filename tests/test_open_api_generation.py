@@ -16,6 +16,21 @@ def test_generate_open_api_info_path_post(schema):
     assert item_path == {"application/json": {}}
 
 
+def test_query_body(schema):
+    request_schema = schema["paths"]["/hello"]["post"]["requestBody"]["content"]["application/json"]["schema"]
+    assert request_schema == {
+        "properties": {
+            "description": {"title": "Description", "type": "string"},
+            "name": {"title": "Name", "type": "string"},
+            "price": {"title": "Price", "type": "number"},
+            "tax": {"title": "Tax", "type": "number"},
+        },
+        "required": ["name", "price"],
+        "title": "Item",
+        "type": "object",
+    }
+
+
 def test_generate_open_api_status_code_int(schema):
     """Can accept an in or an Enum status code"""
     assert "418" in schema["paths"]["/teapot"]["get"]["responses"]
@@ -35,6 +50,6 @@ def test_generate_open_operation_id(schema):
 def test_query_options(schema):
     assert "/query" in schema["paths"]
     assert schema["paths"]["/query"]["get"].get("parameters") == [
-        {"in": "query", "name": "skip", "required": True, "schema": {"type": "integer"}},
-        {"in": "query", "name": "limit", "required": True, "schema": {"type": "integer"}},
+        {"in": "query", "name": "skip", "schema": {"type": "integer"}},
+        {"in": "query", "name": "limit", "schema": {"type": "integer"}},
     ]

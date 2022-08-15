@@ -197,12 +197,16 @@ class PydanticLambdaHandler:
     def generate_post_event_model(url, sig):
         path_model_dict = {}
         query_model_dict = {}
+
         body_default = None
         body_model = None
+
         path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
         path_parameters = set(path_parameters_list)
+
         if len(path_parameters_list) != len(path_parameters):
             raise ValueError(f"re-declared path variable: {url}")
+
         for param, param_info in sig.parameters.items():
             if param in path_parameters:
                 if param_info.annotation == param_info.empty:
@@ -232,6 +236,7 @@ class PydanticLambdaHandler:
 
         if path_parameters != set(path_model_dict.keys()):
             raise ValueError("Missing path parameters")
+
         PathModel = create_model("PathModel", **path_model_dict)
         QueryModel = create_model("QueryModel", **query_model_dict)
 
