@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.6.0 (2022-08-15)
+### Feature
+* Add request body to open api spec ([#35](https://github.com/harvey251/pydantic-lambda-handler/issues/35)) ([`47891da`](https://github.com/harvey251/pydantic-lambda-handler/commit/47891da9ec80bfe312dc8489b2565333f9e9ba3b))
+
 ## v0.5.1 (2022-08-14)
 ### Fix
 * Merge post and get ([#33](https://github.com/harvey251/pydantic-lambda-handler/issues/33)) ([`f4cff6f`](https://github.com/harvey251/pydantic-lambda-handler/commit/f4cff6f68ad1185f120cbd542aa946cf128a6a75))
