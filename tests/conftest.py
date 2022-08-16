@@ -5,6 +5,7 @@ from pathlib import Path
 
 import pytest
 import requests
+from awslambdaric.lambda_context import LambdaContext
 
 from pydantic_lambda_handler.gen_open_api_inspect import gen_open_api_inspect
 
@@ -46,7 +47,13 @@ class RequestClient:
 
         event = {"body": body, "queryStringParameters": kwargs.get("params", None)}
 
-        context = None
+        context = LambdaContext(
+            invoke_id="abd",
+            client_context=None,
+            cognito_identity=None,
+            epoch_deadline_time_in_ms=1660605740936,
+            invoked_function_arn="abd",
+        )
 
         for comp_url, info in self._test["paths"].items():
             try:
@@ -103,3 +110,14 @@ def schema(_gen):
 def cdk_config(_gen):
     _, cdk_config = _gen
     return cdk_config
+
+
+@pytest.fixture
+def mock_lambda_context():
+    return LambdaContext(
+        invoke_id="abd",
+        client_context=None,
+        cognito_identity=None,
+        epoch_deadline_time_in_ms=1660605740936,
+        invoked_function_arn="abd",
+    )

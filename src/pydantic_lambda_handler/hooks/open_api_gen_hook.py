@@ -2,6 +2,7 @@ import re
 from inspect import signature
 from typing import Any
 
+from awslambdaric.lambda_context import LambdaContext
 from pydantic import BaseModel, create_model
 
 from pydantic_lambda_handler.main import PydanticLambdaHandler
@@ -123,7 +124,7 @@ class APIGenerationHook(BaseHook):
                 }
 
     @classmethod
-    def pre_func(cls, event, context) -> tuple[dict, Any]:
+    def pre_func(cls, event, context) -> tuple[dict, LambdaContext]:
         return event, context
 
     @classmethod

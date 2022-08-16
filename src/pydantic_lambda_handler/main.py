@@ -9,6 +9,7 @@ from http import HTTPStatus
 from inspect import signature
 from typing import Iterable, Optional, Union
 
+from awslambdaric.lambda_context import LambdaContext
 from orjson import loads
 from pydantic import BaseModel, ValidationError, create_model
 
@@ -91,7 +92,7 @@ class PydanticLambdaHandler:
                 EventModel = self.generate_get_event_model(url, sig)
 
             @functools.wraps(func)
-            def wrapper_decorator(event, context):
+            def wrapper_decorator(event, context: LambdaContext):
                 for hook in self._hooks:
                     event, context = hook.pre_func(event, context)
 

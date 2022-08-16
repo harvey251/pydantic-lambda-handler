@@ -1,15 +1,21 @@
 from typing import Any
 
+from awslambdaric.lambda_context import LambdaContext
+
 
 class BaseHook:
-    def method_init(self, **kwargs) -> None:
+    @staticmethod
+    def method_init(**kwargs) -> None:
         return
 
-    def pre_path(self, **kwargs) -> None:
+    @staticmethod
+    def pre_path(**kwargs) -> None:
         return
 
-    def pre_func(self, event, context) -> tuple[dict, Any]:
+    @staticmethod
+    def pre_func(event, context) -> tuple[dict, LambdaContext]:
         return event, context
 
-    def post_func(self, body) -> Any:
+    @staticmethod
+    def post_func(body) -> Any:
         return body
