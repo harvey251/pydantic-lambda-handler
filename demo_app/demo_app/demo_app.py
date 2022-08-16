@@ -42,7 +42,7 @@ def hello_handler():
 
     try:
         v.validate_python({"name": "Samuel", "age": 11})
-    except ValidationError as e:
+    except ValidationError:
         """
         1 validation error for model
         age
