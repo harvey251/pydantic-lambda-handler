@@ -35,7 +35,7 @@ def test_post_invalid_body(requests_client, base_url):
     }
 
 
-def test_inv():
+def test_inv(mock_lambda_context):
     event = {
         "resource": "/hello",
         "path": "/hello",
@@ -45,6 +45,6 @@ def test_inv():
         "isBase64Encoded": False,
     }
 
-    response = create_handler(event, {})
+    response = create_handler(event, mock_lambda_context)
 
     assert response["statusCode"] == 201, response.get("body")

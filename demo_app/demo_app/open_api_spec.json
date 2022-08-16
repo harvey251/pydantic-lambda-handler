@@ -24,7 +24,90 @@
                             "application/json": {}
                         }
                     }
+                },
+                "parameters": [],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "title": "Item",
+                                "type": "object",
+                                "properties": {
+                                    "name": {
+                                        "title": "Name",
+                                        "type": "string"
+                                    },
+                                    "description": {
+                                        "title": "Description",
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "title": "Price",
+                                        "type": "number"
+                                    },
+                                    "tax": {
+                                        "title": "Tax",
+                                        "type": "number"
+                                    }
+                                },
+                                "required": [
+                                    "name",
+                                    "price"
+                                ]
+                            }
+                        }
+                    }
                 }
+            }
+        },
+        "/query": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "skip",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ]
+            }
+        },
+        "/query_required": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "parameters": [
+                    {
+                        "name": "secret",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ]
             }
         },
         "/teapot": {
