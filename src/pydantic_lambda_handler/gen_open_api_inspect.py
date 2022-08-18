@@ -7,6 +7,7 @@ from pathlib import Path
 from sys import modules
 from typing import Optional
 
+from pydantic_lambda_handler.hooks.cdk_conf_hook import CDKConf
 from pydantic_lambda_handler.hooks.open_api_gen_hook import APIGenerationHook
 from pydantic_lambda_handler.main import PydanticLambdaHandler
 
@@ -40,6 +41,7 @@ def gen_open_api_inspect(dir_path: Path):
     files = dir_path.rglob("*.py")
 
     PydanticLambdaHandler.add_hook(APIGenerationHook)
+    PydanticLambdaHandler.add_hook(CDKConf)
 
     app: Optional[PydanticLambdaHandler] = None
 
@@ -60,7 +62,7 @@ def gen_open_api_inspect(dir_path: Path):
     if app:
         return (
             next(h for h in app._hooks if issubclass(h, APIGenerationHook)).generate(),  # type: ignore
-            app.cdk_stuff,
+            next(h for h in app._hooks if issubclass(h, CDKConf)).cdk_stuff,  # type: ignore
             app.testing_stuff,
         )
     raise ValueError("App not found")
