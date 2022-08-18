@@ -3,6 +3,14 @@ from inspect import signature
 from typing import Any
 
 from awslambdaric.lambda_context import LambdaContext
+from openapi_schema_pydantic.v3.v3_0_3 import (
+    Info,
+    MediaType,
+    OpenAPI,
+    Operation,
+    PathItem,
+    Response,
+)
 from pydantic import BaseModel, create_model
 
 from pydantic_lambda_handler.main import PydanticLambdaHandler
@@ -14,7 +22,7 @@ class APIGenerationHook(BaseHook):
 
     title: str
     version: str
-    paths: dict[str, Any] = {}
+    paths: dict[str, PathItem] = {}
     method = None
 
     @classmethod
@@ -28,32 +36,35 @@ class APIGenerationHook(BaseHook):
 
         url = kwargs["url"]
         if url in cls.paths:
-            cls.paths[url].update(
-                {
-                    cls.method: {
-                        "responses": {
-                            open_api_status_code: {
-                                "description": kwargs["description"],
-                                "content": {"application/json": {}},
-                            }
-                        },
+            setattr(
+                cls.paths[url],
+                cls.method,
+                Operation(
+                    responses={
+                        open_api_status_code: Response(
+                            description=kwargs["description"],
+                            content={"application/json": {}},
+                        )
                     }
-                }
+                ),
             )
+
         else:
-            cls.paths[url] = {
-                cls.method: {
-                    "responses": {
-                        open_api_status_code: {
-                            "description": kwargs["description"],
-                            "content": {"application/json": {}},
+            cls.paths[url] = PathItem(
+                **{
+                    cls.method: Operation(
+                        responses={
+                            open_api_status_code: Response(
+                                description=kwargs["description"],
+                                content={"application/json": MediaType()},
+                            )
                         }
-                    },
-                }
-            }
+                    )
+                },
+            )
 
         if kwargs["operation_id"]:
-            cls.paths[url][cls.method]["operationId"] = kwargs["operation_id"]
+            getattr(cls.paths[url], cls.method).operationId = kwargs["operation_id"]
 
     @classmethod
     def pre_path(cls, **kwargs) -> None:
@@ -96,7 +107,7 @@ class APIGenerationHook(BaseHook):
                     if issubclass(model, BaseModel):
                         if body_model:
                             raise ValueError("Can only use one Pydantic model for body only")
-                        body_model = model  # type: ignore
+                        body_model: BaseModel = model  # type: ignore
                         body_model._alias = param  # type: ignore
                     else:
                         query_model_dict[param] = annotations
@@ -117,10 +128,10 @@ class APIGenerationHook(BaseHook):
 
                 properties.append(p)
 
-            cls.paths[url][cls.method]["parameters"] = properties
+            getattr(cls.paths[url], cls.method).parameters = properties  # type: ignore
             if body_model:
-                cls.paths[url][cls.method]["requestBody"] = {
-                    "content": {"application/json": {"schema": body_model.schema()}}  # type: ignore
+                getattr(cls.paths[url], cls.method).requestBody = {  # type: ignore
+                    "content": {"application/json": {"schema": body_model.schema()}}
                 }
 
     @classmethod
@@ -133,8 +144,7 @@ class APIGenerationHook(BaseHook):
 
     @classmethod
     def generate(cls):
-        return {
-            "openapi": "3.0.2",
-            "info": {"title": cls.title, "version": cls.version},
-            "paths": cls.paths,
-        }
+        return OpenAPI(
+            info=Info(title=cls.title, version=cls.version),
+            paths=cls.paths,
+        ).json(by_alias=True, exclude_none=True, indent=2)

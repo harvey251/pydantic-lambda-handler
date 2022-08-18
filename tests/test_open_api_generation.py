@@ -1,5 +1,5 @@
 def test_generate_open_api_version(schema):
-    assert schema["openapi"] == "3.0.2"
+    assert schema["openapi"] == "3.0.3"
 
 
 def test_generate_open_api_info(schema):
