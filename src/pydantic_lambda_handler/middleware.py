@@ -19,3 +19,7 @@ class BaseHook:
     @staticmethod
     def post_func(body) -> Any:
         return body
+
+    @staticmethod
+    def post_create_response(**kwargs) -> None:
+        return

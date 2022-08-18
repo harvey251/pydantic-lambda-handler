@@ -8,6 +8,7 @@ from sys import modules
 from typing import Optional
 
 from pydantic_lambda_handler.hooks.cdk_conf_hook import CDKConf
+from pydantic_lambda_handler.hooks.mock_requests import MockRequests
 from pydantic_lambda_handler.hooks.open_api_gen_hook import APIGenerationHook
 from pydantic_lambda_handler.main import PydanticLambdaHandler
 
@@ -42,6 +43,7 @@ def gen_open_api_inspect(dir_path: Path):
 
     PydanticLambdaHandler.add_hook(APIGenerationHook)
     PydanticLambdaHandler.add_hook(CDKConf)
+    PydanticLambdaHandler.add_hook(MockRequests)
 
     app: Optional[PydanticLambdaHandler] = None
 
@@ -63,6 +65,6 @@ def gen_open_api_inspect(dir_path: Path):
         return (
             next(h for h in app._hooks if issubclass(h, APIGenerationHook)).generate(),  # type: ignore
             next(h for h in app._hooks if issubclass(h, CDKConf)).cdk_stuff,  # type: ignore
-            app.testing_stuff,
+            next(h for h in app._hooks if issubclass(h, MockRequests)).testing_stuff,  # type: ignore
         )
     raise ValueError("App not found")

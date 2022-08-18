@@ -6,30 +6,26 @@ from awslambdaric.lambda_context import LambdaContext
 from pydantic_lambda_handler.middleware import BaseHook
 
 
-class CDKConf(BaseHook):
-    """Gen cdk conf"""
-
-    cdk_stuff: dict = defaultdict(dict)
-    _ret_dict = dict
-    _function_name = str
-    _status_code = str
+class MockRequests(BaseHook):
+    testing_stuff: dict = defaultdict(dict)
+    _testing_url = None
     _method = None
 
     @classmethod
     def method_init(cls, **kwargs):
         url = kwargs["url"]
         cls._method = kwargs["method"]
-        cls._function_name = kwargs["function_name"]
-        cls._status_code = str(int(kwargs["status_code"]))
-        cls._ret_dict = add_resource(cls.cdk_stuff, url.lstrip("/"))
+
+        cls._testing_url = url.replace("{", "(?P<").replace("}", r">\w+)")
+        if cls._testing_url not in cls.testing_stuff["paths"]:
+            cls.testing_stuff["paths"][cls._testing_url] = {cls._method: {}}
+        else:
+            cls.testing_stuff["paths"][cls._testing_url][cls._method] = {}
 
     @classmethod
     def pre_path(cls, **kwargs) -> None:
         func = kwargs["func"]
-
-        ret_dict = cls._ret_dict
-        function_name = cls._function_name
-        add_methods(cls._method, func, ret_dict, function_name, cls._status_code)
+        cls.testing_stuff["paths"][cls._testing_url][cls._method]["handler"]["function"] = func
 
     @classmethod
     def pre_func(cls, event, context) -> tuple[dict, LambdaContext]:
@@ -40,7 +36,10 @@ class CDKConf(BaseHook):
         return body
 
     @classmethod
-    def generate(cls):
+    def post_create_response(cls, **kwargs):
+        create_response = kwargs["create_response"]
+
+        cls.testing_stuff["paths"][cls._testing_url][cls._method]["handler"] = {"decorated_function": create_response}
         return {}
 
 

@@ -15,13 +15,14 @@ class APIGenerationHook(BaseHook):
     title: str
     version: str
     paths: dict[str, Any] = {}
+    method = None
 
     @classmethod
     def method_init(cls, **kwargs):
         app: PydanticLambdaHandler = kwargs["self"]
         status_code = kwargs["status_code"]
         open_api_status_code = str(int(status_code))
-        method = kwargs["method"]
+        cls.method = kwargs["method"]
         APIGenerationHook.title = app.title
         APIGenerationHook.version = app.version
 
@@ -29,7 +30,7 @@ class APIGenerationHook(BaseHook):
         if url in cls.paths:
             cls.paths[url].update(
                 {
-                    method: {
+                    cls.method: {
                         "responses": {
                             open_api_status_code: {
                                 "description": kwargs["description"],
@@ -41,7 +42,7 @@ class APIGenerationHook(BaseHook):
             )
         else:
             cls.paths[url] = {
-                method: {
+                cls.method: {
                     "responses": {
                         open_api_status_code: {
                             "description": kwargs["description"],
@@ -52,7 +53,7 @@ class APIGenerationHook(BaseHook):
             }
 
         if kwargs["operation_id"]:
-            cls.paths[url][method]["operationId"] = kwargs["operation_id"]
+            cls.paths[url][cls.method]["operationId"] = kwargs["operation_id"]
 
     @classmethod
     def pre_path(cls, **kwargs) -> None:
@@ -61,7 +62,6 @@ class APIGenerationHook(BaseHook):
         if sig.parameters:
 
             url = kwargs["url"]
-            method = kwargs["method"]
 
             path_model_dict = {}
             query_model_dict = {}
@@ -117,9 +117,9 @@ class APIGenerationHook(BaseHook):
 
                 properties.append(p)
 
-            cls.paths[url][method]["parameters"] = properties
+            cls.paths[url][cls.method]["parameters"] = properties
             if body_model:
-                cls.paths[url][method]["requestBody"] = {
+                cls.paths[url][cls.method]["requestBody"] = {
                     "content": {"application/json": {"schema": body_model.schema()}}  # type: ignore
                 }
 

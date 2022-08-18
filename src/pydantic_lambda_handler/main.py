@@ -4,7 +4,6 @@ The main class which you import and use a decorator.
 import functools
 import json
 import re
-from collections import defaultdict
 from http import HTTPStatus
 from inspect import signature
 from typing import Iterable, Optional, Union
@@ -22,7 +21,6 @@ class PydanticLambdaHandler:
     The decorator handle.
     """
 
-    testing_stuff: dict = defaultdict(dict)
     _hooks: list[type[BaseHook]] = []
 
     def __init__(
@@ -66,12 +64,6 @@ class PydanticLambdaHandler:
     ):
         for hook in self._hooks:
             hook.method_init(**locals())
-
-        testing_url = url.replace("{", "(?P<").replace("}", r">\w+)")
-        if testing_url not in self.testing_stuff["paths"]:
-            self.testing_stuff["paths"][testing_url] = {method: {}}
-        else:
-            self.testing_stuff["paths"][testing_url][method] = {}
 
         def create_response(func):
             for hook in self._hooks:
@@ -123,11 +115,10 @@ class PydanticLambdaHandler:
                 response = BaseOutput(body=json.dumps(body), status_code=status_code)
                 return loads(response.json())
 
-            self.testing_stuff["paths"][testing_url][method]["handler"]["function"] = func
-
             return wrapper_decorator
 
-        self.testing_stuff["paths"][testing_url][method]["handler"] = {"decorated_function": create_response}
+        for hook in self._hooks:
+            hook.post_create_response(**locals())
         return create_response
 
     @staticmethod
