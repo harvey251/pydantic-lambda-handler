@@ -84,6 +84,7 @@ class PydanticLambdaHandler:
                 if sig.parameters:
                     path_parameters = event.get("pathParameters", {}) or {}
                     query_parameters = event.get("queryStringParameters", {}) or {}
+
                     if event["body"] is not None:
                         body = loads(event["body"])
                     else:
@@ -102,6 +103,11 @@ class PydanticLambdaHandler:
                     func_kwargs = {**event_model.path.dict(), **event_model.query.dict()}
                     if hasattr(event_model, "body"):
                         func_kwargs.update(**{event_model.body._alias: event_model.body})
+
+                    if context_name := next(
+                        (i.name for i in iter(sig.parameters.values()) if issubclass(i.annotation, LambdaContext)), None
+                    ):
+                        func_kwargs[context_name] = context
                     body = func(**func_kwargs)
                 else:
                     body = func()
@@ -129,6 +135,7 @@ class PydanticLambdaHandler:
         body_model = None
         path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
         path_parameters = set(path_parameters_list)
+        additional_kwargs = {}
         if len(path_parameters_list) != len(path_parameters):
             raise ValueError(f"re-declared path variable: {url}")
         for param, param_info in sig.parameters.items():
@@ -155,6 +162,8 @@ class PydanticLambdaHandler:
                         raise ValueError("Can only use one Pydantic model for body only")
                     body_model = model
                     body_model._alias = param
+                elif issubclass(model, LambdaContext):
+                    additional_kwargs[param] = annotations
                 else:
                     query_model_dict[param] = annotations
 

@@ -1,9 +1,14 @@
 {
-    "openapi": "3.0.2",
+    "openapi": "3.0.3",
     "info": {
         "title": "PydanticLambdaHandler",
         "version": "0.0.0"
     },
+    "servers": [
+        {
+            "url": "/"
+        }
+    ],
     "paths": {
         "/hello": {
             "get": {
@@ -14,17 +19,10 @@
                             "application/json": {}
                         }
                     }
-                }
+                },
+                "deprecated": false
             },
             "post": {
-                "responses": {
-                    "201": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                },
                 "parameters": [],
                 "requestBody": {
                     "content": {
@@ -57,19 +55,20 @@
                             }
                         }
                     }
-                }
-            }
-        },
-        "/query": {
-            "get": {
+                },
                 "responses": {
-                    "200": {
+                    "201": {
                         "description": "Successful Response",
                         "content": {
                             "application/json": {}
                         }
                     }
                 },
+                "deprecated": false
+            }
+        },
+        "/query": {
+            "get": {
                 "parameters": [
                     {
                         "name": "skip",
@@ -85,11 +84,7 @@
                             "type": "integer"
                         }
                     }
-                ]
-            }
-        },
-        "/query_required": {
-            "get": {
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -98,6 +93,11 @@
                         }
                     }
                 },
+                "deprecated": false
+            }
+        },
+        "/query_required": {
+            "get": {
                 "parameters": [
                     {
                         "name": "secret",
@@ -107,7 +107,16 @@
                         },
                         "required": true
                     }
-                ]
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
             }
         },
         "/teapot": {
@@ -119,19 +128,12 @@
                             "application/json": {}
                         }
                     }
-                }
+                },
+                "deprecated": false
             }
         },
         "/pets/{petId}": {
             "get": {
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                },
                 "operationId": "Create Pet",
                 "parameters": [
                     {
@@ -142,11 +144,7 @@
                         },
                         "required": true
                     }
-                ]
-            }
-        },
-        "/items/{item_id}": {
-            "get": {
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -155,6 +153,11 @@
                         }
                     }
                 },
+                "deprecated": false
+            }
+        },
+        "/items/{item_id}": {
+            "get": {
                 "parameters": [
                     {
                         "name": "item_id",
@@ -164,11 +167,7 @@
                         },
                         "required": true
                     }
-                ]
-            }
-        },
-        "/item_enum/{item_id}": {
-            "get": {
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -177,6 +176,11 @@
                         }
                     }
                 },
+                "deprecated": false
+            }
+        },
+        "/item_enum/{item_id}": {
+            "get": {
                 "parameters": [
                     {
                         "name": "item_id",
@@ -186,7 +190,30 @@
                         },
                         "required": true
                     }
-                ]
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/context": {
+            "get": {
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
             }
         }
     }
