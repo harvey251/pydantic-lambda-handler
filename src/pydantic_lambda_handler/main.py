@@ -17,20 +17,11 @@ from pydantic_lambda_handler.middleware import BaseHook
 from pydantic_lambda_handler.models import BaseOutput
 
 
-def to_camel_case(text):
-    s = text.replace("-", " ").replace("_", " ")
-    s = s.split()
-    if len(text) == 0:
-        return text.capitalize()
-    return "".join(i.capitalize() for i in s)
-
-
 class PydanticLambdaHandler:
     """
     The decorator handle.
     """
 
-    cdk_stuff: dict = defaultdict(dict)
     testing_stuff: dict = defaultdict(dict)
     _hooks: list[type[BaseHook]] = []
 
@@ -75,7 +66,7 @@ class PydanticLambdaHandler:
     ):
         for hook in self._hooks:
             hook.method_init(**locals())
-        ret_dict = add_resource(self.cdk_stuff, url.lstrip("/"))
+
         testing_url = url.replace("{", "(?P<").replace("}", r">\w+)")
         if testing_url not in self.testing_stuff["paths"]:
             self.testing_stuff["paths"][testing_url] = {method: {}}
@@ -131,8 +122,6 @@ class PydanticLambdaHandler:
 
                 response = BaseOutput(body=json.dumps(body), status_code=status_code)
                 return loads(response.json())
-
-            add_methods(method, func, ret_dict, function_name, str(int(status_code)))
 
             self.testing_stuff["paths"][testing_url][method]["handler"]["function"] = func
 
@@ -264,36 +253,3 @@ class PydanticLambdaHandler:
             description,
             function_name,
         )
-
-
-def add_methods(method, func, ret_dict, function_name, open_api_status_code):
-    if "methods" in ret_dict:
-        ret_dict["methods"][method] = {
-            "reference": f"{func.__module__}.{func.__qualname__}",
-            "status_code": open_api_status_code,
-            "function_name": function_name or to_camel_case(func.__name__),
-        }
-    else:
-        ret_dict["methods"] = {
-            method: {
-                "reference": f"{func.__module__}.{func.__qualname__}",
-                "status_code": open_api_status_code,
-                "function_name": function_name or to_camel_case(func.__name__),
-            }
-        }
-
-
-def add_resource(child_dict: dict, url):
-    part, found, remaining = url.partition("/")
-    if part:
-        if part in child_dict.get("resources", {}):
-            return add_resource(child_dict["resources"][part], remaining)
-
-        last_resource: dict[str, dict] = {}
-        if "resources" not in child_dict:
-            child_dict["resources"] = {part: last_resource}
-        else:
-            child_dict["resources"].update({part: last_resource})
-
-        return add_resource(child_dict["resources"][part], remaining)
-    return child_dict
