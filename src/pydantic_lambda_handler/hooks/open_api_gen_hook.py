@@ -86,6 +86,9 @@ class APIGenerationHook(BaseHook):
                 raise ValueError(f"re-declared path variable: {url}")
 
             for param, param_info in sig.parameters.items():
+                if issubclass(param_info.annotation, LambdaContext):
+                    continue
+
                 if param in path_parameters:
                     if param_info.annotation == param_info.empty:
                         annotations = str, ...

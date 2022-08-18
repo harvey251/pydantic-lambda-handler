@@ -24,7 +24,7 @@ class BaseOutput(BaseModel):
     """
 
     isBase64Encoded: bool = Field(False, alias="is_base_64_encoded")
-    statusCode: HTTPStatus = Field(..., alias="status_code")
+    statusCode: Union[HTTPStatus, int] = Field(..., alias="status_code")
     headers: dict[str, str] = Field(default_factory=dict, description='{"headerName": "headerValue", ...}')
     multiValueHeaders: dict[str, Union[str, list[str]]] = Field(
         default_factory=dict,

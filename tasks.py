@@ -34,5 +34,7 @@ def generate_open_api_spec(c, app_dir, output_file_path):
     output_file_path = Path(output_file_path)
     output_file_path.parent.exists()
 
+    schema = json.loads(schema)
+
     with output_file_path.open("w") as f:
         json.dump(schema, f, indent=4)
