@@ -103,7 +103,7 @@ def _gen():
 @pytest.fixture
 def schema(_gen):
     schema, *_ = _gen
-    return schema
+    return json.loads(schema)
 
 
 @pytest.fixture
