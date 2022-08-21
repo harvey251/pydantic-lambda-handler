@@ -28,30 +28,7 @@
                     "content": {
                         "application/json": {
                             "schema": {
-                                "title": "Item",
-                                "type": "object",
-                                "properties": {
-                                    "name": {
-                                        "title": "Name",
-                                        "type": "string"
-                                    },
-                                    "description": {
-                                        "title": "Description",
-                                        "type": "string"
-                                    },
-                                    "price": {
-                                        "title": "Price",
-                                        "type": "number"
-                                    },
-                                    "tax": {
-                                        "title": "Tax",
-                                        "type": "number"
-                                    }
-                                },
-                                "required": [
-                                    "name",
-                                    "price"
-                                ]
+                                "$ref": "#/components/schemas/Item"
                             }
                         }
                     }
@@ -202,6 +179,33 @@
                 "deprecated": false
             }
         },
+        "/response_model": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "secret",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FunModel"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/context": {
             "get": {
                 "parameters": [],
@@ -214,6 +218,53 @@
                     }
                 },
                 "deprecated": false
+            }
+        }
+    },
+    "components": {
+        "schemas": {
+            "FunModel": {
+                "title": "FunModel",
+                "required": [
+                    "item_name"
+                ],
+                "type": "object",
+                "properties": {
+                    "item_name": {
+                        "title": "Item Name",
+                        "type": "string"
+                    },
+                    "item_value": {
+                        "title": "Item Value",
+                        "type": "integer"
+                    }
+                }
+            },
+            "Item": {
+                "title": "Item",
+                "required": [
+                    "name",
+                    "price"
+                ],
+                "type": "object",
+                "properties": {
+                    "name": {
+                        "title": "Name",
+                        "type": "string"
+                    },
+                    "description": {
+                        "title": "Description",
+                        "type": "string"
+                    },
+                    "price": {
+                        "title": "Price",
+                        "type": "number"
+                    },
+                    "tax": {
+                        "title": "Tax",
+                        "type": "number"
+                    }
+                }
             }
         }
     }
