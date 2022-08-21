@@ -5,7 +5,6 @@ from typing import Any
 from awslambdaric.lambda_context import LambdaContext
 from openapi_schema_pydantic.v3.v3_0_3 import (
     Info,
-    MediaType,
     OpenAPI,
     Operation,
     PathItem,
