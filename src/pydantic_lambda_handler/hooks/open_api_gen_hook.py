@@ -5,11 +5,14 @@ from typing import Any
 from awslambdaric.lambda_context import LambdaContext
 from openapi_schema_pydantic.v3.v3_0_3 import (
     Info,
-    MediaType,
     OpenAPI,
     Operation,
     PathItem,
     Response,
+)
+from openapi_schema_pydantic.v3.v3_0_3.util import (
+    PydanticSchema,
+    construct_open_api_with_schema_class,
 )
 from pydantic import BaseModel, create_model
 
@@ -31,8 +34,15 @@ class APIGenerationHook(BaseHook):
         status_code = kwargs["status_code"]
         open_api_status_code = str(int(status_code))
         cls.method = kwargs["method"]
+        response_model = kwargs["response_model"]
+
         APIGenerationHook.title = app.title
         APIGenerationHook.version = app.version
+
+        if response_model:
+            schema = {"schema": PydanticSchema(schema_class=response_model)}
+        else:
+            schema = {}
 
         url = kwargs["url"]
         if url in cls.paths:
@@ -43,7 +53,7 @@ class APIGenerationHook(BaseHook):
                     responses={
                         open_api_status_code: Response(
                             description=kwargs["description"],
-                            content={"application/json": {}},
+                            content={"application/json": schema},
                         )
                     }
                 ),
@@ -56,7 +66,7 @@ class APIGenerationHook(BaseHook):
                         responses={
                             open_api_status_code: Response(
                                 description=kwargs["description"],
-                                content={"application/json": MediaType()},
+                                content={"application/json": schema},
                             )
                         }
                     )
@@ -134,7 +144,7 @@ class APIGenerationHook(BaseHook):
             getattr(cls.paths[url], cls.method).parameters = properties  # type: ignore
             if body_model:
                 getattr(cls.paths[url], cls.method).requestBody = {  # type: ignore
-                    "content": {"application/json": {"schema": body_model.schema()}}
+                    "content": {"application/json": {"schema": PydanticSchema(schema_class=body_model)}}
                 }
 
     @classmethod
@@ -147,7 +157,9 @@ class APIGenerationHook(BaseHook):
 
     @classmethod
     def generate(cls):
-        return OpenAPI(
+        open_api = OpenAPI(
             info=Info(title=cls.title, version=cls.version),
             paths=cls.paths,
-        ).json(by_alias=True, exclude_none=True, indent=2)
+        )
+        open_api = construct_open_api_with_schema_class(open_api)
+        return open_api.json(by_alias=True, exclude_none=True, indent=2)

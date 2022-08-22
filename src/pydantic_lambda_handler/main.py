@@ -43,6 +43,7 @@ class PydanticLambdaHandler:
         operation_id: str = None,
         description: str = "Successful Response",
         function_name=None,
+        response_model=None,
     ):
         """Expect request with a GET method.
 
@@ -51,7 +52,42 @@ class PydanticLambdaHandler:
         :return:
         """
         method = "get"
-        return self.run_method(method, url, status_code, operation_id, description, function_name)
+        return self.run_method(
+            method,
+            url,
+            status_code,
+            operation_id,
+            description,
+            function_name,
+            response_model,
+        )
+
+    def post(
+        self,
+        url,
+        *,
+        status_code: Union[HTTPStatus, int] = HTTPStatus.CREATED,
+        operation_id: str = None,
+        description: str = "Successful Response",
+        function_name=None,
+        response_model=None,
+    ):
+        """Expect request with a POST method.
+
+        :param url:
+        :param status_code:
+        :return:
+        """
+        method = "post"
+        return self.run_method(
+            method,
+            url,
+            status_code,
+            operation_id,
+            description,
+            function_name,
+            response_model,
+        )
 
     def run_method(
         self,
@@ -61,6 +97,7 @@ class PydanticLambdaHandler:
         operation_id,
         description,
         function_name,
+        response_model,
     ):
         for hook in self._hooks:
             hook.method_init(**locals())
@@ -72,7 +109,7 @@ class PydanticLambdaHandler:
             sig = signature(func)
 
             if sig.parameters:
-                EventModel = self.generate_get_event_model(url, sig)
+                EventModel = self.generate_event_model(url, sig)
 
             @functools.wraps(func)
             def wrapper_decorator(event, context: LambdaContext):
@@ -115,10 +152,13 @@ class PydanticLambdaHandler:
                 for hook in reversed(self._hooks):
                     body = hook.post_func(body)
 
-                if hasattr(body, "json"):
-                    body = loads(body.json())
+                if response_model:
+                    response = BaseOutput(body=body.json(), status_code=status_code)
+                elif hasattr(body, "json"):
+                    response = BaseOutput(body=body.json(), status_code=status_code)
+                else:
+                    response = BaseOutput(body=json.dumps(body), status_code=status_code)
 
-                response = BaseOutput(body=json.dumps(body), status_code=status_code)
                 return loads(response.json())
 
             return wrapper_decorator
@@ -128,11 +168,13 @@ class PydanticLambdaHandler:
         return create_response
 
     @staticmethod
-    def generate_get_event_model(url, sig):
+    def generate_event_model(url, sig):
         path_model_dict = {}
         query_model_dict = {}
+
         body_default = None
         body_model = None
+
         path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
         path_parameters = set(path_parameters_list)
         additional_kwargs = {}
@@ -177,79 +219,3 @@ class PydanticLambdaHandler:
             event_models["body"] = (body_model, body_default)
 
         return create_model("EventModel", **event_models)
-
-    @staticmethod
-    def generate_post_event_model(url, sig):
-        path_model_dict = {}
-        query_model_dict = {}
-
-        body_default = None
-        body_model = None
-
-        path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
-        path_parameters = set(path_parameters_list)
-
-        if len(path_parameters_list) != len(path_parameters):
-            raise ValueError(f"re-declared path variable: {url}")
-
-        for param, param_info in sig.parameters.items():
-            if param in path_parameters:
-                if param_info.annotation == param_info.empty:
-                    annotations = str, ...
-                else:
-                    annotations = param_info.annotation, ...
-            else:
-                default = ... if param_info.default == param_info.empty else param_info.default
-                if param_info.annotation == param_info.empty:
-                    annotations = str, default
-                else:
-                    annotations = param_info.annotation, default
-
-            if param in path_parameters:
-                if param_info.default != param_info.empty:
-                    raise ValueError("Should not set default for path parameters")
-                path_model_dict[param] = annotations
-            else:
-                model, body_default = annotations
-                if issubclass(model, BaseModel):
-                    if body_model:
-                        raise ValueError("Can only use one Pydantic model for body only")
-                    body_model = model
-                    body_model._alias = param
-                else:
-                    query_model_dict[param] = annotations
-
-        if path_parameters != set(path_model_dict.keys()):
-            raise ValueError("Missing path parameters")
-
-        PathModel = create_model("PathModel", **path_model_dict)
-        QueryModel = create_model("QueryModel", **query_model_dict)
-
-        return create_model(
-            "EventModel", **{"path": (PathModel, {}), "query": (QueryModel, {}), "body": (body_model, body_default)}
-        )
-
-    def post(
-        self,
-        url,
-        *,
-        status_code: Union[HTTPStatus, int] = HTTPStatus.CREATED,
-        operation_id: str = None,
-        description: str = "Successful Response",
-        function_name=None,
-    ):
-        """Expect request with a POST method.
-
-        :param url:
-        :param status_code:
-        :return:
-        """
-        method = "post"
-        return self.run_method(
-            method,
-            url,
-            status_code,
-            operation_id,
-            description,
-            function_name,
-        )

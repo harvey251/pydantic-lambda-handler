@@ -18,7 +18,8 @@ def test_generate_open_api_info_path_post(schema):
 
 def test_query_body(schema):
     request_schema = schema["paths"]["/hello"]["post"]["requestBody"]["content"]["application/json"]["schema"]
-    assert request_schema == {
+    assert request_schema == {"$ref": "#/components/schemas/Item"}
+    assert schema["components"]["schemas"]["Item"] == {
         "properties": {
             "description": {"title": "Description", "type": "string"},
             "name": {"title": "Name", "type": "string"},
@@ -53,3 +54,20 @@ def test_query_options(schema):
         {"in": "query", "name": "skip", "schema": {"type": "integer"}},
         {"in": "query", "name": "limit", "schema": {"type": "integer"}},
     ]
+
+
+def test_response_body(schema):
+    assert "/response_model" in schema["paths"]
+    response_schema = schema["paths"]["/response_model"]["get"]["responses"]["200"]["content"]["application/json"][
+        "schema"
+    ]
+    assert response_schema == {"$ref": "#/components/schemas/FunModel"}
+    assert schema["components"]["schemas"]["FunModel"] == {
+        "title": "FunModel",
+        "required": ["item_name"],
+        "type": "object",
+        "properties": {
+            "item_name": {"title": "Item Name", "type": "string"},
+            "item_value": {"title": "Item Value", "type": "integer"},
+        },
+    }
