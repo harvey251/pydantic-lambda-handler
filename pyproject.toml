@@ -33,6 +33,12 @@ tests = [
 [project.urls]
 Home = "https://github.com/harvey251/pydantic-lambda-handler"
 
+[tool.hatch.version]
+path = "src/pydantic_lambda_handler/__init__.py"
+
+[project.scripts]
+gen-open-api-spec = "pydantic_lambda_handler.gen_open_api_inspect:main"
+
 [tool.pytest.ini_options]
 pythonpath = [
  "./", "src/", "demo_app/demo_app/"
