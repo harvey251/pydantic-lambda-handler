@@ -1,3 +1,4 @@
+import json
 import os
 from ast import Import, ImportFrom, parse, walk
 from copy import deepcopy
@@ -68,3 +69,24 @@ def gen_open_api_inspect(dir_path: Path):
             next(h for h in app._hooks if issubclass(h, MockRequests)).testing_stuff,  # type: ignore
         )
     raise ValueError("App not found")
+
+
+print("yeah")
+
+
+def main():
+    app_dir = "/Users/markharvey/PycharmProjects/pydantic-lambda-handler/demo_app/demo_app"
+    output_file_path = "/Users/markharvey/PycharmProjects/pydantic-lambda-handler/demo_app/demo_app/open_api_spec.json"
+
+    app_dir_path = Path(app_dir)
+    app_dir_path.exists()
+
+    schema, *_ = gen_open_api_inspect(app_dir_path)
+
+    output_file_path = Path(output_file_path)
+    output_file_path.parent.exists()
+
+    schema = json.loads(schema)
+
+    with output_file_path.open("w") as f:
+        json.dump(schema, f, indent=4)

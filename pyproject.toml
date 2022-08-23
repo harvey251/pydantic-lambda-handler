@@ -1,6 +1,15 @@
 [build-system]
-requires = ["flit_core >=3.2,<4"]
-build-backend = "flit_core.buildapi"
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.sdist]
+exclude = [
+  "/.github",
+  "/docs",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pydantic_lambda_handler"]
 
 [project]
 name = "pydantic_lambda_handler"
@@ -9,6 +18,8 @@ readme = "README.md"
 license = {file = "LICENSE"}
 classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
+requires-python = ">=3.9"
+
 
 dependencies = [
     "orjson>=3.7.5",
@@ -32,6 +43,12 @@ tests = [
 
 [project.urls]
 Home = "https://github.com/harvey251/pydantic-lambda-handler"
+
+[tool.hatch.version]
+path = "src/pydantic_lambda_handler/__init__.py"
+
+[project.scripts]
+gen-open-api-spec = "pydantic_lambda_handler.gen_open_api_inspect:main"
 
 [tool.pytest.ini_options]
 pythonpath = [
