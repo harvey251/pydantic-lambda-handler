@@ -71,12 +71,16 @@ def gen_open_api_inspect(dir_path: Path):
     raise ValueError("App not found")
 
 
-print("yeah")
-
-
 def main():
-    app_dir = "/Users/markharvey/PycharmProjects/pydantic-lambda-handler/demo_app/demo_app"
-    output_file_path = "/Users/markharvey/PycharmProjects/pydantic-lambda-handler/demo_app/demo_app/open_api_spec.json"
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("app_dir")
+    parser.add_argument("output_file_path")
+    args = parser.parse_args()
+
+    app_dir = args.app_dir
+    output_file_path = args.output_file_path
 
     app_dir_path = Path(app_dir)
     app_dir_path.exists()
