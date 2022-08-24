@@ -38,6 +38,7 @@ path = "src/pydantic_lambda_handler/__init__.py"
 
 [project.scripts]
 gen-open-api-spec = "pydantic_lambda_handler.gen_open_api_inspect:main"
+gen-cdk-conf = "pydantic_lambda_handler.gen_open_api_inspect:cdk_conf"
 
 [tool.pytest.ini_options]
 pythonpath = [

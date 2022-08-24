@@ -94,3 +94,26 @@ def main():
 
     with output_file_path.open("w") as f:
         json.dump(schema, f, indent=4)
+
+
+def cdk_conf():
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("app_dir")
+    parser.add_argument("output_file_path")
+    args = parser.parse_args()
+
+    app_dir = args.app_dir
+    output_file_path = args.output_file_path
+
+    app_dir_path = Path(app_dir)
+    app_dir_path.exists()
+
+    _, cdk_conf, _ = gen_open_api_inspect(app_dir_path)
+
+    output_file_path = Path(output_file_path)
+    output_file_path.parent.exists()
+
+    with output_file_path.open("w") as f:
+        json.dump(cdk_conf, f, indent=4)

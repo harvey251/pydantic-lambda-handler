@@ -1,0 +1,102 @@
+{
+    "resources": {
+        "hello": {
+            "methods": {
+                "get": {
+                    "reference": "demo_app.hello_handler",
+                    "status_code": "200",
+                    "function_name": "HelloHandler"
+                },
+                "post": {
+                    "reference": "demo_app.create_handler",
+                    "status_code": "201",
+                    "function_name": "CreateHandler"
+                }
+            }
+        },
+        "query": {
+            "methods": {
+                "get": {
+                    "reference": "subfolder.query_parameters.query_skip",
+                    "status_code": "200",
+                    "function_name": "QuerySkip"
+                }
+            }
+        },
+        "query_required": {
+            "methods": {
+                "get": {
+                    "reference": "subfolder.query_parameters.query_required",
+                    "status_code": "200",
+                    "function_name": "QueryRequired"
+                }
+            }
+        },
+        "teapot": {
+            "methods": {
+                "get": {
+                    "reference": "subfolder.path_parameters.hello_teapot",
+                    "status_code": "418",
+                    "function_name": "HelloTeapot"
+                }
+            }
+        },
+        "pets": {
+            "resources": {
+                "{petId}": {
+                    "methods": {
+                        "get": {
+                            "reference": "subfolder.path_parameters.pets_handler",
+                            "status_code": "200",
+                            "function_name": "PetsHandler"
+                        }
+                    }
+                }
+            }
+        },
+        "items": {
+            "resources": {
+                "{item_id}": {
+                    "methods": {
+                        "get": {
+                            "reference": "subfolder.path_parameters.handler_with_type_hint",
+                            "status_code": "200",
+                            "function_name": "HandlerWithTypeHint"
+                        }
+                    }
+                }
+            }
+        },
+        "item_enum": {
+            "resources": {
+                "{item_id}": {
+                    "methods": {
+                        "get": {
+                            "reference": "subfolder.path_parameters.handler_with_enum_type_hint",
+                            "status_code": "200",
+                            "function_name": "HandlerWithEnumTypeHint"
+                        }
+                    }
+                }
+            }
+        },
+        "response_model": {
+            "methods": {
+                "get": {
+                    "reference": "subfolder.response_model.response_model",
+                    "status_code": "200",
+                    "function_name": "ResponseModel"
+                }
+            }
+        },
+        "context": {
+            "methods": {
+                "get": {
+                    "reference": "subfolder.additional_args.with_context",
+                    "status_code": "200",
+                    "function_name": "WithContext"
+                }
+            }
+        }
+    }
+}
