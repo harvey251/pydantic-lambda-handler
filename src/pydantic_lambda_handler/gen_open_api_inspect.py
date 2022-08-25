@@ -94,7 +94,7 @@ def gen_open_api_inspect(dir_path: Path):
         if app:
             return (
                 next(h for h in app._hooks if issubclass(h, APIGenerationHook)).generate(),  # type: ignore
-                next(h for h in app._hooks if issubclass(h, CDKConf)).cdk_stuff,  # type: ignore
+                next(h for h in app._hooks if issubclass(h, CDKConf)).generate(),  # type: ignore
                 next(h for h in app._hooks if issubclass(h, MockRequests)).testing_stuff,  # type: ignore
             )
         raise ValueError("App not found")
