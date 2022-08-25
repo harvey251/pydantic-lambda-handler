@@ -63,14 +63,14 @@ def add_resource(child_dict: dict, url):
 def add_methods(method, func, ret_dict, function_name, open_api_status_code):
     if "methods" in ret_dict:
         ret_dict["methods"][method] = {
-            "reference": f"{func.__module__}.{func.__qualname__}",
+            "reference": f"{func.__module__}.{func.__qualname__}".removeprefix("src.").removeprefix("demo_app."),
             "status_code": open_api_status_code,
             "function_name": function_name or to_camel_case(func.__name__),
         }
     else:
         ret_dict["methods"] = {
             method: {
-                "reference": f"{func.__module__}.{func.__qualname__}",
+                "reference": f"{func.__module__}.{func.__qualname__}".removeprefix("src.").removeprefix("demo_app."),
                 "status_code": open_api_status_code,
                 "function_name": function_name or to_camel_case(func.__name__),
             }

@@ -1,5 +1,6 @@
 import json
 import os
+import sys
 from ast import Import, ImportFrom, parse, walk
 from copy import deepcopy
 from importlib.util import module_from_spec, spec_from_file_location
@@ -39,36 +40,55 @@ def get_top_imported_names(file: str) -> set[str]:
     return top_imported
 
 
+class add_path:
+    def __init__(self, path):
+        self.path = str(path)
+        self.added = False
+
+    def __enter__(self):
+        if self.path not in sys.path:
+            sys.path.insert(0, self.path)
+            self.added = True
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        if self.added:
+            try:
+                sys.path.remove(self.path)
+            except ValueError:
+                pass
+
+
 def gen_open_api_inspect(dir_path: Path):
-    files = dir_path.rglob("*.py")
+    with add_path(dir_path):
+        files = dir_path.rglob("*.py")
 
-    PydanticLambdaHandler.add_hook(APIGenerationHook)
-    PydanticLambdaHandler.add_hook(CDKConf)
-    PydanticLambdaHandler.add_hook(MockRequests)
+        PydanticLambdaHandler.add_hook(APIGenerationHook)
+        PydanticLambdaHandler.add_hook(CDKConf)
+        PydanticLambdaHandler.add_hook(MockRequests)
 
-    app: Optional[PydanticLambdaHandler] = None
+        app: Optional[PydanticLambdaHandler] = None
 
-    for file in files:
-        module_name = ".".join(str(file.relative_to(dir_path)).removesuffix(".py").split("/"))
-        spec = spec_from_file_location(module_name, file)
-        if not spec or not spec.loader:
-            continue
-        module = module_from_spec(spec)
-        modules[module_name] = module
-        spec.loader.exec_module(module)
-        results = getmembers(module)
+        for file in files:
+            module_name = ".".join(str(file.relative_to(dir_path)).removesuffix(".py").split("/"))
+            spec = spec_from_file_location(module_name, file)
+            if not spec or not spec.loader:
+                continue
+            module = module_from_spec(spec)
+            modules[module_name] = module
+            spec.loader.exec_module(module)
+            results = getmembers(module)
 
-        for i in range(len(results)):
-            if isinstance(results[i][1], PydanticLambdaHandler):
-                app = deepcopy(results[i][1])
+            for i in range(len(results)):
+                if isinstance(results[i][1], PydanticLambdaHandler):
+                    app = deepcopy(results[i][1])
 
-    if app:
-        return (
-            next(h for h in app._hooks if issubclass(h, APIGenerationHook)).generate(),  # type: ignore
-            next(h for h in app._hooks if issubclass(h, CDKConf)).cdk_stuff,  # type: ignore
-            next(h for h in app._hooks if issubclass(h, MockRequests)).testing_stuff,  # type: ignore
-        )
-    raise ValueError("App not found")
+        if app:
+            return (
+                next(h for h in app._hooks if issubclass(h, APIGenerationHook)).generate(),  # type: ignore
+                next(h for h in app._hooks if issubclass(h, CDKConf)).cdk_stuff,  # type: ignore
+                next(h for h in app._hooks if issubclass(h, MockRequests)).testing_stuff,  # type: ignore
+            )
+        raise ValueError("App not found")
 
 
 def main():

@@ -1,7 +1,7 @@
 def test_generate_cdk_config(cdk_config):
     assert cdk_config["resources"]["hello"]["methods"] == {
-        "get": {"function_name": "HelloHandler", "reference": "demo_app.hello_handler", "status_code": "200"},
-        "post": {"function_name": "CreateHandler", "reference": "demo_app.create_handler", "status_code": "201"},
+        "get": {"function_name": "HelloHandler", "reference": "hello_handler", "status_code": "200"},
+        "post": {"function_name": "CreateHandler", "reference": "create_handler", "status_code": "201"},
     }
 
 

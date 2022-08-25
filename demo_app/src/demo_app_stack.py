@@ -99,7 +99,7 @@ class DemoAppStack(Stack):
             code=aws_lambda.Code.from_asset(str(requirements_dir)),
         )
 
-        app_dir = repo_dir.joinpath("demo_app/demo_app")
+        app_dir = repo_dir.joinpath("demo_app/src")
         _, cdk_config, _ = gen_open_api_inspect(app_dir)
 
         self.add_resource(app_dir, base_api.root, base_lambda_layer, cdk_config)

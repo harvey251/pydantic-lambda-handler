@@ -1,6 +1,7 @@
 from typing import Optional
 
 from handler_app import plh
+from models.db_model import FUN
 from pydantic import BaseModel
 
 
