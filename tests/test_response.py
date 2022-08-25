@@ -1,4 +1,4 @@
-from demo_app import create_handler  # type: ignore
+from demo_app_handlers import create_handler  # type: ignore
 
 
 def test_get_response(requests_client, base_url):

@@ -110,9 +110,6 @@ class DemoAppStack(Stack):
 
             new_resource = resource.add_resource(
                 resource_name,
-                default_cors_preflight_options=_apigw.CorsOptions(
-                    allow_methods=list(resource_info.keys()), allow_origins=_apigw.Cors.ALL_ORIGINS
-                ),
             )
 
             if "methods" in resource_info:
