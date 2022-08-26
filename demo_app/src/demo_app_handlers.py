@@ -4,6 +4,18 @@ from handler_app import plh
 from pydantic import BaseModel
 
 
+class Item(BaseModel):
+    name: str
+    description: Optional[str] = None
+    price: float
+    tax: Optional[float] = None
+
+
+@plh.post("/hello")
+def create_handler(item: Item):
+    return item
+
+
 @plh.get("/hello")
 def hello_handler():
     from pydantic_core import SchemaValidator, ValidationError
@@ -52,13 +64,6 @@ def hello_handler():
     return {"message": "Hello World"}
 
 
-class Item(BaseModel):
-    name: str
-    description: Optional[str] = None
-    price: float
-    tax: Optional[float] = None
-
-
-@plh.post("/hello")
-def create_handler(item: Item):
-    return item
+@plh.post("/")
+def index_handler():
+    return {"message": "Hello Index"}

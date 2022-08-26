@@ -23,8 +23,8 @@ from pydantic_lambda_handler.middleware import BaseHook
 class APIGenerationHook(BaseHook):
     """Gen open api"""
 
-    title: str
-    version: str
+    title: str = "Pydantic Lambda Handler"
+    version: str = "0.0.0"
     paths: dict[str, PathItem] = {}
     method = None
 

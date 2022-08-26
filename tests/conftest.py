@@ -28,7 +28,7 @@ class Response:
 
 class RequestClient:
     def __init__(self):
-        path = Path(__file__).parents[1].joinpath("demo_app/demo_app")
+        path = Path(__file__).parents[1].joinpath("demo_app/src")
         self._spec, self._cdk_stuff, self._test = gen_open_api_inspect(path)
 
     def get(self, url, *args, **kwargs):
@@ -95,7 +95,7 @@ def pytest_generate_tests(metafunc):
 
 @pytest.fixture
 def _gen():
-    path = Path(__file__).parents[1].joinpath("demo_app/demo_app")
+    path = Path(__file__).parents[1].joinpath("demo_app/src")
     schema, cdk_stuff, _ = gen_open_api_inspect(path)
     return schema, cdk_stuff
 

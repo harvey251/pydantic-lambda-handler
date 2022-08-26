@@ -44,6 +44,33 @@
                 "deprecated": false
             }
         },
+        "/": {
+            "post": {
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/context": {
+            "get": {
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/query": {
             "get": {
                 "parameters": [
@@ -90,6 +117,33 @@
                         "description": "Successful Response",
                         "content": {
                             "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/response_model": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "secret",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/FunModel"
+                                }
+                            }
                         }
                     }
                 },
@@ -168,47 +222,6 @@
                         "required": true
                     }
                 ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                },
-                "deprecated": false
-            }
-        },
-        "/response_model": {
-            "get": {
-                "parameters": [
-                    {
-                        "name": "secret",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/FunModel"
-                                }
-                            }
-                        }
-                    }
-                },
-                "deprecated": false
-            }
-        },
-        "/context": {
-            "get": {
-                "parameters": [],
                 "responses": {
                     "200": {
                         "description": "Successful Response",

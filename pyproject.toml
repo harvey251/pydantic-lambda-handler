@@ -42,7 +42,7 @@ gen-cdk-conf = "pydantic_lambda_handler.gen_open_api_inspect:cdk_conf"
 
 [tool.pytest.ini_options]
 pythonpath = [
- "./", "src/", "demo_app/demo_app/"
+ "./", "src/", "demo_app/src/"
 ]
 
 [tool.semantic_release]
