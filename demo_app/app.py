@@ -2,7 +2,7 @@
 
 if __name__ == "__main__":
     import aws_cdk as cdk
-    from demo_app_stack import DemoAppStack
+    from src.demo_app_stack import DemoAppStack
 
     app = cdk.App()
     DemoAppStack(app, "demo-app", env={"region": "eu-west-2"})

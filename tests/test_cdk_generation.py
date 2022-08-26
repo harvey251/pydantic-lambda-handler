@@ -1,4 +1,4 @@
-from pydantic_lambda_handler.hooks.cdk_conf_hook import add_resource, add_resource_v2
+from pydantic_lambda_handler.hooks.cdk_conf_hook import add_resource_v2
 
 
 def test_generate_cdk_config(cdk_config):
@@ -9,7 +9,7 @@ def test_generate_cdk_config(cdk_config):
             "function_name": "HelloHandler",
             "handler": "hello_handler",
             "index": "demo_app_handlers.py",
-            "method": "get",
+            "method": "GET",
             "reference": "demo_app_handlers.hello_handler",
             "status_code": "200",
         },
@@ -17,7 +17,7 @@ def test_generate_cdk_config(cdk_config):
             "function_name": "CreateHandler",
             "handler": "create_handler",
             "index": "demo_app_handlers.py",
-            "method": "post",
+            "method": "POST",
             "reference": "demo_app_handlers.create_handler",
             "status_code": "201",
         },
@@ -30,7 +30,7 @@ def test_generate_cdk_config_status_code(cdk_config):
 
 
 def test_generate_cdk_config_nested_resources(cdk_config):
-    hello_resource = next(i for i in cdk_config if i.get("name") == "items")
+    hello_resource = next(i for i in cdk_config[0]["resources"] if i.get("name") == "items")
     assert hello_resource["resources"] == [
         {
             "methods": [
@@ -38,7 +38,7 @@ def test_generate_cdk_config_nested_resources(cdk_config):
                     "function_name": "HandlerWithTypeHint",
                     "handler": "handler_with_type_hint",
                     "index": "subfolder/path_parameters_handlers.py",
-                    "method": "get",
+                    "method": "GET",
                     "reference": "subfolder.path_parameters_handlers.handler_with_type_hint",
                     "status_code": "200",
                 }
@@ -46,27 +46,6 @@ def test_generate_cdk_config_nested_resources(cdk_config):
             "name": "{item_id}",
         }
     ]
-
-#
-# def test_add_resource_root():
-#     child_list = []
-#     url = ""
-#     add_resource(child_list, url)
-#     assert child_list == [{"name": ""}]
-#
-#
-# def test_add_resource_query():
-#     child_list = []
-#     url = "query"
-#     add_resource(child_list, url)
-#     assert child_list == [{"resources": [{"name": "query"}]}]
-#
-#
-# def test_add_resource_deep():
-#     child_list = []
-#     url = "pets/{petId}"
-#     add_resource(child_list, url)
-#     assert child_list == [{"resources": [{"name": "pets", "resources": [{"name": "{petId}"}]}]}]
 
 
 conf = [
@@ -214,11 +193,12 @@ def test_add_resource_root_v2():
             }
         },
     )
-    add_resource_v2(child_list, url.strip("/"), conf)
+    add_resource_v2(child_list, url, conf)
     assert child_list == [
         {
-            "methods": {
-                "POST": {
+            "name": "",
+            "methods": [
+                {
                     "function_name": "IndexHandler",
                     "handler": "index_handler",
                     "index": "demo_app_handlers.py",
@@ -226,8 +206,7 @@ def test_add_resource_root_v2():
                     "reference": "demo_app_handlers.index_handler",
                     "status_code": "201",
                 }
-            },
-            "name": "",
+            ],
         }
     ]
 
@@ -246,14 +225,14 @@ def test_add_resource_query_v2():
             }
         },
     )
-    add_resource_v2(child_list, url.strip("/"), conf)
+    add_resource_v2(child_list, url, conf)
     assert child_list == [
         {
             "resources": [
                 {
                     "name": "query",
-                    "methods": {
-                        "GET": {
+                    "methods": [
+                        {
                             "function_name": "QuerySkip",
                             "handler": "query_skip",
                             "index": "subfolder/query_parameters_handlers.py",
@@ -261,7 +240,7 @@ def test_add_resource_query_v2():
                             "reference": "subfolder.query_parameters_handlers.query_skip",
                             "status_code": "200",
                         }
-                    },
+                    ],
                 }
             ]
         }
@@ -291,24 +270,84 @@ def test_add_resource_deep_v2():
                     "name": "pets",
                     "resources": [
                         {
-                            "resources": [
+                            "name": "{petId}",
+                            "methods": [
                                 {
-                                    "methods": {
-                                        "GET": {
-                                            "function_name": "PetsHandler",
-                                            "handler": "pets_handler",
-                                            "index": "subfolder/path_parameters_handlers.py",
-                                            "method": "GET",
-                                            "reference": "subfolder.path_parameters_handlers.pets_handler",
-                                            "status_code": "200",
-                                        }
-                                    },
-                                    "name": "{petId}",
+                                    "function_name": "PetsHandler",
+                                    "handler": "pets_handler",
+                                    "index": "subfolder/path_parameters_handlers.py",
+                                    "method": "GET",
+                                    "reference": "subfolder.path_parameters_handlers.pets_handler",
+                                    "status_code": "200",
                                 }
-                            ]
+                            ],
                         }
-                    ]
+                    ],
                 }
+            ],
+        }
+    ]
+
+
+def test_add_resource_deep_plus2_v2():
+    child_list = []
+    child_dict = {
+        "/pets/{petId}": {
+            "GET": {
+                "function_name": "PetsHandler",
+                "status_code": "200",
+                "index": "subfolder/path_parameters_handlers.py",
+                "handler": "pets_handler",
+                "reference": "subfolder.path_parameters_handlers.pets_handler",
+            }
+        },
+        "/context": {
+            "GET": {
+                "function_name": "WithContext",
+                "status_code": "200",
+                "index": "subfolder/additional_args_handlers.py",
+                "handler": "with_context",
+                "reference": "subfolder.additional_args_handlers.with_context",
+            }
+        },
+    }
+
+    for url, conf in child_dict.items():
+        add_resource_v2(child_list, url, conf)
+    assert child_list == [
+        {
+            "resources": [
+                {
+                    "name": "pets",
+                    "resources": [
+                        {
+                            "name": "{petId}",
+                            "methods": [
+                                {
+                                    "function_name": "PetsHandler",
+                                    "handler": "pets_handler",
+                                    "index": "subfolder/path_parameters_handlers.py",
+                                    "method": "GET",
+                                    "reference": "subfolder.path_parameters_handlers.pets_handler",
+                                    "status_code": "200",
+                                }
+                            ],
+                        }
+                    ],
+                },
+                {
+                    "name": "context",
+                    "methods": [
+                        {
+                            "function_name": "WithContext",
+                            "handler": "with_context",
+                            "index": "subfolder/additional_args_handlers.py",
+                            "method": "GET",
+                            "reference": "subfolder.additional_args_handlers.with_context",
+                            "status_code": "200",
+                        }
+                    ],
+                },
             ]
         }
     ]

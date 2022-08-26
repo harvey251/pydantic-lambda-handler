@@ -15,6 +15,7 @@ class Item(BaseModel):
 def create_handler(item: Item):
     return item
 
+
 @plh.get("/hello")
 def hello_handler():
     from pydantic_core import SchemaValidator, ValidationError
@@ -61,8 +62,6 @@ def hello_handler():
           [kind=greater_than_equal, context={ge: 18}, input_value=11, input_type=int]
         """
     return {"message": "Hello World"}
-
-
 
 
 @plh.post("/")

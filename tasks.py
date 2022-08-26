@@ -6,8 +6,10 @@ from invoke import task
 
 from pydantic_lambda_handler.gen_open_api_inspect import gen_open_api_inspect
 
-root = Path(__name__).parent
-demo_app_dir = root.joinpath("demo_app")
+root = Path(__name__).absolute().parents[1]
+print(root)
+demo_app_dir = root.joinpath("demo_app").absolute()
+assert demo_app_dir.exists(), demo_app_dir
 
 
 @task

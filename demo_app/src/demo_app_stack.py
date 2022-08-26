@@ -4,6 +4,7 @@ https://docs.aws.amazon.com/lambda/latest/dg/services-apigateway-tutorial.html#s
 import subprocess
 import sys
 from pathlib import Path
+from pprint import pprint
 from tempfile import mkdtemp
 
 from aws_cdk import Stack
@@ -99,32 +100,31 @@ class DemoAppStack(Stack):
             code=aws_lambda.Code.from_asset(str(requirements_dir)),
         )
 
-        app_dir = repo_dir.joinpath("demo_app/demo_app")
+        app_dir = repo_dir.joinpath("demo_app/src")
         _, cdk_config, _ = gen_open_api_inspect(app_dir)
 
-        self.add_resource(app_dir, base_api.root, base_lambda_layer, cdk_config)
+        self.add_resources(app_dir, base_api.root, base_lambda_layer, cdk_config)
 
-    def add_resource(self, app_dir, resource, base_lambda_layer, config):
+    def add_resources(self, app_dir, resource, base_lambda_layer, config):
+        for conf in config:
+            if conf.get("name"):
+                new_resource = resource.add_resource(conf["name"])
+            else:
+                new_resource = resource
 
-        for resource_name, resource_info in sorted(config["resources"].items()):
+            for method_conf in conf.get("methods", ()):
+                pprint(method_conf)
+                self.add_method(method_conf, new_resource, app_dir, base_lambda_layer)
 
-            new_resource = resource.add_resource(
-                resource_name,
-            )
+            self.add_resources(app_dir, new_resource, base_lambda_layer, conf.get("resources", ()))
 
-            if "methods" in resource_info:
-                for method, method_info in resource_info["methods"].items():
-                    self.add_method(method, method_info, new_resource, app_dir, base_lambda_layer)
-
-            if "resources" in resource_info:
-                self.add_resource(app_dir, new_resource, base_lambda_layer, resource_info)
-
-    def add_method(self, method, method_info, resource, app_dir, base_lambda_layer):
+    def add_method(self, method_conf, resource, app_dir, base_lambda_layer):
+        pprint(method_conf)
         func = aws_lambda.Function(
             self,
-            method_info["function_name"],
+            method_conf["function_name"],
             runtime=aws_lambda.Runtime.PYTHON_3_9,
-            handler=method_info["reference"],
+            handler=method_conf["reference"],
             layers=[base_lambda_layer],
             code=aws_lambda.Code.from_asset(
                 str(app_dir),
@@ -136,18 +136,18 @@ class DemoAppStack(Stack):
             proxy=True,
             integration_responses=[
                 _apigw.IntegrationResponse(
-                    status_code=method_info["status_code"],
+                    status_code=method_conf["status_code"],
                     response_parameters={"method.response.header.Access-Control-Allow-Origin": "'*'"},
                 )
             ],
         )
 
         resource.add_method(
-            method.upper(),
+            method_conf["method"],
             api_gw_lambda,
             method_responses=[
                 _apigw.MethodResponse(
-                    status_code=method_info["status_code"],
+                    status_code=method_conf["status_code"],
                     response_parameters={"method.response.header.Access-Control-Allow-Origin": True},
                 )
             ],
