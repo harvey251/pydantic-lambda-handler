@@ -60,6 +60,9 @@ jobs:
     - run: |
         pip install nox
         nox --session --python ${{ matrix.python-version }}
+        curl -Os https://uploader.codecov.io/latest/linux/codecov
+        chmod +x codecov
+        ./codecov -t ${CODECOV_TOKEN}
   release:
     name: Python Semantic Release
     runs-on: ubuntu-latest
