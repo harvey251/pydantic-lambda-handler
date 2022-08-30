@@ -55,6 +55,10 @@ pythonpath = [
  "./", "src/", "demo_app/src/"
 ]
 
+[tool.coverage.run]
+source = ['src', "demo_app/src"]
+
+
 [tool.semantic_release]
 version_variable = "src/pydantic_lambda_handler/__init__.py:__version__"
 build_command = "pip install flit && flit build"
