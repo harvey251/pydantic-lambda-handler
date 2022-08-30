@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.1 (2022-08-30)
+### Fix
+* Allow list response ([#57](https://github.com/harvey251/pydantic-lambda-handler/issues/57)) ([`8045667`](https://github.com/harvey251/pydantic-lambda-handler/commit/80456671d322374c6aeb45121afa8372ed184e22))
+
 ## v0.6.3 (2022-08-15)
 ### Fix
 * Add a space ([`fd182ac`](https://github.com/harvey251/pydantic-lambda-handler/commit/fd182acd14017b320d480a5cb8b7a6218501ac42))
