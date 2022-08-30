@@ -152,9 +152,7 @@ class PydanticLambdaHandler:
                 for hook in reversed(self._hooks):
                     body = hook.post_func(body)
 
-                if response_model:
-                    response = BaseOutput(body=body.json(), status_code=status_code)
-                elif hasattr(body, "json"):
+                if hasattr(body, "json"):
                     response = BaseOutput(body=body.json(), status_code=status_code)
                 else:
                     response = BaseOutput(body=json.dumps(body), status_code=status_code)

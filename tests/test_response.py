@@ -48,3 +48,15 @@ def test_inv(mock_lambda_context):
     response = create_handler(event, mock_lambda_context)
 
     assert response["statusCode"] == 201, response.get("body")
+
+
+def test_list_response(requests_client, base_url):
+    response = requests_client.get(f"{base_url}/list_response")
+    assert response.status_code == 200
+    assert response.json() == [{"item_name": 1}]
+
+
+def test_list_response_model(requests_client, base_url):
+    response = requests_client.get(f"{base_url}/list_response_model")
+    assert response.status_code == 200
+    assert response.json() == [{"item_name": "secret"}]

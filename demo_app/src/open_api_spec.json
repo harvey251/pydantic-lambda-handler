@@ -150,6 +150,36 @@
                 "deprecated": false
             }
         },
+        "/list_response": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/list_response_model": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListFunModel"
+                                }
+                            }
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/teapot": {
             "get": {
                 "responses": {
@@ -277,6 +307,13 @@
                         "title": "Tax",
                         "type": "number"
                     }
+                }
+            },
+            "ListFunModel": {
+                "title": "ListFunModel",
+                "type": "array",
+                "items": {
+                    "$ref": "#/components/schemas/FunModel"
                 }
             }
         }
