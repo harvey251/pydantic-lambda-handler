@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.2 (2022-08-30)
+### Fix
+* Add pypi repo details ([#58](https://github.com/harvey251/pydantic-lambda-handler/issues/58)) ([`4af957f`](https://github.com/harvey251/pydantic-lambda-handler/commit/4af957fac980ec1b9dc063ef5933582e609001d2))
+
 ## v0.8.1 (2022-08-30)
 ### Fix
 * Allow list response ([#57](https://github.com/harvey251/pydantic-lambda-handler/issues/57)) ([`8045667`](https://github.com/harvey251/pydantic-lambda-handler/commit/80456671d322374c6aeb45121afa8372ed184e22))
