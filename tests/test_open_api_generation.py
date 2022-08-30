@@ -16,6 +16,16 @@ def test_generate_open_api_info_path_post(schema):
     assert item_path == {"application/json": {}}
 
 
+def test_generate_open_api_list_response_model(schema):
+    item_path = schema["paths"]["/list_response_model"]["get"]["responses"]["200"]["content"]
+    assert item_path == {"application/json": {"schema": {"$ref": "#/components/schemas/ListFunModel"}}}
+    assert schema["components"]["schemas"]["ListFunModel"] == {
+        "items": {"$ref": "#/components/schemas/FunModel"},
+        "title": "ListFunModel",
+        "type": "array",
+    }
+
+
 def test_query_body(schema):
     request_schema = schema["paths"]["/hello"]["post"]["requestBody"]["content"]["application/json"]["schema"]
     assert request_schema == {"$ref": "#/components/schemas/Item"}

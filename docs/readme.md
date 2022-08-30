@@ -22,9 +22,26 @@ app.get("/")
 def your_handler():
     return {"success": True}
 ```
+{: .language-python}
 
 ## url parameters
 
 
 
 ## query parameters
+
+
+
+## response model
+
+If response model needs to be a list, do need to adjust the model like so
+
+```
+class FunModel(BaseModel):
+    item_name: str
+    item_value: Optional[int]
+
+class ListFunModel(BaseModel):
+    __root__: list[FunModel]
+```
+{: .language-python}
