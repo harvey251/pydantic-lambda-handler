@@ -19,6 +19,7 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
   'pytest',
+  'pytest-cov',
   'requests',
   "awslambdaric",
   "boto3>=1.20.32",
