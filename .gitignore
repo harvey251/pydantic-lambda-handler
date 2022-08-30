@@ -9,3 +9,6 @@ secret.txt
 __pycache__/*
 **/__pycache__/*
 .DS_Store
+/.jekyll-cache/Jekyll/Cache/Jekyll--Cache/b7/
+/_site/
+/docs/.jekyll-cache/Jekyll/Cache/Jekyll--Cache/b7/
