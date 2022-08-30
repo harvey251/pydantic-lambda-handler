@@ -106,6 +106,7 @@ class DemoAppStack(Stack):
         self.add_resources(app_dir, base_api.root, base_lambda_layer, cdk_config)
 
     def add_resources(self, app_dir, resource, base_lambda_layer, config):
+        """add resource"""
         for conf in config:
             if conf.get("name"):
                 new_resource = resource.add_resource(conf["name"])
