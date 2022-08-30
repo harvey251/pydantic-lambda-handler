@@ -19,6 +19,7 @@ dependencies = [
 [project.optional-dependencies]
 tests = [
   'pytest',
+  'pytest-cov',
   'requests',
   "awslambdaric",
   "boto3>=1.20.32",
@@ -53,6 +54,10 @@ gen-cdk-conf = "pydantic_lambda_handler.gen_open_api_inspect:cdk_conf"
 pythonpath = [
  "./", "src/", "demo_app/src/"
 ]
+
+[tool.coverage.run]
+source = ['src', "demo_app/src"]
+
 
 [tool.semantic_release]
 version_variable = "src/pydantic_lambda_handler/__init__.py:__version__"

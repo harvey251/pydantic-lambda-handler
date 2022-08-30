@@ -47,19 +47,18 @@ jobs:
           mypy src
   test:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.9', '3.10']
-    name: Python ${{ matrix.python-version }}
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
-        architecture: x64
-    - run: |
-        pip install nox
-        nox --session --python ${{ matrix.python-version }}
+        - uses: actions/setup-python@v2
+          with:
+            python-version: '3.9'
+        - uses: actions/checkout@v2
+        - name: Pytest 3.9
+          run: |
+            pip install .[tests]
+            pytest --cov=src/pydantic_lambda_handler
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            chmod +x codecov
+            ./codecov -t ${CODECOV_TOKEN}
   release:
     name: Python Semantic Release
     runs-on: ubuntu-latest
