@@ -1,7 +1,5 @@
 ![example workflow](https://github.com/harvey251/pydantic-lambda-handler/actions/workflows/main.yml/badge.svg) [![codecov](https://codecov.io/gh/harvey251/pydantic-lambda-handler/branch/main/graph/badge.svg?token=PX0GRFCYQE)](https://codecov.io/gh/harvey251/pydantic-lambda-handler) ![pypi package](https://img.shields.io/pypi/v/pydantic-lambda-handler?color=%2334D058&label=pypi%20package)
 
-[![codecov](https://codecov.io/gh/harvey251/pydantic-lambda-handler/branch/main/graph/badge.svg?token=PX0GRFCYQE)](https://codecov.io/gh/harvey251/pydantic-lambda-handler)
-
 # Vision
 
 Aim to create an easy-to-use decorator on a lambda for quick development of apis on AWS lambda using AWS Gateway.
