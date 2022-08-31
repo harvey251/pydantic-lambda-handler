@@ -72,3 +72,8 @@ def index_handler():
 @plh.get("/error_much")
 def error_much_handler():
     raise ValueError("it's broken")
+
+
+@plh.post("/error_much")
+def error_much_handler_post():
+    raise ValueError("it's broken")

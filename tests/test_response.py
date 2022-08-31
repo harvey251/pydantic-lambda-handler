@@ -66,3 +66,8 @@ def test_list_response_model(requests_client, base_url):
 def test_error_much_handler(requests_client, base_url):
     with pytest.raises(ValueError):
         requests_client.get(f"{base_url}/error_much")
+
+
+def test_error_much_handler_post(requests_client, base_url):
+    with pytest.raises(ValueError):
+        requests_client.post(f"{base_url}/error_much")
