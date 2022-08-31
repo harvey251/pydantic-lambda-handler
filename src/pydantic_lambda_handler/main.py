@@ -3,7 +3,10 @@ The main class which you import and use a decorator.
 """
 import functools
 import json
+import logging
 import re
+import sys
+import traceback
 from http import HTTPStatus
 from inspect import signature
 from typing import Iterable, Optional, Union
@@ -44,6 +47,7 @@ class PydanticLambdaHandler:
         description: str = "Successful Response",
         function_name=None,
         response_model=None,
+        logger=None,
     ):
         """Expect request with a GET method.
 
@@ -52,15 +56,21 @@ class PydanticLambdaHandler:
         :return:
         """
         method = "get"
-        return self.run_method(
-            method,
-            url,
-            status_code,
-            operation_id,
-            description,
-            function_name,
-            response_model,
-        )
+        self.logger = logger or logging.getLogger(__name__)
+        try:
+            return self.run_method(
+                method,
+                url,
+                status_code,
+                operation_id,
+                description,
+                function_name,
+                response_model,
+            )
+        except Exception as error:
+            traceback.print_exc(file=sys.stdout)
+            self.logger.error(f"{type(error).__name__}: {error}")
+            raise
 
     def post(
         self,
@@ -71,6 +81,7 @@ class PydanticLambdaHandler:
         description: str = "Successful Response",
         function_name=None,
         response_model=None,
+        logger=None,
     ):
         """Expect request with a POST method.
 
@@ -79,15 +90,21 @@ class PydanticLambdaHandler:
         :return:
         """
         method = "post"
-        return self.run_method(
-            method,
-            url,
-            status_code,
-            operation_id,
-            description,
-            function_name,
-            response_model,
-        )
+        self.logger = logger or logging.getLogger(__name__)
+        try:
+            return self.run_method(
+                method,
+                url,
+                status_code,
+                operation_id,
+                description,
+                function_name,
+                response_model,
+            )
+        except Exception as error:
+            traceback.print_exc(file=sys.stdout)
+            self.logger.error(f"{type(error).__name__}: {error}")
+            raise
 
     def run_method(
         self,
