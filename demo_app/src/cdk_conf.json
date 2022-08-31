@@ -26,6 +26,27 @@
                 ]
             },
             {
+                "name": "error_much",
+                "methods": [
+                    {
+                        "method": "GET",
+                        "index": "demo_app_handlers.py",
+                        "handler": "error_much_handler",
+                        "reference": "demo_app_handlers.error_much_handler",
+                        "status_code": "200",
+                        "function_name": "ErrorMuchHandler"
+                    },
+                    {
+                        "method": "POST",
+                        "index": "demo_app_handlers.py",
+                        "handler": "error_much_handler_post",
+                        "reference": "demo_app_handlers.error_much_handler_post",
+                        "status_code": "201",
+                        "function_name": "ErrorMuchHandlerPost"
+                    }
+                ]
+            },
+            {
                 "name": "hello",
                 "methods": [
                     {
@@ -79,6 +100,32 @@
                                 "function_name": "HandlerWithTypeHint"
                             }
                         ]
+                    }
+                ]
+            },
+            {
+                "name": "list_response",
+                "methods": [
+                    {
+                        "method": "GET",
+                        "index": "subfolder/response_model_handlers.py",
+                        "handler": "response_list",
+                        "reference": "subfolder.response_model_handlers.response_list",
+                        "status_code": "200",
+                        "function_name": "ResponseList"
+                    }
+                ]
+            },
+            {
+                "name": "list_response_model",
+                "methods": [
+                    {
+                        "method": "GET",
+                        "index": "subfolder/response_model_handlers.py",
+                        "handler": "response_list_model",
+                        "reference": "subfolder.response_model_handlers.response_list_model",
+                        "status_code": "200",
+                        "function_name": "ResponseListModel"
                     }
                 ]
             },
