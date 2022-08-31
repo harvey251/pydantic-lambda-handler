@@ -67,3 +67,8 @@ def hello_handler():
 @plh.post("/")
 def index_handler():
     return {"message": "Hello Index"}
+
+
+@plh.get("/error_much")
+def error_much_handler():
+    raise ValueError("it's broken")
