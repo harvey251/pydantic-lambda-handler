@@ -27,12 +27,18 @@ class PydanticLambdaHandler:
     _hooks: list[type[BaseHook]] = []
 
     def __init__(
-        self, *, title="PydanticLambdaHandler", version="0.0.0", hooks: Optional[Iterable[type[BaseHook]]] = None
+        self,
+        *,
+        title="PydanticLambdaHandler",
+        version="0.0.0",
+        hooks: Optional[Iterable[type[BaseHook]]] = None,
+        logger=None,
     ):
         self.title = title
         self.version = version
         if hooks:
             PydanticLambdaHandler._hooks.extend(hooks)
+        self.logger = logger or logging.getLogger(__name__)
 
     @classmethod
     def add_hook(cls, hook: type[BaseHook]):
@@ -56,21 +62,17 @@ class PydanticLambdaHandler:
         :return:
         """
         method = "get"
-        self.logger = logger or logging.getLogger(__name__)
-        try:
-            return self.run_method(
-                method,
-                url,
-                status_code,
-                operation_id,
-                description,
-                function_name,
-                response_model,
-            )
-        except Exception as error:
-            traceback.print_exc(file=sys.stdout)
-            self.logger.error(f"{type(error).__name__}: {error}")
-            raise
+        if logger:
+            self.logger = logger
+        return self.run_method(
+            method,
+            url,
+            status_code,
+            operation_id,
+            description,
+            function_name,
+            response_model,
+        )
 
     def post(
         self,
@@ -90,21 +92,17 @@ class PydanticLambdaHandler:
         :return:
         """
         method = "post"
-        self.logger = logger or logging.getLogger(__name__)
-        try:
-            return self.run_method(
-                method,
-                url,
-                status_code,
-                operation_id,
-                description,
-                function_name,
-                response_model,
-            )
-        except Exception as error:
-            traceback.print_exc(file=sys.stdout)
-            self.logger.error(f"{type(error).__name__}: {error}")
-            raise
+        if logger:
+            self.logger = logger
+        return self.run_method(
+            method,
+            url,
+            status_code,
+            operation_id,
+            description,
+            function_name,
+            response_model,
+        )
 
     def run_method(
         self,
@@ -130,51 +128,63 @@ class PydanticLambdaHandler:
 
             @functools.wraps(func)
             def wrapper_decorator(event, context: LambdaContext):
-                for hook in self._hooks:
-                    event, context = hook.pre_func(event, context)
+                try:
+                    for hook in self._hooks:
+                        event, context = hook.pre_func(event, context)
 
-                sig = signature(func)
+                    self.logger.debug(f"{event=}")
+                    self.logger.debug(f"{context=}")
 
-                if sig.parameters:
-                    path_parameters = event.get("pathParameters", {}) or {}
-                    query_parameters = event.get("queryStringParameters", {}) or {}
+                    sig = signature(func)
 
-                    if event["body"] is not None:
-                        body = loads(event["body"])
+                    if sig.parameters:
+                        path_parameters = event.get("pathParameters", {}) or {}
+                        query_parameters = event.get("queryStringParameters", {}) or {}
+
+                        if event["body"] is not None:
+                            body = loads(event["body"])
+                        else:
+                            body = None
+
+                        try:
+                            event_model = EventModel(path=path_parameters, query=query_parameters, body=body)
+                        except ValidationError as e:
+                            response = BaseOutput(
+                                body=json.dumps({"detail": json.loads(e.json())}),
+                                status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
+                            )
+                            return loads(response.json())
+
+                        # Do something before
+                        func_kwargs = {**event_model.path.dict(), **event_model.query.dict()}
+                        if hasattr(event_model, "body"):
+                            func_kwargs.update(**{event_model.body._alias: event_model.body})
+
+                        if context_name := next(
+                            (i.name for i in iter(sig.parameters.values()) if issubclass(i.annotation, LambdaContext)),
+                            None,
+                        ):
+                            func_kwargs[context_name] = context
+                        body = func(**func_kwargs)
                     else:
-                        body = None
+                        body = func()
 
-                    try:
-                        event_model = EventModel(path=path_parameters, query=query_parameters, body=body)
-                    except ValidationError as e:
-                        response = BaseOutput(
-                            body=json.dumps({"detail": json.loads(e.json())}),
-                            status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
-                        )
-                        return loads(response.json())
+                    for hook in reversed(self._hooks):
+                        body = hook.post_func(body)
 
-                    # Do something before
-                    func_kwargs = {**event_model.path.dict(), **event_model.query.dict()}
-                    if hasattr(event_model, "body"):
-                        func_kwargs.update(**{event_model.body._alias: event_model.body})
+                    if hasattr(body, "json"):
+                        base_output = BaseOutput(body=body.json(), status_code=status_code)
+                    else:
+                        base_output = BaseOutput(body=json.dumps(body), status_code=status_code)
 
-                    if context_name := next(
-                        (i.name for i in iter(sig.parameters.values()) if issubclass(i.annotation, LambdaContext)), None
-                    ):
-                        func_kwargs[context_name] = context
-                    body = func(**func_kwargs)
+                    response = loads(base_output.json())
+                except Exception as error:
+                    traceback.print_exc(file=sys.stdout)
+                    self.logger.error(f"{type(error).__name__}: {error}")
+                    raise
                 else:
-                    body = func()
-
-                for hook in reversed(self._hooks):
-                    body = hook.post_func(body)
-
-                if hasattr(body, "json"):
-                    response = BaseOutput(body=body.json(), status_code=status_code)
-                else:
-                    response = BaseOutput(body=json.dumps(body), status_code=status_code)
-
-                return loads(response.json())
+                    self.logger.debug(f"{context=}")
+                    return response
 
             return wrapper_decorator
 
