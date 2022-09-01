@@ -1,7 +1,11 @@
+import logging
 from typing import Optional
 
 from handler_app import plh
 from pydantic import BaseModel
+
+logger = logging.getLogger(__name__)
+logger.setLevel(level=logging.DEBUG)
 
 
 class Item(BaseModel):
@@ -11,7 +15,7 @@ class Item(BaseModel):
     tax: Optional[float] = None
 
 
-@plh.post("/hello")
+@plh.post("/hello", logger=logger)
 def create_handler(item: Item):
     return item
 
@@ -69,11 +73,11 @@ def index_handler():
     return {"message": "Hello Index"}
 
 
-@plh.get("/error_much")
+@plh.get("/error_much", logger=logger)
 def error_much_handler():
     raise ValueError("it's broken")
 
 
-@plh.post("/error_much")
+@plh.post("/error_much", logger=logger)
 def error_much_handler_post():
     raise ValueError("it's broken")
