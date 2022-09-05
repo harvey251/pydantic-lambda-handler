@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.6 (2022-09-05)
+### Fix
+* Add generate_event ([#64](https://github.com/harvey251/pydantic-lambda-handler/issues/64)) ([`26e026f`](https://github.com/harvey251/pydantic-lambda-handler/commit/26e026f9440e07b5d4d34c240dafc9abf9f4c144))
+
 ## v0.8.5 (2022-09-05)
 ### Fix
 * Use response model ([#63](https://github.com/harvey251/pydantic-lambda-handler/issues/63)) ([`ad3b17c`](https://github.com/harvey251/pydantic-lambda-handler/commit/ad3b17c1f326dd7e9bf8153d3dc19a65d07bdd61))
