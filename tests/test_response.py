@@ -1,5 +1,4 @@
 import pytest
-
 from demo_app_handlers import create_handler  # type: ignore
 
 
@@ -61,7 +60,7 @@ def test_list_response(requests_client, base_url):
 def test_list_response_model(requests_client, base_url):
     response = requests_client.get(f"{base_url}/list_response_model")
     assert response.status_code == 200
-    assert response.json() == [{"item_name": "secret"}]
+    assert response.json() == [{"item_name": "secret", "item_value": None}]
 
 
 def test_error_much_handler(requests_client, base_url):
