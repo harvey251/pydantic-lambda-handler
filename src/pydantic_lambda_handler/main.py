@@ -138,16 +138,8 @@ class PydanticLambdaHandler:
                     sig = signature(func)
 
                     if sig.parameters:
-                        path_parameters = event.get("pathParameters", {}) or {}
-                        query_parameters = event.get("queryStringParameters", {}) or {}
-
-                        if event["body"] is not None:
-                            body = loads(event["body"])
-                        else:
-                            body = None
-
                         try:
-                            event_model = EventModel(path=path_parameters, query=query_parameters, body=body)
+                            event_model = self._gen_event_model(event, EventModel)
                         except ValidationError as e:
                             response = BaseOutput(
                                 body=json.dumps({"detail": json.loads(e.json())}),
@@ -247,3 +239,15 @@ class PydanticLambdaHandler:
             event_models["body"] = (body_model, body_default)
 
         return create_model("EventModel", **event_models)
+
+    @staticmethod
+    def _gen_event_model(event, EventModel):
+        path_parameters = event.get("pathParameters", {}) or {}
+        query_parameters = event.get("queryStringParameters", {}) or {}
+
+        if event["body"] is not None:
+            body = loads(event["body"])
+        else:
+            body = None
+
+        return EventModel(path=path_parameters, query=query_parameters, body=body)
