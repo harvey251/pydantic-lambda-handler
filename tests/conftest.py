@@ -38,22 +38,7 @@ class RequestClient:
         return self._mock_request(url, "post", *args, **kwargs)
 
     def _mock_request(self, url, method, *args, **kwargs):
-        if "data" in kwargs:
-            body = kwargs["data"]
-        elif "json" in kwargs:
-            body = json.dumps(kwargs["json"])
-        else:
-            body = None
-
-        event = {"body": body, "queryStringParameters": kwargs.get("params", None)}
-
-        context = LambdaContext(
-            invoke_id="abd",
-            client_context=None,
-            cognito_identity=None,
-            epoch_deadline_time_in_ms=1660605740936,
-            invoked_function_arn="abd",
-        )
+        event = self.generate_event(kwargs, url)
 
         for comp_url, info in self._test["paths"].items():
             try:
@@ -65,14 +50,42 @@ class RequestClient:
 
             if match:
                 decorated_function_ = info[method]["handler"]["decorated_function"]
-                event["pathParameters"] = match.groupdict()
                 break
         else:  # No break
             raise ValueError
 
+        context = LambdaContext(
+            invoke_id="abd",
+            client_context=None,
+            cognito_identity=None,
+            epoch_deadline_time_in_ms=1660605740936,
+            invoked_function_arn="abd",
+        )
+
         function_ = self._test["paths"][comp_url][method]["handler"]["function"]
         response = decorated_function_(function_)(event, context)
         return Response(response)
+
+    def generate_event(self, kwargs, url):
+        if "data" in kwargs:
+            body = kwargs["data"]
+        elif "json" in kwargs:
+            body = json.dumps(kwargs["json"])
+        else:
+            body = None
+        for comp_url, info in self._test["paths"].items():
+            try:
+                match = re.fullmatch(comp_url, url)
+            except Exception:
+                # None breaking here
+                continue
+
+            if match:
+                break
+        else:  # No break
+            raise ValueError
+        event = {"body": body, "queryStringParameters": kwargs.get("params", None), "pathParameters": match.groupdict()}
+        return event
 
 
 @pytest.fixture(scope="function")
