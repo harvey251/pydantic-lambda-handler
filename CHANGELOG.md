@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.5 (2022-09-05)
+### Fix
+* Use response model ([#63](https://github.com/harvey251/pydantic-lambda-handler/issues/63)) ([`ad3b17c`](https://github.com/harvey251/pydantic-lambda-handler/commit/ad3b17c1f326dd7e9bf8153d3dc19a65d07bdd61))
+
 ## v0.8.4 (2022-09-01)
 ### Fix
 * Add debug logs ([#62](https://github.com/harvey251/pydantic-lambda-handler/issues/62)) ([`e8ddaaf`](https://github.com/harvey251/pydantic-lambda-handler/commit/e8ddaaf8a12fc2577784dfa4b4f970abdc2fbce3))
