@@ -67,8 +67,6 @@ def gen_open_api_inspect(dir_path: Path):
         else:
             files.insert(0, dir_path.joinpath("handler_app.py"))
 
-        print(list(files))
-
         # This is ugly, once it works refactor out
         PydanticLambdaHandler.add_hook(APIGenerationHook)
         CDKConf._dir_path = dir_path
