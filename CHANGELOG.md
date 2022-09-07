@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.7 (2022-09-07)
+### Fix
+* Add index location and remove prints ([#65](https://github.com/harvey251/pydantic-lambda-handler/issues/65)) ([`00abacc`](https://github.com/harvey251/pydantic-lambda-handler/commit/00abacc35ccbfbcd12d00dbec8c2d38c89d9abd5))
+
 ## v0.8.6 (2022-09-05)
 ### Fix
 * Add generate_event ([#64](https://github.com/harvey251/pydantic-lambda-handler/issues/64)) ([`26e026f`](https://github.com/harvey251/pydantic-lambda-handler/commit/26e026f9440e07b5d4d34c240dafc9abf9f4c144))
