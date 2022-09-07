@@ -1,4 +1,4 @@
 """
 Pydantic lambda handler modelled on FastAPI
 """
-__version__ = "0.8.7"
+__version__ = "0.8.8"

@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.8 (2022-09-07)
+### Fix
+* Run checks in ci ([#66](https://github.com/harvey251/pydantic-lambda-handler/issues/66)) ([`17f78c6`](https://github.com/harvey251/pydantic-lambda-handler/commit/17f78c6a986446114ecd44779f0c6c6461273d53))
+
 ## v0.8.7 (2022-09-07)
 ### Fix
 * Add index location and remove prints ([#65](https://github.com/harvey251/pydantic-lambda-handler/issues/65)) ([`00abacc`](https://github.com/harvey251/pydantic-lambda-handler/commit/00abacc35ccbfbcd12d00dbec8c2d38c89d9abd5))
