@@ -1,3 +1,4 @@
+import json
 import re
 from inspect import signature
 from typing import Any
@@ -162,4 +163,9 @@ class APIGenerationHook(BaseHook):
             paths=cls.paths,
         )
         open_api = construct_open_api_with_schema_class(open_api)
-        return open_api.json(by_alias=True, exclude_none=True, indent=2)
+
+        # sort keys
+        open_api_dict = json.loads(open_api.json(by_alias=True, exclude_none=True))
+
+        open_api_dict["paths"] = dict(sorted(open_api_dict["paths"].items()))
+        return json.dumps(open_api_dict, indent=2)

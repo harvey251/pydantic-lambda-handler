@@ -80,3 +80,29 @@ jobs:
       - flake8
       - mypy
       - test
+
+  gen-cdk-conf:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/setup-python@v2
+          with:
+            python-version: '3.9'
+        - uses: actions/checkout@v2
+        - name: Pytest 3.9
+          run: |
+            pip install .[tests]
+            gen-cdk-conf demo_app/src demo_app/cdk_conf.json
+            git diff --exit-code demo_app/cdk_conf.json
+
+  gen-open-api-spec:
+    runs-on: ubuntu-latest
+    steps:
+        - uses: actions/setup-python@v2
+          with:
+            python-version: '3.9'
+        - uses: actions/checkout@v2
+        - name: Pytest 3.9
+          run: |
+            pip install .[tests]
+            gen-open-api-spec demo_app/src demo_app/open_api_spec.json
+            git diff --exit-code demo_app/open_api_spec.json

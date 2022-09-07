@@ -10,6 +10,57 @@
         }
     ],
     "paths": {
+        "/": {
+            "post": {
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/context": {
+            "get": {
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/error_much": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            },
+            "post": {
+                "responses": {
+                    "201": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/hello": {
             "get": {
                 "responses": {
@@ -44,10 +95,20 @@
                 "deprecated": false
             }
         },
-        "/": {
-            "post": {
+        "/item_enum/{item_id}": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "item_id",
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Successful Response",
                         "content": {
                             "application/json": {}
@@ -57,7 +118,30 @@
                 "deprecated": false
             }
         },
-        "/error_much": {
+        "/items/{item_id}": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "item_id",
+                        "in": "path",
+                        "schema": {
+                            "type": "integer"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/list_response": {
             "get": {
                 "responses": {
                     "200": {
@@ -68,22 +152,38 @@
                     }
                 },
                 "deprecated": false
-            },
-            "post": {
+            }
+        },
+        "/list_response_model": {
+            "get": {
                 "responses": {
-                    "201": {
+                    "200": {
                         "description": "Successful Response",
                         "content": {
-                            "application/json": {}
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/ListFunModel"
+                                }
+                            }
                         }
                     }
                 },
                 "deprecated": false
             }
         },
-        "/context": {
+        "/pets/{petId}": {
             "get": {
-                "parameters": [],
+                "operationId": "Create Pet",
+                "parameters": [
+                    {
+                        "name": "petId",
+                        "in": "path",
+                        "schema": {
+                            "type": "string"
+                        },
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Successful Response",
@@ -174,110 +274,10 @@
                 "deprecated": false
             }
         },
-        "/list_response": {
-            "get": {
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                },
-                "deprecated": false
-            }
-        },
-        "/list_response_model": {
-            "get": {
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/ListFunModel"
-                                }
-                            }
-                        }
-                    }
-                },
-                "deprecated": false
-            }
-        },
         "/teapot": {
             "get": {
                 "responses": {
                     "418": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                },
-                "deprecated": false
-            }
-        },
-        "/pets/{petId}": {
-            "get": {
-                "operationId": "Create Pet",
-                "parameters": [
-                    {
-                        "name": "petId",
-                        "in": "path",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                },
-                "deprecated": false
-            }
-        },
-        "/items/{item_id}": {
-            "get": {
-                "parameters": [
-                    {
-                        "name": "item_id",
-                        "in": "path",
-                        "schema": {
-                            "type": "integer"
-                        },
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Successful Response",
-                        "content": {
-                            "application/json": {}
-                        }
-                    }
-                },
-                "deprecated": false
-            }
-        },
-        "/item_enum/{item_id}": {
-            "get": {
-                "parameters": [
-                    {
-                        "name": "item_id",
-                        "in": "path",
-                        "schema": {
-                            "type": "string"
-                        },
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
                         "description": "Successful Response",
                         "content": {
                             "application/json": {}
