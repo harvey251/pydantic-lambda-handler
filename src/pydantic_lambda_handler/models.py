@@ -1,10 +1,12 @@
 """
 location of base models
 """
+from enum import Enum
 from http import HTTPStatus
-from typing import Union
+from typing import Union, Any, Optional, Dict
 
 from pydantic import BaseModel, Field
+from pydantic.fields import FieldInfo, Undefined
 
 
 class BaseOutput(BaseModel):
@@ -32,3 +34,100 @@ class BaseOutput(BaseModel):
         alias="multi_value_headers",
     )
     body: Union[dict, list, str, int]
+
+
+class ParamTypes(Enum):
+    query = "query"
+    header = "header"
+    path = "path"
+    cookie = "cookie"
+
+
+class Param(FieldInfo):
+    in_: ParamTypes
+
+    def __init__(
+        self,
+        default: Any = Undefined,
+        *,
+        alias: Optional[str] = None,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        gt: Optional[float] = None,
+        ge: Optional[float] = None,
+        lt: Optional[float] = None,
+        le: Optional[float] = None,
+        min_length: Optional[int] = None,
+        max_length: Optional[int] = None,
+        regex: Optional[str] = None,
+        example: Any = Undefined,
+        examples: Optional[Dict[str, Any]] = None,
+        deprecated: Optional[bool] = None,
+        include_in_schema: bool = True,
+        **extra: Any,
+    ):
+        self.deprecated = deprecated
+        self.example = example
+        self.examples = examples
+        self.include_in_schema = include_in_schema
+        super().__init__(
+            default=default,
+            alias=alias,
+            title=title,
+            description=description,
+            gt=gt,
+            ge=ge,
+            lt=lt,
+            le=le,
+            min_length=min_length,
+            max_length=max_length,
+            regex=regex,
+            **extra,
+        )
+
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.default})"
+
+
+class Path(Param):
+    in_ = ParamTypes.path
+
+    def __init__(
+        self,
+        default: Any = Undefined,
+        *,
+        alias: Optional[str] = None,
+        title: Optional[str] = None,
+        description: Optional[str] = None,
+        gt: Optional[float] = None,
+        ge: Optional[float] = None,
+        lt: Optional[float] = None,
+        le: Optional[float] = None,
+        min_length: Optional[int] = None,
+        max_length: Optional[int] = None,
+        regex: Optional[str] = None,
+        example: Any = Undefined,
+        examples: Optional[dict[str, Any]] = None,
+        deprecated: Optional[bool] = None,
+        include_in_schema: bool = True,
+        **extra: Any,
+    ):
+        self.in_ = self.in_
+        super().__init__(
+            default=...,
+            alias=alias,
+            title=title,
+            description=description,
+            gt=gt,
+            ge=ge,
+            lt=lt,
+            le=le,
+            min_length=min_length,
+            max_length=max_length,
+            regex=regex,
+            deprecated=deprecated,
+            example=example,
+            examples=examples,
+            include_in_schema=include_in_schema,
+            **extra,
+        )
