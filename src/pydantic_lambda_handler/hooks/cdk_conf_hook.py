@@ -1,4 +1,3 @@
-import inspect
 from collections import defaultdict
 from pathlib import Path
 from typing import Any
@@ -30,9 +29,7 @@ class CDKConf(BaseHook):
     @classmethod
     def pre_path(cls, **kwargs) -> None:
         func = kwargs["func"]
-        cls._hold_dict[kwargs["url"]][cls._method]["index"] = str(
-            Path(inspect.getfile(func)).relative_to(cls._dir_path)
-        )
+        cls._hold_dict[kwargs["url"]][cls._method]["index"] = str(f'{func.__module__.replace(".", "/")}.py')
         cls._hold_dict[kwargs["url"]][cls._method]["handler"] = func.__name__
         cls._hold_dict[kwargs["url"]][cls._method]["reference"] = f"{func.__module__}.{func.__qualname__}"
         cls._hold_dict[kwargs["url"]][cls._method]["function_name"] = cls._hold_dict[kwargs["url"]][cls._method][
