@@ -244,8 +244,7 @@ class PydanticLambdaHandler:
     def _gen_event_model(event, EventModel):
         path_parameters = event.get("pathParameters", {}) or {}
         query_parameters = event.get("queryStringParameters", {}) or {}
-
-        if event["body"] is not None:
+        if event.get("body") is not None:
             body = loads(event["body"])
         else:
             body = None
