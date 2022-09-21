@@ -20,6 +20,7 @@ dependencies = [
 tests = [
   'pytest',
   'pytest-cov',
+  'pytest-mock',
   'requests',
   "awslambdaric",
   "boto3>=1.20.32",
