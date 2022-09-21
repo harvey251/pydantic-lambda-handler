@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.9 (2022-09-21)
+### Fix
+* Allow "name" not to be set in conf ([#69](https://github.com/harvey251/pydantic-lambda-handler/issues/69)) ([`67bb4e4`](https://github.com/harvey251/pydantic-lambda-handler/commit/67bb4e4a514b0d1ca69bd7b31f978e691ce6f971))
+
 ## v0.8.8 (2022-09-07)
 ### Fix
 * Run checks in ci ([#66](https://github.com/harvey251/pydantic-lambda-handler/issues/66)) ([`17f78c6`](https://github.com/harvey251/pydantic-lambda-handler/commit/17f78c6a986446114ecd44779f0c6c6461273d53))
