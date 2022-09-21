@@ -60,10 +60,11 @@ class CDKConf(BaseHook):
                 if "methods" in i:
                     i["methods"] = sorted(i["methods"], key=lambda x: methods.index(x["method"]))
 
-                if i["name"] in seen:
-                    raise ValueError(f'{i["name"]=}')
+                if "name" in i:
+                    if i["name"] in seen:
+                        raise ValueError(f'{i["name"]=}')
 
-                seen.add(i["name"])
+                    seen.add(i["name"])
 
                 if "resources" in i:
                     sort_recursive(i["resources"])
