@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.10 (2022-09-21)
+### Fix
+* Set event body as optional ([#70](https://github.com/harvey251/pydantic-lambda-handler/issues/70)) ([`7d7ee58`](https://github.com/harvey251/pydantic-lambda-handler/commit/7d7ee58cae07fee08cc2a696a07570f389e649bb))
+
 ## v0.8.9 (2022-09-21)
 ### Fix
 * Allow "name" not to be set in conf ([#69](https://github.com/harvey251/pydantic-lambda-handler/issues/69)) ([`67bb4e4`](https://github.com/harvey251/pydantic-lambda-handler/commit/67bb4e4a514b0d1ca69bd7b31f978e691ce6f971))
