@@ -43,17 +43,16 @@ def hello_handler():
                     "schema": {
                         "type": "bool",
                     },
-                    "default": True,
                 },
             },
         }
     )
 
-    r1 = v.validate_python({"name": "Samuel", "age": 35})
+    r1 = v.validate_python({"name": "Samuel", "age": 35, "is_developer": True})
     assert r1 == {"name": "Samuel", "age": 35, "is_developer": True}
 
     # pydantic-core can also validate JSON directly
-    r2 = v.validate_json('{"name": "Samuel", "age": 35}')
+    r2 = v.validate_json('{"name": "Samuel", "age": 35, "is_developer": true}')
     assert r1 == r2
 
     try:
