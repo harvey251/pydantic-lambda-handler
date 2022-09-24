@@ -42,13 +42,13 @@ class RequestClient:
     def get(self, url, *args, **kwargs):
         try:
             return self._mock_request(url, "get", *args, **kwargs)
-        except:
+        except Exception:
             return Response({"statusCode": 502, "body": json.dumps({"message": "Internal server error"})})
 
     def post(self, url, *args, **kwargs):
         try:
             return self._mock_request(url, "post", *args, **kwargs)
-        except:
+        except Exception:
             return Response({"statusCode": 502, "body": json.dumps({"message": "Internal server error"})})
 
     def _mock_request(self, url, method, *args, **kwargs):
