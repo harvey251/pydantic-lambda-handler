@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.8.11 (2022-09-24)
+### Fix
+* Capture error for mock requests ([#72](https://github.com/harvey251/pydantic-lambda-handler/issues/72)) ([`ca961da`](https://github.com/harvey251/pydantic-lambda-handler/commit/ca961da9f618b537950edab9ec58b3949ce50f3f))
+
 ## v0.8.10 (2022-09-21)
 ### Fix
 * Set event body as optional ([#70](https://github.com/harvey251/pydantic-lambda-handler/issues/70)) ([`7d7ee58`](https://github.com/harvey251/pydantic-lambda-handler/commit/7d7ee58cae07fee08cc2a696a07570f389e649bb))
