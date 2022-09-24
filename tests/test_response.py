@@ -1,4 +1,3 @@
-import pytest
 from demo_app_handlers import create_handler  # type: ignore
 
 
