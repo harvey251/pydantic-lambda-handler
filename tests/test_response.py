@@ -64,10 +64,12 @@ def test_list_response_model(requests_client, base_url):
 
 
 def test_error_much_handler(requests_client, base_url):
-    with pytest.raises(ValueError):
-        requests_client.get(f"{base_url}/error_much")
+    response = requests_client.get(f"{base_url}/error_much")
+    assert response.status_code == 502
+    assert response.json() == {"message": "Internal server error"}
 
 
 def test_error_much_handler_post(requests_client, base_url):
-    with pytest.raises(ValueError):
-        requests_client.post(f"{base_url}/error_much")
+    response = requests_client.post(f"{base_url}/error_much")
+    assert response.status_code == 502
+    assert response.json() == {"message": "Internal server error"}
