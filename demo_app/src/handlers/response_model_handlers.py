@@ -25,4 +25,5 @@ def response_list():
 
 @plh.get("/list_response_model", response_model=ListFunModel)
 def response_list_model():
+    """List models"""
     return [{"item_name": "secret"}]
