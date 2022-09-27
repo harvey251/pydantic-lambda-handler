@@ -60,7 +60,10 @@ class add_path:
 
 def gen_open_api_inspect(dir_path: Path):
     with add_path(dir_path):
-        files = list(dir_path.rglob("*_handlers.py"))
+        files = list(dir_path.glob("**/*handler[s].py"))
+        if t_files := list(dir_path.glob("handlers/**/*.py")):
+            files.extend(t_files)
+
         app_fp = dir_path.joinpath("app.py")
         if app_fp.exists():
             files.insert(0, app_fp)
