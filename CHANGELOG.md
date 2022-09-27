@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.9.0 (2022-09-27)
+### Feature
+* Add handlers folder ([#73](https://github.com/harvey251/pydantic-lambda-handler/issues/73)) ([`e41a6b9`](https://github.com/harvey251/pydantic-lambda-handler/commit/e41a6b9b36c99c147faa1636ef0e9396408b69cf))
+
 ## v0.8.11 (2022-09-24)
 ### Fix
 * Capture error for mock requests ([#72](https://github.com/harvey251/pydantic-lambda-handler/issues/72)) ([`ca961da`](https://github.com/harvey251/pydantic-lambda-handler/commit/ca961da9f618b537950edab9ec58b3949ce50f3f))
