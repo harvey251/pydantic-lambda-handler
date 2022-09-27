@@ -13,3 +13,4 @@ __pycache__/*
 /_site/
 /docs/.jekyll-cache/Jekyll/Cache/Jekyll--Cache/b7/
 /venv/
+/docs/.jekyll-cache/

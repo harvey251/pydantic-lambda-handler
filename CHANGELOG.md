@@ -2,6 +2,22 @@
 
 <!--next-version-placeholder-->
 
+## v0.9.0 (2022-09-27)
+### Feature
+* Add handlers folder ([#73](https://github.com/harvey251/pydantic-lambda-handler/issues/73)) ([`e41a6b9`](https://github.com/harvey251/pydantic-lambda-handler/commit/e41a6b9b36c99c147faa1636ef0e9396408b69cf))
+
+## v0.8.11 (2022-09-24)
+### Fix
+* Capture error for mock requests ([#72](https://github.com/harvey251/pydantic-lambda-handler/issues/72)) ([`ca961da`](https://github.com/harvey251/pydantic-lambda-handler/commit/ca961da9f618b537950edab9ec58b3949ce50f3f))
+
+## v0.8.10 (2022-09-21)
+### Fix
+* Set event body as optional ([#70](https://github.com/harvey251/pydantic-lambda-handler/issues/70)) ([`7d7ee58`](https://github.com/harvey251/pydantic-lambda-handler/commit/7d7ee58cae07fee08cc2a696a07570f389e649bb))
+
+## v0.8.9 (2022-09-21)
+### Fix
+* Allow "name" not to be set in conf ([#69](https://github.com/harvey251/pydantic-lambda-handler/issues/69)) ([`67bb4e4`](https://github.com/harvey251/pydantic-lambda-handler/commit/67bb4e4a514b0d1ca69bd7b31f978e691ce6f971))
+
 ## v0.8.8 (2022-09-07)
 ### Fix
 * Run checks in ci ([#66](https://github.com/harvey251/pydantic-lambda-handler/issues/66)) ([`17f78c6`](https://github.com/harvey251/pydantic-lambda-handler/commit/17f78c6a986446114ecd44779f0c6c6461273d53))

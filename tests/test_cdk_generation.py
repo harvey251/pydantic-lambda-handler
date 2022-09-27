@@ -1,4 +1,4 @@
-from pydantic_lambda_handler.hooks.cdk_conf_hook import add_resource_v2
+from pydantic_lambda_handler.hooks.cdk_conf_hook import CDKConf, add_resource_v2
 
 
 def test_generate_cdk_config(cdk_config):
@@ -22,6 +22,25 @@ def test_generate_cdk_config(cdk_config):
             "status_code": "201",
         },
     ]
+
+
+def test_generate_cdk_config_no_name(mocker):
+    """
+    Bug: if path "/" doesn't exist then a KeyError would occur
+    """
+    hold_dict = {
+        "/query": {
+            "GET": {
+                "function_name": "QuerySkip",
+                "status_code": "200",
+                "index": "subfolder/query_parameters_handlers.py",
+                "handler": "query_skip",
+                "reference": "subfolder.query_parameters_handlers.query_skip",
+            }
+        },
+    }
+    mocker.patch.object(CDKConf, "_hold_dict", return_value=hold_dict)
+    CDKConf.generate()
 
 
 def test_generate_cdk_config_status_code(cdk_config):

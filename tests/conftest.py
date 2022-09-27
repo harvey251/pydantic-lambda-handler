@@ -25,6 +25,14 @@ class Response:
     def json(self):
         return json.loads(self._response["body"])
 
+    @property
+    def text(self):
+        return self._response["body"]
+
+    @property
+    def content(self):
+        return bytes(self._response["body"])
+
 
 class RequestClient:
     def __init__(self):
@@ -32,10 +40,16 @@ class RequestClient:
         self._spec, self._cdk_stuff, self._test = gen_open_api_inspect(path)
 
     def get(self, url, *args, **kwargs):
-        return self._mock_request(url, "get", *args, **kwargs)
+        try:
+            return self._mock_request(url, "get", *args, **kwargs)
+        except Exception:
+            return Response({"statusCode": 502, "body": json.dumps({"message": "Internal server error"})})
 
     def post(self, url, *args, **kwargs):
-        return self._mock_request(url, "post", *args, **kwargs)
+        try:
+            return self._mock_request(url, "post", *args, **kwargs)
+        except Exception:
+            return Response({"statusCode": 502, "body": json.dumps({"message": "Internal server error"})})
 
     def _mock_request(self, url, method, *args, **kwargs):
         event = self.generate_event(kwargs, url)

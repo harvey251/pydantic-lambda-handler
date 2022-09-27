@@ -15,7 +15,7 @@ app = PydanticLambdaHandler(title="PydanticLambdaHandler")
 ```
 {: .language-python}
 
-Then in your file, (file name must end with `_handler.py` or `_handlers.py`
+Then in a file ending with `_handler.py` or `_handlers.py`, or in the folder `handlers` add ...
 
 ```
 app.get("/")

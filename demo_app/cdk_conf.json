@@ -108,9 +108,9 @@
                 "methods": [
                     {
                         "method": "GET",
-                        "index": "subfolder/response_model_handlers.py",
+                        "index": "handlers/response_model_handlers.py",
                         "handler": "response_list",
-                        "reference": "subfolder.response_model_handlers.response_list",
+                        "reference": "handlers.response_model_handlers.response_list",
                         "status_code": "200",
                         "function_name": "ResponseList"
                     }
@@ -121,9 +121,9 @@
                 "methods": [
                     {
                         "method": "GET",
-                        "index": "subfolder/response_model_handlers.py",
+                        "index": "handlers/response_model_handlers.py",
                         "handler": "response_list_model",
-                        "reference": "subfolder.response_model_handlers.response_list_model",
+                        "reference": "handlers.response_model_handlers.response_list_model",
                         "status_code": "200",
                         "function_name": "ResponseListModel"
                     }
@@ -178,9 +178,9 @@
                 "methods": [
                     {
                         "method": "GET",
-                        "index": "subfolder/response_model_handlers.py",
+                        "index": "handlers/response_model_handlers.py",
                         "handler": "response_model",
-                        "reference": "subfolder.response_model_handlers.response_model",
+                        "reference": "handlers.response_model_handlers.response_model",
                         "status_code": "200",
                         "function_name": "ResponseModel"
                     }
