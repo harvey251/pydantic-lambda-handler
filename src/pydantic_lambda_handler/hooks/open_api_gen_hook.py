@@ -144,26 +144,20 @@ class APIGenerationHook(BaseHook):
             path_schema_initial = APIPathModel.schema()
             properties = []
             for name, property_info in path_schema_initial.get("properties", {}).items():
-                #  {"name": "petId", "in": "path", "required": True, "schema": {"type": "string"}}
+                if "$ref" in property_info:
+                    property_info["$ref"] = property_info["$ref"].replace("#/definitions/", "#/components/schemas/")
+                    for key, value in path_schema_initial.get("definitions", {}).items():
+                        cls.schemas[key] = Schema.parse_obj(value)
+
                 if isinstance(param_info.default, Header):
                     if param_info.default.include_in_schema is False:
                         continue
-
-                    if "$ref" in property_info:
-                        property_info["$ref"] = property_info["$ref"].replace("#/definitions/", "#/components/schemas/")
-                        for key, value in path_schema_initial.get("definitions", {}).items():
-                            cls.schemas[key] = Schema.parse_obj(value)
 
                     p = {"name": name, "in": "headers", "schema": property_info}
                     if name in path_schema_initial.get("required", ()):
                         p["required"] = True
                     properties.append(p)
                     continue
-
-                if "$ref" in property_info:
-                    property_info["$ref"] = property_info["$ref"].replace("#/definitions/", "#/components/schemas/")
-                    for key, value in path_schema_initial.get("definitions", {}).items():
-                        cls.schemas[key] = Schema.parse_obj(value)
 
                 in_ = "path" if name in path_parameters else "query"
                 p = {"name": name, "in": in_, "schema": property_info}
