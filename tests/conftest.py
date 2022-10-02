@@ -98,7 +98,12 @@ class RequestClient:
                 break
         else:  # No break
             raise ValueError
-        event = {"body": body, "queryStringParameters": kwargs.get("params", None), "pathParameters": match.groupdict()}
+        event = {
+            "body": body,
+            "queryStringParameters": kwargs.get("params"),
+            "pathParameters": match.groupdict(),
+            "headers": kwargs.get("headers"),
+        }
         return event
 
 

@@ -45,3 +45,9 @@ class ListFunModel(BaseModel):
     __root__: list[FunModel]
 ```
 {: .language-python}
+
+## CLI commands
+
+```commandline
+
+```

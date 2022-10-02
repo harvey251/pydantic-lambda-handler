@@ -5,11 +5,13 @@ from typing import Any
 
 from awslambdaric.lambda_context import LambdaContext
 from openapi_schema_pydantic.v3.v3_0_3 import (
+    Components,
     Info,
     OpenAPI,
     Operation,
     PathItem,
     Response,
+    Schema,
 )
 from openapi_schema_pydantic.v3.v3_0_3.util import (
     PydanticSchema,
@@ -19,6 +21,7 @@ from pydantic import BaseModel, create_model
 
 from pydantic_lambda_handler.main import PydanticLambdaHandler
 from pydantic_lambda_handler.middleware import BaseHook
+from pydantic_lambda_handler.params import Header
 
 
 class APIGenerationHook(BaseHook):
@@ -28,6 +31,7 @@ class APIGenerationHook(BaseHook):
     version: str = "0.0.0"
     paths: dict[str, PathItem] = {}
     method = None
+    schemas: dict[str, Schema] = {}
 
     @classmethod
     def method_init(cls, **kwargs):
@@ -78,7 +82,7 @@ class APIGenerationHook(BaseHook):
             getattr(cls.paths[url], cls.method).operationId = kwargs["operation_id"]
 
     @classmethod
-    def pre_path(cls, **kwargs) -> None:
+    def pre_path(cls, **kwargs) -> None:  # noqa: C901 too complex
         sig = signature(kwargs["func"])
 
         if sig.parameters:
@@ -93,10 +97,16 @@ class APIGenerationHook(BaseHook):
             path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
             path_parameters = set(path_parameters_list)
 
+            headers = {}
+
             if len(path_parameters_list) != len(path_parameters):
                 raise ValueError(f"re-declared path variable: {url}")
 
             for param, param_info in sig.parameters.items():
+                if isinstance(param_info.default, Header):
+                    headers[param] = str, param_info.default
+                    continue
+
                 if issubclass(param_info.annotation, LambdaContext):
                     continue
 
@@ -129,14 +139,28 @@ class APIGenerationHook(BaseHook):
             if path_parameters != set(path_model_dict.keys()):
                 raise ValueError("Missing path parameters")
 
-            APIPathModel = create_model("APIPathModel", **path_model_dict, **query_model_dict)  # type: ignore
+            APIPathModel = create_model("APIPathModel", **path_model_dict, **query_model_dict, **headers)  # type: ignore
 
             path_schema_initial = APIPathModel.schema()
             properties = []
             for name, property_info in path_schema_initial.get("properties", {}).items():
-                #  {"name": "petId", "in": "path", "required": True, "schema": {"type": "string"}}
+                if "$ref" in property_info:
+                    property_info["$ref"] = property_info["$ref"].replace("#/definitions/", "#/components/schemas/")
+                    for key, value in path_schema_initial.get("definitions", {}).items():
+                        cls.schemas[key] = Schema.parse_obj(value)
+
+                if isinstance(param_info.default, Header):
+                    if param_info.default.include_in_schema is False:
+                        continue
+
+                    p = {"name": name, "in": "headers", "schema": property_info}
+                    if name in path_schema_initial.get("required", ()):
+                        p["required"] = True
+                    properties.append(p)
+                    continue
+
                 in_ = "path" if name in path_parameters else "query"
-                p = {"name": name, "in": in_, "schema": {"type": property_info.get("type", "string")}}
+                p = {"name": name, "in": in_, "schema": property_info}
                 if name in path_schema_initial.get("required", ()):
                     p["required"] = True
 
@@ -159,8 +183,7 @@ class APIGenerationHook(BaseHook):
     @classmethod
     def generate(cls):
         open_api = OpenAPI(
-            info=Info(title=cls.title, version=cls.version),
-            paths=cls.paths,
+            info=Info(title=cls.title, version=cls.version), paths=cls.paths, components=Components(schemas=cls.schemas)
         )
         open_api = construct_open_api_with_schema_class(open_api)
 

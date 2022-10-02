@@ -102,7 +102,7 @@
                         "name": "item_id",
                         "in": "path",
                         "schema": {
-                            "type": "string"
+                            "$ref": "#/components/schemas/Animals"
                         },
                         "required": true
                     }
@@ -125,6 +125,7 @@
                         "name": "item_id",
                         "in": "path",
                         "schema": {
+                            "title": "Item Id",
                             "type": "integer"
                         },
                         "required": true
@@ -179,6 +180,7 @@
                         "name": "petId",
                         "in": "path",
                         "schema": {
+                            "title": "Petid",
                             "type": "string"
                         },
                         "required": true
@@ -202,6 +204,8 @@
                         "name": "skip",
                         "in": "query",
                         "schema": {
+                            "title": "Skip",
+                            "default": 0,
                             "type": "integer"
                         }
                     },
@@ -209,6 +213,8 @@
                         "name": "limit",
                         "in": "query",
                         "schema": {
+                            "title": "Limit",
+                            "default": 10,
                             "type": "integer"
                         }
                     }
@@ -231,6 +237,7 @@
                         "name": "secret",
                         "in": "query",
                         "schema": {
+                            "title": "Secret",
                             "type": "string"
                         },
                         "required": true
@@ -254,6 +261,7 @@
                         "name": "secret",
                         "in": "query",
                         "schema": {
+                            "title": "Secret",
                             "type": "string"
                         },
                         "required": true
@@ -286,10 +294,78 @@
                 },
                 "deprecated": false
             }
+        },
+        "/with_headers": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "user_agent",
+                        "in": "headers",
+                        "schema": {
+                            "title": "User Agent",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/with_headers_alias": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "UserId",
+                        "in": "headers",
+                        "schema": {
+                            "title": "Userid",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/with_headers_not_in_schema": {
+            "get": {
+                "parameters": [],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
         }
     },
     "components": {
         "schemas": {
+            "Animals": {
+                "title": "Animals",
+                "enum": [
+                    "dog"
+                ],
+                "type": "string",
+                "description": "An enumeration."
+            },
             "FunModel": {
                 "title": "FunModel",
                 "required": [

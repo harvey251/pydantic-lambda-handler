@@ -50,7 +50,7 @@ def test_generate_open_api_status_code_int(schema):
 def test_generate_open_api_path(schema):
     assert "/pets/{petId}" in schema["paths"]
     assert schema["paths"]["/pets/{petId}"]["get"].get("parameters") == [
-        {"name": "petId", "in": "path", "required": True, "schema": {"type": "string"}}
+        {"name": "petId", "in": "path", "required": True, "schema": {"title": "Petid", "type": "string"}}
     ]
 
 
@@ -61,8 +61,8 @@ def test_generate_open_operation_id(schema):
 def test_query_options(schema):
     assert "/query" in schema["paths"]
     assert schema["paths"]["/query"]["get"].get("parameters") == [
-        {"in": "query", "name": "skip", "schema": {"type": "integer"}},
-        {"in": "query", "name": "limit", "schema": {"type": "integer"}},
+        {"in": "query", "name": "skip", "schema": {"default": 0, "title": "Skip", "type": "integer"}},
+        {"in": "query", "name": "limit", "schema": {"default": 10, "title": "Limit", "type": "integer"}},
     ]
 
 
@@ -81,3 +81,22 @@ def test_response_body(schema):
             "item_value": {"title": "Item Value", "type": "integer"},
         },
     }
+
+
+def test_header_options(schema):
+    assert "/with_headers" in schema["paths"]
+    assert schema["paths"]["/with_headers"]["get"].get("parameters") == [
+        {"in": "headers", "name": "user_agent", "schema": {"title": "User Agent", "type": "string"}}
+    ]
+
+
+def test_header_options_not_in_schema(schema):
+    assert "/with_headers_not_in_schema" in schema["paths"]
+    assert schema["paths"]["/with_headers_not_in_schema"]["get"].get("parameters") == []
+
+
+def test_header_options_uses_alias(schema):
+    assert "/with_headers_alias" in schema["paths"]
+    assert schema["paths"]["/with_headers_alias"]["get"].get("parameters") == [
+        {"in": "headers", "name": "UserId", "schema": {"title": "Userid", "type": "string"}}
+    ]
