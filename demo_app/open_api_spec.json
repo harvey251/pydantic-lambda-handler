@@ -318,6 +318,29 @@
                 "deprecated": false
             }
         },
+        "/with_headers_alias": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "UserId",
+                        "in": "headers",
+                        "schema": {
+                            "title": "Userid",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/with_headers_not_in_schema": {
             "get": {
                 "parameters": [],

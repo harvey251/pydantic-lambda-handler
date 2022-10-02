@@ -213,6 +213,19 @@
                 ]
             },
             {
+                "name": "with_headers_alias",
+                "methods": [
+                    {
+                        "method": "GET",
+                        "index": "subfolder/headers_handlers.py",
+                        "handler": "with_headers_alias",
+                        "reference": "subfolder.headers_handlers.with_headers_alias",
+                        "status_code": "200",
+                        "function_name": "WithHeadersAlias"
+                    }
+                ]
+            },
+            {
                 "name": "with_headers_not_in_schema",
                 "methods": [
                     {

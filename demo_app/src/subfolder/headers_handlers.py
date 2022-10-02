@@ -13,3 +13,8 @@ def with_headers(user_agent: Union[str, None] = Header(default=None)):
 @plh.get("/with_headers_not_in_schema")
 def with_headers_not_in_schema(user_agent: Union[str, None] = Header(default=None, include_in_schema=False)):
     return {"user_agent": user_agent}
+
+
+@plh.get("/with_headers_alias")
+def with_headers_alias(user_agent: Union[str, None] = Header(default=None, alias="UserId")):
+    return {"user_agent": user_agent}

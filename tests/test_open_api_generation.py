@@ -93,3 +93,10 @@ def test_header_options(schema):
 def test_header_options_not_in_schema(schema):
     assert "/with_headers_not_in_schema" in schema["paths"]
     assert schema["paths"]["/with_headers_not_in_schema"]["get"].get("parameters") == []
+
+
+def test_header_options_uses_alias(schema):
+    assert "/with_headers_alias" in schema["paths"]
+    assert schema["paths"]["/with_headers_alias"]["get"].get("parameters") == [
+        {"in": "headers", "name": "UserId", "schema": {"title": "Userid", "type": "string"}}
+    ]

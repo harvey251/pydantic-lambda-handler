@@ -213,7 +213,7 @@ class PydanticLambdaHandler:
 
         for param, param_info in sig.parameters.items():
             if isinstance(param_info.default, Header):
-                headers[param] = param_info.annotation, param_info.default.default
+                headers[param] = param_info.annotation, param_info.default
                 continue
             elif param in path_parameters:
                 if param_info.annotation == param_info.empty:
