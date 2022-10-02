@@ -82,7 +82,7 @@ class APIGenerationHook(BaseHook):
             getattr(cls.paths[url], cls.method).operationId = kwargs["operation_id"]
 
     @classmethod
-    def pre_path(cls, **kwargs) -> None:
+    def pre_path(cls, **kwargs) -> None:  # noqa: C901 too complex
         sig = signature(kwargs["func"])
 
         if sig.parameters:
