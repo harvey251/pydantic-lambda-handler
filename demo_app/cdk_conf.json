@@ -198,6 +198,32 @@
                         "function_name": "HelloTeapot"
                     }
                 ]
+            },
+            {
+                "name": "with_headers",
+                "methods": [
+                    {
+                        "method": "GET",
+                        "index": "subfolder/headers_handlers.py",
+                        "handler": "with_headers",
+                        "reference": "subfolder.headers_handlers.with_headers",
+                        "status_code": "200",
+                        "function_name": "WithHeaders"
+                    }
+                ]
+            },
+            {
+                "name": "with_headers_not_in_schema",
+                "methods": [
+                    {
+                        "method": "GET",
+                        "index": "subfolder/headers_handlers.py",
+                        "handler": "with_headers_not_in_schema",
+                        "reference": "subfolder.headers_handlers.with_headers_not_in_schema",
+                        "status_code": "200",
+                        "function_name": "WithHeadersNotInSchema"
+                    }
+                ]
             }
         ]
     }

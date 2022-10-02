@@ -17,6 +17,7 @@ from pydantic import BaseModel, ValidationError, create_model
 
 from pydantic_lambda_handler.middleware import BaseHook
 from pydantic_lambda_handler.models import BaseOutput
+from pydantic_lambda_handler.params import Header, Param
 
 
 class PydanticLambdaHandler:
@@ -148,12 +149,20 @@ class PydanticLambdaHandler:
                             return loads(response.json())
 
                         # Do something before
-                        func_kwargs = {**event_model.path.dict(), **event_model.query.dict()}
+                        func_kwargs = {
+                            **event_model.path.dict(),
+                            **event_model.query.dict(),
+                            **event_model.headers.dict(),
+                        }
                         if hasattr(event_model, "body"):
                             func_kwargs.update(**{event_model.body._alias: event_model.body})
 
                         if context_name := next(
-                            (i.name for i in iter(sig.parameters.values()) if issubclass(i.annotation, LambdaContext)),
+                            (
+                                i.name
+                                for i in iter(sig.parameters.values())
+                                if isinstance(i.annotation, type) and issubclass(i.annotation, LambdaContext)
+                            ),
                             None,
                         ):
                             func_kwargs[context_name] = context
@@ -195,13 +204,18 @@ class PydanticLambdaHandler:
         body_default = None
         body_model = None
 
+        headers = {}
         path_parameters_list = list(re.findall(r"\{(.*?)\}", url))
         path_parameters = set(path_parameters_list)
         additional_kwargs = {}
         if len(path_parameters_list) != len(path_parameters):
             raise ValueError(f"re-declared path variable: {url}")
+
         for param, param_info in sig.parameters.items():
-            if param in path_parameters:
+            if isinstance(param_info.default, Header):
+                headers[param] = param_info.annotation, param_info.default.default
+                continue
+            elif param in path_parameters:
                 if param_info.annotation == param_info.empty:
                     annotations = str, ...
                 else:
@@ -219,7 +233,9 @@ class PydanticLambdaHandler:
                 path_model_dict[param] = annotations
             else:
                 model, body_default = annotations
-                if issubclass(model, BaseModel):
+                if isinstance(model, Param):
+                    raise NotImplementedError
+                elif issubclass(model, BaseModel):
                     if body_model:
                         raise ValueError("Can only use one Pydantic model for body only")
                     body_model = model
@@ -234,7 +250,8 @@ class PydanticLambdaHandler:
 
         PathModel = create_model("PathModel", **path_model_dict)
         QueryModel = create_model("QueryModel", **query_model_dict)
-        event_models = {"path": (PathModel, {}), "query": (QueryModel, {})}
+        HeaderModel = create_model("HeaderModel", **headers)
+        event_models = {"path": (PathModel, {}), "query": (QueryModel, {}), "headers": (HeaderModel, {})}
         if body_model:
             event_models["body"] = (body_model, body_default)
 
@@ -244,9 +261,7 @@ class PydanticLambdaHandler:
     def _gen_event_model(event, EventModel):
         path_parameters = event.get("pathParameters", {}) or {}
         query_parameters = event.get("queryStringParameters", {}) or {}
-        if event.get("body") is not None:
-            body = loads(event["body"])
-        else:
-            body = None
+        headers = event.get("headers", {}) or {}
+        body = loads(event["body"]) if event.get("body") is not None else None
 
-        return EventModel(path=path_parameters, query=query_parameters, body=body)
+        return EventModel(path=path_parameters, query=query_parameters, body=body, headers=headers)
