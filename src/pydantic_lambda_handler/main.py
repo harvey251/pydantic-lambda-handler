@@ -1,5 +1,5 @@
 """
-The main class which you import and use a decorator.
+The main class which you import and use as a decorator.
 """
 import functools
 import json
