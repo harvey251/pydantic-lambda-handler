@@ -8,7 +8,7 @@ import re
 import sys
 import traceback
 from http import HTTPStatus
-from inspect import signature
+from inspect import isclass, signature
 from typing import Iterable, Optional, Union
 
 from awslambdaric.lambda_context import LambdaContext
@@ -17,7 +17,7 @@ from pydantic import BaseModel, ValidationError, create_model
 
 from pydantic_lambda_handler.middleware import BaseHook
 from pydantic_lambda_handler.models import BaseOutput
-from pydantic_lambda_handler.params import Header, Param
+from pydantic_lambda_handler.params import Header, Param, Query
 
 
 class PydanticLambdaHandler:
@@ -140,7 +140,7 @@ class PydanticLambdaHandler:
 
                     if sig.parameters:
                         try:
-                            event_model = self._gen_event_model(event, EventModel)
+                            event_model = self.parse_event_to_model(event, EventModel)
                         except ValidationError as e:
                             response = BaseOutput(
                                 body=json.dumps({"detail": json.loads(e.json())}),
@@ -215,6 +215,9 @@ class PydanticLambdaHandler:
             if isinstance(param_info.default, Header):
                 headers[param] = param_info.annotation, param_info.default
                 continue
+            elif isinstance(param_info.default, Query):
+                query_model_dict[param] = param_info.annotation, param_info.default
+                continue
             elif param in path_parameters:
                 if param_info.annotation == param_info.empty:
                     annotations = str, ...
@@ -235,12 +238,12 @@ class PydanticLambdaHandler:
                 model, body_default = annotations
                 if isinstance(model, Param):
                     raise NotImplementedError
-                elif issubclass(model, BaseModel):
+                elif isclass(param_info.annotation) and issubclass(model, BaseModel):
                     if body_model:
                         raise ValueError("Can only use one Pydantic model for body only")
                     body_model = model
                     body_model._alias = param
-                elif issubclass(model, LambdaContext):
+                elif isclass(param_info.annotation) and issubclass(model, LambdaContext):
                     additional_kwargs[param] = annotations
                 else:
                     query_model_dict[param] = annotations
@@ -258,9 +261,10 @@ class PydanticLambdaHandler:
         return create_model("EventModel", **event_models)
 
     @staticmethod
-    def _gen_event_model(event, EventModel):
+    def parse_event_to_model(event, EventModel):
         path_parameters = event.get("pathParameters", {}) or {}
-        query_parameters = event.get("queryStringParameters", {}) or {}
+        # query_parameters = event.get("queryStringParameters", {}) or {}
+        query_parameters = event.get("multiValueQueryStringParameters", {}) or {}
         headers = event.get("headers", {}) or {}
         body = loads(event["body"]) if event.get("body") is not None else None
 

@@ -1,3 +1,4 @@
+import inspect
 import json
 import re
 from inspect import signature
@@ -21,7 +22,7 @@ from pydantic import BaseModel, create_model
 
 from pydantic_lambda_handler.main import PydanticLambdaHandler
 from pydantic_lambda_handler.middleware import BaseHook
-from pydantic_lambda_handler.params import Header
+from pydantic_lambda_handler.params import Header, Query
 
 
 class APIGenerationHook(BaseHook):
@@ -104,10 +105,13 @@ class APIGenerationHook(BaseHook):
 
             for param, param_info in sig.parameters.items():
                 if isinstance(param_info.default, Header):
-                    headers[param] = str, param_info.default
+                    headers[param] = param_info.annotation, param_info.default
+                    continue
+                elif isinstance(param_info.default, Query):
+                    query_model_dict[param] = param_info.annotation, param_info.default
                     continue
 
-                if issubclass(param_info.annotation, LambdaContext):
+                if inspect.isclass(param_info.annotation) and issubclass(param_info.annotation, LambdaContext):
                     continue
 
                 if param in path_parameters:
@@ -128,7 +132,7 @@ class APIGenerationHook(BaseHook):
                     path_model_dict[param] = annotations
                 else:
                     model, body_default = annotations
-                    if issubclass(model, BaseModel):
+                    if inspect.isclass(param_info.annotation) and issubclass(model, BaseModel):
                         if body_model:
                             raise ValueError("Can only use one Pydantic model for body only")
                         body_model: BaseModel = model  # type: ignore

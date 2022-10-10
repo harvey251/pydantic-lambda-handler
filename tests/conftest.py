@@ -98,9 +98,23 @@ class RequestClient:
                 break
         else:  # No break
             raise ValueError
+
+        qs_params = {}
+        mult_qs_params = {}
+
+        for key, values in kwargs.get("params", {}).items():
+            if isinstance(values, list):
+                for value in values:
+                    qs_params[key] = value
+                mult_qs_params[key] = values
+            else:
+                qs_params[key] = values
+                mult_qs_params[key] = [values]
+
         event = {
             "body": body,
-            "queryStringParameters": kwargs.get("params"),
+            "queryStringParameters": qs_params or None,
+            "multiValueQueryStringParameters": mult_qs_params or None,
             "pathParameters": match.groupdict(),
             "headers": kwargs.get("headers"),
         }

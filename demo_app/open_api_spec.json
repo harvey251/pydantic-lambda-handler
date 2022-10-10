@@ -230,6 +230,56 @@
                 "deprecated": false
             }
         },
+        "/query_multivalue_param": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "sausages",
+                        "in": "query",
+                        "schema": {
+                            "title": "Sausages",
+                            "type": "array",
+                            "items": {
+                                "type": "integer"
+                            }
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/query_param": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "meat",
+                        "in": "query",
+                        "schema": {
+                            "title": "Meat",
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/query_required": {
             "get": {
                 "parameters": [

@@ -13,4 +13,4 @@ def test_gen_event_model():
         query: dict[str, str]
         body: Optional[dict[str, str]]
 
-    PydanticLambdaHandler._gen_event_model({}, EventModel)
+    PydanticLambdaHandler.parse_event_to_model({}, EventModel)

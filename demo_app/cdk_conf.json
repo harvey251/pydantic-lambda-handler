@@ -161,6 +161,32 @@
                 ]
             },
             {
+                "name": "query_multivalue_param",
+                "methods": [
+                    {
+                        "method": "GET",
+                        "index": "subfolder/query_parameters_handlers.py",
+                        "handler": "query_multi_param",
+                        "reference": "subfolder.query_parameters_handlers.query_multi_param",
+                        "status_code": "200",
+                        "function_name": "QueryMultiParam"
+                    }
+                ]
+            },
+            {
+                "name": "query_param",
+                "methods": [
+                    {
+                        "method": "GET",
+                        "index": "subfolder/query_parameters_handlers.py",
+                        "handler": "query_param",
+                        "reference": "subfolder.query_parameters_handlers.query_param",
+                        "status_code": "200",
+                        "function_name": "QueryParam"
+                    }
+                ]
+            },
+            {
                 "name": "query_required",
                 "methods": [
                     {
