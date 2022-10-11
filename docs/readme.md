@@ -32,6 +32,31 @@ def your_handler():
 
 
 
+## headers parameters
+
+Headers can be added using the Header param
+
+```
+@app.get("/with_headers")
+def with_headers(host: Union[str, None] = Header(default=None, alias="Host")):
+    return {"host": host}
+```
+{: .language-python}
+
+
+## context object
+
+You can access the lambda context using
+```
+from awslambdaric.lambda_context import LambdaContext
+
+@app.get("/context")
+def with_context(lambda_context: LambdaContext):
+    return {"context": lambda_context.get_remaining_time_in_millis()}
+```
+{: .language-python}
+
+
 ## response model
 
 If response model needs to be a list, do need to adjust the model like so
