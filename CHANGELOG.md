@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.10.2 (2022-10-11)
+### Fix
+* Add docs for headers and context ([#77](https://github.com/harvey251/pydantic-lambda-handler/issues/77)) ([`53da543`](https://github.com/harvey251/pydantic-lambda-handler/commit/53da543b59508a3e369d12af08265cda50d61802))
+
 ## v0.10.1 (2022-10-11)
 ### Fix
 * Bug with cdk conf ([#76](https://github.com/harvey251/pydantic-lambda-handler/issues/76)) ([`1c5657b`](https://github.com/harvey251/pydantic-lambda-handler/commit/1c5657baa59ae31a7149bf76d504b11ab0d77e10))
