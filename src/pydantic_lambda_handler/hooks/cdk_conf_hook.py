@@ -110,7 +110,13 @@ def add_resource_v2(child_list: list[dict], url: str, conf):
             child_list.append(child_resource)
             add_resource_v2(resources, remaining, conf)
         else:
-            print()
+            if "resources" in child_resource:
+                resources = child_resource["resources"]
+            else:
+                resources = []
+                child_resource["resources"] = resources
+
+            add_resource_v2(resources, remaining, conf)
     else:
         # add methods
         child_resource = next((i for i in child_list if i.get("name") == name), None)  # type: ignore
