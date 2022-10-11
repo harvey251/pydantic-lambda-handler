@@ -370,3 +370,77 @@ def test_add_resource_deep_plus2_v2():
             ]
         }
     ]
+
+
+def test_add_resource_missing_paths_bug():
+    hold_dict = {
+        "/data/{key}/vector": {
+            "GET": {
+                "function_name": "VectorDataRoutes",
+                "status_code": "200",
+                "index": "handlers/vector_api_handlers.py",
+                "handler": "vector_data_routes",
+                "reference": "handlers.vector_api_handlers.vector_data_routes",
+            }
+        },
+        "/data/{key}/vector/geojson": {
+            "GET": {
+                "function_name": "QueryVectorData",
+                "status_code": "200",
+                "index": "handlers/vector_api_handlers.py",
+                "handler": "query_vector_data",
+                "reference": "handlers.vector_api_handlers.query_vector_data",
+            }
+        },
+    }
+
+    resource = []
+    for url, conf in sorted(hold_dict.items()):
+        add_resource_v2(resource, url, conf)
+
+    response = [
+        {
+            "resources": [
+                {
+                    "name": "data",
+                    "resources": [
+                        {
+                            "name": "{key}",
+                            "resources": [
+                                {
+                                    "methods": [
+                                        {
+                                            "function_name": "VectorDataRoutes",
+                                            "handler": "vector_data_routes",
+                                            "index": "handlers/vector_api_handlers.py",
+                                            "method": "GET",
+                                            "reference": "handlers.vector_api_handlers.vector_data_routes",
+                                            "status_code": "200",
+                                        }
+                                    ],
+                                    "name": "vector",
+                                    "resources": [
+                                        {
+                                            "methods": [
+                                                {
+                                                    "function_name": "QueryVectorData",
+                                                    "handler": "query_vector_data",
+                                                    "index": "handlers/vector_api_handlers.py",
+                                                    "method": "GET",
+                                                    "reference": "handlers.vector_api_handlers.query_vector_data",
+                                                    "status_code": "200",
+                                                }
+                                            ],
+                                            "name": "geojson",
+                                        }
+                                    ],
+                                }
+                            ],
+                        }
+                    ],
+                }
+            ]
+        }
+    ]
+
+    assert resource == response
