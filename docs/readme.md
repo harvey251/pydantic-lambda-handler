@@ -30,7 +30,14 @@ def your_handler():
 
 ## query parameters
 
+query parameters can be single or multivalue
 
+```
+@app.get("/query_multivalue_param")
+def query_multi_param(sausages: Optional[list[int]]):
+    return {"sausages": sausages}
+```
+{: .language-python}
 
 ## headers parameters
 
