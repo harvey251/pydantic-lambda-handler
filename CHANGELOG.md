@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.1 (2022-10-25)
+### Fix
+* Add docs for query headers ([`5d6d741`](https://github.com/harvey251/pydantic-lambda-handler/commit/5d6d7418488d9d576c3c338aedb7c1496b8063df))
+
 ## v0.11.0 (2022-10-25)
 ### Feature
 * Multi Value Query model ([#79](https://github.com/harvey251/pydantic-lambda-handler/issues/79)) ([`44c4920`](https://github.com/harvey251/pydantic-lambda-handler/commit/44c4920c64c5f6dcc5364eeb11bb08f32fcfb5db))
