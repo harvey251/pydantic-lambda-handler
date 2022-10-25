@@ -8,7 +8,7 @@ import re
 import sys
 import traceback
 from http import HTTPStatus
-from inspect import signature
+from inspect import isclass, signature
 from typing import Iterable, Optional, Union
 
 from awslambdaric.lambda_context import LambdaContext
@@ -17,7 +17,7 @@ from pydantic import BaseModel, ValidationError, create_model
 
 from pydantic_lambda_handler.middleware import BaseHook
 from pydantic_lambda_handler.models import BaseOutput
-from pydantic_lambda_handler.params import Header, Param
+from pydantic_lambda_handler.params import Header, Param, Query
 
 
 class PydanticLambdaHandler:
@@ -140,7 +140,7 @@ class PydanticLambdaHandler:
 
                     if sig.parameters:
                         try:
-                            event_model = self._gen_event_model(event, EventModel)
+                            event_model = self.parse_event_to_model(event, EventModel)
                         except ValidationError as e:
                             response = BaseOutput(
                                 body=json.dumps({"detail": json.loads(e.json())}),
@@ -152,6 +152,7 @@ class PydanticLambdaHandler:
                         func_kwargs = {
                             **event_model.path.dict(),
                             **event_model.query.dict(),
+                            **event_model.multiquery.dict(),
                             **event_model.headers.dict(),
                         }
                         if hasattr(event_model, "body"):
@@ -200,6 +201,7 @@ class PydanticLambdaHandler:
     def generate_event_model(url, sig):
         path_model_dict = {}
         query_model_dict = {}
+        multiquery_model_dict = {}
 
         body_default = None
         body_model = None
@@ -214,6 +216,9 @@ class PydanticLambdaHandler:
         for param, param_info in sig.parameters.items():
             if isinstance(param_info.default, Header):
                 headers[param] = param_info.annotation, param_info.default
+                continue
+            elif isinstance(param_info.default, Query):
+                query_model_dict[param] = param_info.annotation, param_info.default
                 continue
             elif param in path_parameters:
                 if param_info.annotation == param_info.empty:
@@ -235,33 +240,49 @@ class PydanticLambdaHandler:
                 model, body_default = annotations
                 if isinstance(model, Param):
                     raise NotImplementedError
-                elif issubclass(model, BaseModel):
+                elif isclass(param_info.annotation) and issubclass(model, BaseModel):
                     if body_model:
                         raise ValueError("Can only use one Pydantic model for body only")
                     body_model = model
                     body_model._alias = param
-                elif issubclass(model, LambdaContext):
+                elif isclass(param_info.annotation) and issubclass(model, LambdaContext):
                     additional_kwargs[param] = annotations
                 else:
-                    query_model_dict[param] = annotations
+                    # FIXME: This will need some refactoring
+                    if not isclass(annotations[0]) or not issubclass(annotations[0], (int, str)):
+                        if annotations[0].__args__[0].__name__ == "list":
+                            multiquery_model_dict[param] = annotations
+                        else:
+                            raise ValueError("Something went wrong")
+                    else:
+                        query_model_dict[param] = annotations
 
         if path_parameters != set(path_model_dict.keys()):
             raise ValueError("Missing path parameters")
 
         PathModel = create_model("PathModel", **path_model_dict)
         QueryModel = create_model("QueryModel", **query_model_dict)
+        MultiValueQueryModel = create_model("MultiValueQueryModel", **multiquery_model_dict)
         HeaderModel = create_model("HeaderModel", **headers)
-        event_models = {"path": (PathModel, {}), "query": (QueryModel, {}), "headers": (HeaderModel, {})}
+        event_models = {
+            "path": (PathModel, {}),
+            "query": (QueryModel, {}),
+            "multiquery": (MultiValueQueryModel, {}),
+            "headers": (HeaderModel, {}),
+        }
         if body_model:
             event_models["body"] = (body_model, body_default)
 
         return create_model("EventModel", **event_models)
 
     @staticmethod
-    def _gen_event_model(event, EventModel):
+    def parse_event_to_model(event, EventModel):
         path_parameters = event.get("pathParameters", {}) or {}
         query_parameters = event.get("queryStringParameters", {}) or {}
+        multiquery_parameters = event.get("multiValueQueryStringParameters", {}) or {}
         headers = event.get("headers", {}) or {}
         body = loads(event["body"]) if event.get("body") is not None else None
 
-        return EventModel(path=path_parameters, query=query_parameters, body=body, headers=headers)
+        return EventModel(
+            path=path_parameters, query=query_parameters, multiquery=multiquery_parameters, body=body, headers=headers
+        )
