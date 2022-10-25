@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.11.0 (2022-10-25)
+### Feature
+* Multi Value Query model ([#79](https://github.com/harvey251/pydantic-lambda-handler/issues/79)) ([`44c4920`](https://github.com/harvey251/pydantic-lambda-handler/commit/44c4920c64c5f6dcc5364eeb11bb08f32fcfb5db))
+
 ## v0.10.2 (2022-10-11)
 ### Fix
 * Add docs for headers and context ([#77](https://github.com/harvey251/pydantic-lambda-handler/issues/77)) ([`53da543`](https://github.com/harvey251/pydantic-lambda-handler/commit/53da543b59508a3e369d12af08265cda50d61802))
