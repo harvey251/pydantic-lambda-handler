@@ -138,7 +138,7 @@ class APIGenerationHook(BaseHook):
                         body_model: BaseModel = model  # type: ignore
                         body_model._alias = param  # type: ignore
                     else:
-                        query_model_dict[param] = annotations
+                        query_model_dict[param] = annotations  # type: ignore
 
             if path_parameters != set(path_model_dict.keys()):
                 raise ValueError("Missing path parameters")
