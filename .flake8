@@ -12,7 +12,18 @@ exclude =
     old,
     build,
     dist,
-    venv
+    venv,
+    docs,
+    .benchmarks,
+    .github,
+    .jekyll-cache,
+    .mypy_cache,
+    .nox,
+    .pytest_cache,
+    _site,
+    demo_app/cdk.out,
+    docs,
+    tests,
 docstring-convention=google
 per-file-ignores =
     # ignore docstrings for tests

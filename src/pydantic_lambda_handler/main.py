@@ -102,7 +102,7 @@ class PydanticLambdaHandler:
             errors,
         )
 
-    def run_method(
+    def run_method(  # noqa: C901 too complex
         self,
         method,
         url,
@@ -175,24 +175,22 @@ class PydanticLambdaHandler:
                             for e_status_code, exceptions in errors:
                                 if isinstance(e, exceptions):
                                     if hasattr(e, "json"):
-                                        response = BaseOutput(
-                                            body=json.dumps({"detail": json.loads(e.json())}),
-                                            status_code=e_status_code,
-                                        )
+                                        body = json.dumps({"detail": json.loads(e.json())})
                                     else:
-                                        response = BaseOutput(
-                                            body=json.dumps(
-                                                {
-                                                    "detail": [
-                                                        {
-                                                            "msg": getattr(e, "msg", str(e)),
-                                                            "type": type(e).__name__,
-                                                        }
-                                                    ]
-                                                }
-                                            ),
-                                            status_code=e_status_code,
+                                        body = json.dumps(
+                                            {
+                                                "detail": [
+                                                    {
+                                                        "msg": getattr(e, "msg", str(e)),
+                                                        "type": type(e).__name__,
+                                                    }
+                                                ]
+                                            }
                                         )
+                                    response = BaseOutput(
+                                        body=body,
+                                        status_code=e_status_code,
+                                    )
                                     return loads(response.json())
                         raise
 
@@ -272,16 +270,13 @@ class PydanticLambdaHandler:
                     body_model._alias = param
                 elif isclass(param_info.annotation) and issubclass(model, LambdaContext):
                     additional_kwargs[param] = annotations
-                else:
-                    # FIXME: This will need some refactoring
-                    if not isclass(annotations[0]) or not issubclass(annotations[0], (int, str)):
-                        if annotations[0].__args__[0].__name__ == "list":
-                            multiquery_model_dict[param] = annotations
-                        else:
-                            raise ValueError("Something went wrong")
-                    else:
-                        query_model_dict[param] = annotations
+                elif isclass(annotations[0]) and issubclass(annotations[0], (int, str)):
+                    query_model_dict[param] = annotations
 
+                elif annotations[0].__args__[0].__name__ == "list":
+                    multiquery_model_dict[param] = annotations
+                else:
+                    raise ValueError("Something went wrong")
         if path_parameters != set(path_model_dict.keys()):
             raise ValueError("Missing path parameters")
 
