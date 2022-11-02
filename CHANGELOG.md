@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.0 (2022-11-02)
+### Feature
+* Add error handling ([#83](https://github.com/harvey251/pydantic-lambda-handler/issues/83)) ([`2aaa550`](https://github.com/harvey251/pydantic-lambda-handler/commit/2aaa55078e78accf9ce27cc6b491bd940013103e))
+
 ## v0.11.1 (2022-10-25)
 ### Fix
 * Add docs for query headers ([`5d6d741`](https://github.com/harvey251/pydantic-lambda-handler/commit/5d6d7418488d9d576c3c338aedb7c1496b8063df))
