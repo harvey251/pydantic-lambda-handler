@@ -25,3 +25,8 @@ def query_multi_param(sausages: Optional[list[int]]):
 @plh.get("/query_required")
 def query_required(secret):
     return {"item_name": secret}
+
+
+@plh.get("/query_float")
+def query_float(item_name: float):
+    return {"item_name": item_name}

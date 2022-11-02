@@ -1,12 +1,14 @@
 """
 The main class which you import and use as a decorator.
 """
+import datetime
 import functools
 import json
 import logging
 import re
 import sys
 import traceback
+from decimal import Decimal
 from http import HTTPStatus
 from inspect import isclass, signature
 from typing import Any, Iterable, Optional, Union
@@ -18,6 +20,8 @@ from pydantic import BaseModel, ValidationError, create_model
 from pydantic_lambda_handler.middleware import BaseHook
 from pydantic_lambda_handler.models import BaseOutput
 from pydantic_lambda_handler.params import Header, Param, Query
+
+JSON_DATA_TYPES = int, str, float, Decimal, bool, datetime.datetime, datetime.date
 
 
 class PydanticLambdaHandler:
@@ -270,9 +274,8 @@ class PydanticLambdaHandler:
                     body_model._alias = param
                 elif isclass(param_info.annotation) and issubclass(model, LambdaContext):
                     additional_kwargs[param] = annotations
-                elif isclass(annotations[0]) and issubclass(annotations[0], (int, str)):
+                elif isclass(annotations[0]) and issubclass(annotations[0], (JSON_DATA_TYPES)):
                     query_model_dict[param] = annotations
-
                 elif annotations[0].__args__[0].__name__ == "list":
                     multiquery_model_dict[param] = annotations
                 else:

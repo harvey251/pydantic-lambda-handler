@@ -28,3 +28,9 @@ def test_query_multivalue_param(requests_client, base_url):
     response = requests_client.get(f"{base_url}/query_multivalue_param", params={"sausages": [5, 6, 7, 8]})
     assert response.status_code == 200, response.json()
     assert response.json() == {"sausages": [5, 6, 7, 8]}
+
+
+def test_query_param_float(requests_client, base_url):
+    response = requests_client.get(f"{base_url}/query_float", params={"item_name": "4"})
+    assert response.status_code == 200, response.json()
+    assert response.json() == {"item_name": 4.0}
