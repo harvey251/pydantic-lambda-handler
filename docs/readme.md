@@ -78,6 +78,20 @@ class ListFunModel(BaseModel):
 ```
 {: .language-python}
 
+## Error handling
+
+```
+@app.get("/error", errors=[(418, ValueError)])
+def error():
+    raise ValueError("nope")
+
+# {
+#    "statusCode": 418,
+#    "body": {"detail": [{"msg": "nope", "type": "ValueError"}]}
+# }
+```
+{: .language-python}
+
 ## CLI commands
 
 ```commandline

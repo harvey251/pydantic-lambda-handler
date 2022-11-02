@@ -102,7 +102,7 @@ def test_header_options_uses_alias(schema):
     ]
 
 
-def test_erros(schema):
+def test_errors(schema):
     assert "/error" in schema["paths"]
     assert schema["paths"]["/error"]["get"]["responses"]["418"] == {
         "content": {"application/json": {}},

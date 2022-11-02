@@ -63,7 +63,6 @@ class APIGenerationHook(BaseHook):
                     description=getattr(error, "description", None) or inspect.getdoc(error),
                     content={"application/json": {}},
                 )
-                print()
         if url in cls.paths:
             setattr(
                 cls.paths[url],
