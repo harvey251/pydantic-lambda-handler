@@ -25,8 +25,14 @@ def your_handler():
 {: .language-python}
 
 ## url parameters
-
-
+url parameters will always be evaluated first, then query parameters.
+For that reason you cannot have a query parameter that matches the path parameter unless you use an alias
+```
+@app.get("/items/{item_id}")
+def handler_with_type_hint(item_id: int):
+    return {"item_id": item_id}
+```
+{: .language-python}
 
 ## query parameters
 
