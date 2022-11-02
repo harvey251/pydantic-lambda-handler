@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.3 (2022-11-02)
+### Fix
+* Add docs for path parameters ([#86](https://github.com/harvey251/pydantic-lambda-handler/issues/86)) ([`90c053e`](https://github.com/harvey251/pydantic-lambda-handler/commit/90c053ee6175299f798deece40767faff5501dc4))
+
 ## v0.12.2 (2022-11-02)
 ### Fix
 * Allow parsing of standard default types ([#85](https://github.com/harvey251/pydantic-lambda-handler/issues/85)) ([`90d12ff`](https://github.com/harvey251/pydantic-lambda-handler/commit/90d12fff7380097c7e0f4ebcc91887f98d294f74))
