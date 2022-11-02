@@ -253,10 +253,10 @@
             "get": {
                 "parameters": [
                     {
-                        "name": "secret",
+                        "name": "item_name",
                         "in": "query",
                         "schema": {
-                            "title": "Secret",
+                            "title": "Item Name",
                             "type": "number"
                         },
                         "required": true
