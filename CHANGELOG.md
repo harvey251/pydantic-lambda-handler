@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.2 (2022-11-02)
+### Fix
+* Allow parsing of standard default types ([#85](https://github.com/harvey251/pydantic-lambda-handler/issues/85)) ([`90d12ff`](https://github.com/harvey251/pydantic-lambda-handler/commit/90d12fff7380097c7e0f4ebcc91887f98d294f74))
+
 ## v0.12.1 (2022-11-02)
 ### Fix
 * Add error handling docs ([#84](https://github.com/harvey251/pydantic-lambda-handler/issues/84)) ([`123c543`](https://github.com/harvey251/pydantic-lambda-handler/commit/123c54325a73f3153973a1ae3d39b871d9ffdbcd))
