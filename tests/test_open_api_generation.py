@@ -100,3 +100,11 @@ def test_header_options_uses_alias(schema):
     assert schema["paths"]["/with_headers_alias"]["get"].get("parameters") == [
         {"in": "headers", "name": "UserId", "schema": {"title": "Userid", "type": "string"}}
     ]
+
+
+def test_erros(schema):
+    assert "/error" in schema["paths"]
+    assert schema["paths"]["/error"]["get"]["responses"]["418"] == {
+        "content": {"application/json": {}},
+        "description": "Inappropriate argument value (of correct type).",
+    }

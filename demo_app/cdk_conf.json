@@ -26,6 +26,19 @@
                 ]
             },
             {
+                "name": "error",
+                "methods": [
+                    {
+                        "method": "GET",
+                        "index": "subfolder/error_handlers.py",
+                        "handler": "error_skip",
+                        "reference": "subfolder.error_handlers.error_skip",
+                        "status_code": "200",
+                        "function_name": "ErrorSkip"
+                    }
+                ]
+            },
+            {
                 "name": "error_much",
                 "methods": [
                     {

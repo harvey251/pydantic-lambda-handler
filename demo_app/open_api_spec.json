@@ -37,6 +37,25 @@
                 "deprecated": false
             }
         },
+        "/error": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "418": {
+                        "description": "Inappropriate argument value (of correct type).",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/error_much": {
             "get": {
                 "responses": {
