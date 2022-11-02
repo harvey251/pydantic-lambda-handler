@@ -51,32 +51,30 @@ class APIGenerationHook(BaseHook):
             schema = {}
 
         url = kwargs["url"]
+        responses = {
+            open_api_status_code: Response(
+                description=kwargs["description"],
+                content={"application/json": schema},
+            )
+        }
+        if kwargs.get("errors"):
+            for e_status_code, error in kwargs["errors"]:
+                responses[int(e_status_code)] = Response(
+                    description=getattr(error, "description", None) or inspect.getdoc(error),
+                    content={"application/json": {}},
+                )
+                print()
         if url in cls.paths:
             setattr(
                 cls.paths[url],
                 cls.method,
-                Operation(
-                    responses={
-                        open_api_status_code: Response(
-                            description=kwargs["description"],
-                            content={"application/json": schema},
-                        )
-                    }
-                ),
+                Operation(responses=responses),
             )
 
         else:
+
             cls.paths[url] = PathItem(
-                **{
-                    cls.method: Operation(
-                        responses={
-                            open_api_status_code: Response(
-                                description=kwargs["description"],
-                                content={"application/json": schema},
-                            )
-                        }
-                    )
-                },
+                **{cls.method: Operation(responses=responses)},
             )
 
         if kwargs["operation_id"]:

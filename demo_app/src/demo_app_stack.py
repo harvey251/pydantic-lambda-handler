@@ -35,6 +35,8 @@ def build_requirements():
             "pip",
             "install",
             f"{root}",
+            "-r",
+            f"{root.joinpath('demo_app/src/requirements.txt')}",
             "--upgrade",
             "--target",
             requirements_dir.joinpath("python"),
