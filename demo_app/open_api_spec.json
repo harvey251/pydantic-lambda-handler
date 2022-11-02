@@ -249,6 +249,30 @@
                 "deprecated": false
             }
         },
+        "/query_float": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "item_name",
+                        "in": "query",
+                        "schema": {
+                            "title": "Item Name",
+                            "type": "number"
+                        },
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/query_multivalue_param": {
             "get": {
                 "parameters": [
