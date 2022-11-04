@@ -143,6 +143,19 @@
                 ]
             },
             {
+                "name": "multiple_errors",
+                "methods": [
+                    {
+                        "method": "GET",
+                        "index": "subfolder/error_handlers.py",
+                        "handler": "error_multiple",
+                        "reference": "subfolder.error_handlers.error_multiple",
+                        "status_code": "200",
+                        "function_name": "ErrorMultiple"
+                    }
+                ]
+            },
+            {
                 "name": "pets",
                 "resources": [
                     {

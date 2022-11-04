@@ -191,6 +191,25 @@
                 "deprecated": false
             }
         },
+        "/multiple_errors": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/pets/{petId}": {
             "get": {
                 "operationId": "Create Pet",
