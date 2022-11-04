@@ -1,6 +1,7 @@
 import inspect
 import json
 import re
+from http import client
 from inspect import signature
 from typing import Any
 
@@ -58,11 +59,17 @@ class APIGenerationHook(BaseHook):
             )
         }
         if kwargs.get("errors"):
-            for e_status_code, error in kwargs["errors"]:
-                responses[int(e_status_code)] = Response(
-                    description=getattr(error, "description", None) or inspect.getdoc(error),
-                    content={"application/json": {}},
-                )
+            for e_status_code, errors in kwargs["errors"]:
+                if inspect.isclass(errors) and issubclass(errors, Exception):
+                    responses[int(e_status_code)] = Response(
+                        description=getattr(errors, "description", None) or inspect.getdoc(errors),
+                        content={"application/json": {}},
+                    )
+                else:
+                    responses[int(e_status_code)] = Response(
+                        description=client.responses[int(e_status_code)],
+                        content={"application/json": {}},
+                    )
         if url in cls.paths:
             setattr(
                 cls.paths[url],
