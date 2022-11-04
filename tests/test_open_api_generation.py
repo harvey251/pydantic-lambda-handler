@@ -1,3 +1,6 @@
+from http import HTTPStatus, client
+
+
 def test_generate_open_api_version(schema):
     assert schema["openapi"] == "3.0.3"
 
@@ -108,3 +111,9 @@ def test_errors(schema):
         "content": {"application/json": {}},
         "description": "Inappropriate argument value (of correct type).",
     }
+
+
+def test_multiple_errors_description(schema):
+    assert "/multiple_errors" in schema["paths"]
+    description = schema["paths"]["/multiple_errors"]["get"]["responses"]["422"]["description"]
+    assert description == client.responses[422]
