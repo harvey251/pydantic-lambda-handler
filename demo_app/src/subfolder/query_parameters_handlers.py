@@ -1,4 +1,6 @@
-from typing import Optional
+from datetime import datetime
+from decimal import Decimal
+from typing import Optional, Union
 
 from handler_app import plh
 
@@ -30,3 +32,10 @@ def query_required(secret):
 @plh.get("/query_float")
 def query_float(item_name: float):
     return {"item_name": item_name}
+
+
+@plh.get("/query_union")
+def query_union(
+    param: Union[Decimal, datetime, None] = None,
+):
+    return {"param": param}

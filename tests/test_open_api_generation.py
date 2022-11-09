@@ -117,3 +117,15 @@ def test_multiple_errors_description(schema):
     assert "/multiple_errors" in schema["paths"]
     description = schema["paths"]["/multiple_errors"]["get"]["responses"]["422"]["description"]
     assert description == client.responses[422]
+
+
+def test_query_union(schema):
+    assert "/query_union" in schema["paths"]
+    parameters = schema["paths"]["/query_union"]["get"]["parameters"]
+    assert parameters == [
+        {
+            "name": "param",
+            "in": "query",
+            "schema": {"title": "Param", "anyOf": [{"type": "number"}, {"type": "string", "format": "date-time"}]},
+        }
+    ]

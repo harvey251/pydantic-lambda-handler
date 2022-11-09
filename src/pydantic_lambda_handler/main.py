@@ -54,12 +54,12 @@ class PydanticLambdaHandler:
         url,
         *,
         status_code: Union[HTTPStatus, int] = HTTPStatus.OK,
-        operation_id: str = None,
+        operation_id: Optional[str] = None,
         description: str = "Successful Response",
         function_name=None,
         response_model=None,
         logger=None,
-        errors: list[tuple[Union[HTTPStatus, int], Any]] = None,
+        errors: Optional[list[tuple[Union[HTTPStatus, int], Any]]] = None,
     ):
         """Expect request with a GET method.
 
@@ -79,7 +79,7 @@ class PydanticLambdaHandler:
         url,
         *,
         status_code: Union[HTTPStatus, int] = HTTPStatus.CREATED,
-        operation_id: str = None,
+        operation_id: Optional[str] = None,
         description: str = "Successful Response",
         function_name=None,
         response_model=None,
@@ -279,7 +279,9 @@ class PydanticLambdaHandler:
                 elif annotations[0].__args__[0].__name__ == "list":
                     multiquery_model_dict[param] = annotations
                 else:
-                    raise ValueError("Something went wrong")
+                    query_model_dict[param] = annotations
+
+                model, body_default = annotations
         if path_parameters != set(path_model_dict.keys()):
             raise ValueError("Missing path parameters")
 
