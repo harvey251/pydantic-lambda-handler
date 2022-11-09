@@ -239,6 +239,19 @@
                 ]
             },
             {
+                "name": "query_union",
+                "methods": [
+                    {
+                        "method": "GET",
+                        "index": "subfolder/query_parameters_handlers.py",
+                        "handler": "query_union",
+                        "reference": "subfolder.query_parameters_handlers.query_union",
+                        "status_code": "200",
+                        "function_name": "QueryUnion"
+                    }
+                ]
+            },
+            {
                 "name": "response_model",
                 "methods": [
                     {

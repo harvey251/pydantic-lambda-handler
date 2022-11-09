@@ -366,6 +366,37 @@
                 "deprecated": false
             }
         },
+        "/query_union": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "param",
+                        "in": "query",
+                        "schema": {
+                            "title": "Param",
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "string",
+                                    "format": "date-time"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/response_model": {
             "get": {
                 "parameters": [

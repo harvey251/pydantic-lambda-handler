@@ -11,7 +11,7 @@ import traceback
 from decimal import Decimal
 from http import HTTPStatus
 from inspect import isclass, signature
-from typing import Any, Iterable, Optional, Union
+from typing import Any, Iterable, Optional, Union, get_args
 
 from awslambdaric.lambda_context import LambdaContext
 from orjson import loads
@@ -279,7 +279,9 @@ class PydanticLambdaHandler:
                 elif annotations[0].__args__[0].__name__ == "list":
                     multiquery_model_dict[param] = annotations
                 else:
-                    raise ValueError("Something went wrong")
+                    query_model_dict[param] = annotations
+
+                model, body_default = annotations
         if path_parameters != set(path_model_dict.keys()):
             raise ValueError("Missing path parameters")
 
