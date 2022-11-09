@@ -36,6 +36,6 @@ def query_float(item_name: float):
 
 @plh.get("/query_union")
 def query_union(
-    param: Union[Decimal, datetime] = None,
+    param: Union[Decimal, datetime, None] = None,
 ):
     return {"param": param}

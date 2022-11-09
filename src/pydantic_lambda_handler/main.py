@@ -11,7 +11,7 @@ import traceback
 from decimal import Decimal
 from http import HTTPStatus
 from inspect import isclass, signature
-from typing import Any, Iterable, Optional, Union, get_args
+from typing import Any, Iterable, Optional, Union
 
 from awslambdaric.lambda_context import LambdaContext
 from orjson import loads
