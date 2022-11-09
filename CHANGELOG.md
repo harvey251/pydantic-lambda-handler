@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.4 (2022-11-09)
+### Fix
+* Add unions ([#91](https://github.com/harvey251/pydantic-lambda-handler/issues/91)) ([`5e0fd90`](https://github.com/harvey251/pydantic-lambda-handler/commit/5e0fd90d51a5fd24bae0342bb1d3374057141200))
+
 ## v0.12.3 (2022-11-02)
 ### Fix
 * Add docs for path parameters ([#86](https://github.com/harvey251/pydantic-lambda-handler/issues/86)) ([`90c053e`](https://github.com/harvey251/pydantic-lambda-handler/commit/90c053ee6175299f798deece40767faff5501dc4))
