@@ -54,12 +54,12 @@ class PydanticLambdaHandler:
         url,
         *,
         status_code: Union[HTTPStatus, int] = HTTPStatus.OK,
-        operation_id: str = None,
+        operation_id: Optional[str] = None,
         description: str = "Successful Response",
         function_name=None,
         response_model=None,
         logger=None,
-        errors: list[tuple[Union[HTTPStatus, int], Any]] = None,
+        errors: Optional[list[tuple[Union[HTTPStatus, int], Any]]] = None,
     ):
         """Expect request with a GET method.
 
@@ -79,7 +79,7 @@ class PydanticLambdaHandler:
         url,
         *,
         status_code: Union[HTTPStatus, int] = HTTPStatus.CREATED,
-        operation_id: str = None,
+        operation_id: Optional[str] = None,
         description: str = "Successful Response",
         function_name=None,
         response_model=None,
