@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.5 (2022-12-06)
+### Fix
+* Add open api spec validation ([#92](https://github.com/harvey251/pydantic-lambda-handler/issues/92)) ([`0f1dc70`](https://github.com/harvey251/pydantic-lambda-handler/commit/0f1dc704f2bd031f19000a46fb4aed54a693786d))
+
 ## v0.12.4 (2022-11-09)
 ### Fix
 * Add unions ([#91](https://github.com/harvey251/pydantic-lambda-handler/issues/91)) ([`5e0fd90`](https://github.com/harvey251/pydantic-lambda-handler/commit/5e0fd90d51a5fd24bae0342bb1d3374057141200))
