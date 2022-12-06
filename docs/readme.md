@@ -5,6 +5,8 @@ So same familiar interface as FastAPI, where it makes sense, for aws lambda.
 
 The outputs an open api spec as well as a cdk conf which can be used to generate aws gateway and lambdas.
 
+The open api spec is generated and validated using openapi-spec-validator, but this is still in an alpha phase so please let me know if you have any problems.
+
 ## Basic usage
 
 handler_app.py
