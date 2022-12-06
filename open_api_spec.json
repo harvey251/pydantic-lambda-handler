@@ -37,6 +37,25 @@
                 "deprecated": false
             }
         },
+        "/error": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "418": {
+                        "description": "Inappropriate argument value (of correct type).",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/error_much": {
             "get": {
                 "responses": {
@@ -172,6 +191,25 @@
                 "deprecated": false
             }
         },
+        "/multiple_errors": {
+            "get": {
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    },
+                    "422": {
+                        "description": "Unprocessable Entity",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/pets/{petId}": {
             "get": {
                 "operationId": "Create Pet",
@@ -217,6 +255,30 @@
                             "default": 10,
                             "type": "integer"
                         }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
+        "/query_float": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "item_name",
+                        "in": "query",
+                        "schema": {
+                            "title": "Item Name",
+                            "type": "number"
+                        },
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -304,6 +366,37 @@
                 "deprecated": false
             }
         },
+        "/query_union": {
+            "get": {
+                "parameters": [
+                    {
+                        "name": "param",
+                        "in": "query",
+                        "schema": {
+                            "title": "Param",
+                            "anyOf": [
+                                {
+                                    "type": "number"
+                                },
+                                {
+                                    "type": "string",
+                                    "format": "date-time"
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful Response",
+                        "content": {
+                            "application/json": {}
+                        }
+                    }
+                },
+                "deprecated": false
+            }
+        },
         "/response_model": {
             "get": {
                 "parameters": [
@@ -350,7 +443,7 @@
                 "parameters": [
                     {
                         "name": "user_agent",
-                        "in": "headers",
+                        "in": "header",
                         "schema": {
                             "title": "User Agent",
                             "type": "string"
@@ -373,7 +466,7 @@
                 "parameters": [
                     {
                         "name": "UserId",
-                        "in": "headers",
+                        "in": "header",
                         "schema": {
                             "title": "Userid",
                             "type": "string"
