@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.6 (2022-12-06)
+### Fix
+* Add info about openapi-spec-validator to docs ([#93](https://github.com/harvey251/pydantic-lambda-handler/issues/93)) ([`bbbbe11`](https://github.com/harvey251/pydantic-lambda-handler/commit/bbbbe11047a8c98a280633d785754f9be53c74a6))
+
 ## v0.12.5 (2022-12-06)
 ### Fix
 * Add open api spec validation ([#92](https://github.com/harvey251/pydantic-lambda-handler/issues/92)) ([`0f1dc70`](https://github.com/harvey251/pydantic-lambda-handler/commit/0f1dc704f2bd031f19000a46fb4aed54a693786d))
