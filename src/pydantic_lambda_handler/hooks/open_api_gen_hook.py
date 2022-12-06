@@ -157,11 +157,15 @@ class APIGenerationHook(BaseHook):
                     for key, value in path_schema_initial.get("definitions", {}).items():
                         cls.schemas[key] = Schema.parse_obj(value)
 
-                if isinstance(param_info.default, Header):
-                    if param_info.default.include_in_schema is False:
+                # FIXME: This is ugly, please refactor
+                alias_header = next((h for _, h in headers.values() if h.alias == name), None)
+                if name in headers or alias_header:
+                    if (name in headers and headers[name][1].include_in_schema is False) or (
+                        alias_header and alias_header.include_in_schema is False
+                    ):
                         continue
 
-                    p = {"name": name, "in": "headers", "schema": property_info}
+                    p = {"name": name, "in": "header", "schema": property_info}
                     if name in path_schema_initial.get("required", ()):
                         p["required"] = True
                     properties.append(p)

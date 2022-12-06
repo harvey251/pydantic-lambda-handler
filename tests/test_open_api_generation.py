@@ -1,8 +1,46 @@
-from http import HTTPStatus, client
+import json
+from http import client
+
+from openapi_spec_validator import validate_spec
+
+from pydantic_lambda_handler.hooks.open_api_gen_hook import APIGenerationHook
+from pydantic_lambda_handler.main import PydanticLambdaHandler
+from pydantic_lambda_handler.params import Header
 
 
 def test_generate_open_api_version(schema):
     assert schema["openapi"] == "3.0.3"
+
+
+def test_valid_open_api_spc(schema):
+    validate_spec(schema)
+
+
+def test_valid_open_api_spc_missing_key():
+    app = PydanticLambdaHandler(title="PydanticLambdaHandler")
+    app.add_hook(APIGenerationHook)
+
+    @app.get("/sources/{key}/data")
+    def data_links(key: str):
+        return {"key": key}
+
+    schema = next(h for h in app._hooks if issubclass(h, APIGenerationHook)).generate()  # type: ignore
+    schema = json.loads(schema)
+    validate_spec(schema)
+
+
+def test_valid_open_api_spc_missing_key_with_header():
+    app = PydanticLambdaHandler(title="PydanticLambdaHandler")
+    app.add_hook(APIGenerationHook)
+    header_host = Header("", alias="Host", include_in_schema=False)
+
+    @app.get("/sources/{key}/data")
+    def data_links(key: str, host: str = header_host):
+        return {"key": key}
+
+    schema = next(h for h in app._hooks if issubclass(h, APIGenerationHook)).generate()  # type: ignore
+    schema = json.loads(schema)
+    validate_spec(schema)
 
 
 def test_generate_open_api_info(schema):
@@ -89,7 +127,7 @@ def test_response_body(schema):
 def test_header_options(schema):
     assert "/with_headers" in schema["paths"]
     assert schema["paths"]["/with_headers"]["get"].get("parameters") == [
-        {"in": "headers", "name": "user_agent", "schema": {"title": "User Agent", "type": "string"}}
+        {"in": "header", "name": "user_agent", "schema": {"title": "User Agent", "type": "string"}}
     ]
 
 
@@ -101,7 +139,7 @@ def test_header_options_not_in_schema(schema):
 def test_header_options_uses_alias(schema):
     assert "/with_headers_alias" in schema["paths"]
     assert schema["paths"]["/with_headers_alias"]["get"].get("parameters") == [
-        {"in": "headers", "name": "UserId", "schema": {"title": "Userid", "type": "string"}}
+        {"in": "header", "name": "UserId", "schema": {"title": "Userid", "type": "string"}}
     ]
 
 
