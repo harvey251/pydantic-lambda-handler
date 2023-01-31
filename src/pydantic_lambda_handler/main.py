@@ -29,7 +29,7 @@ class PydanticLambdaHandler:
     The decorator handle.
     """
 
-    _hooks: list[type[BaseHook]] = []
+    hooks: Iterable[type[BaseHook]] = []
 
     def __init__(
         self,
@@ -41,9 +41,13 @@ class PydanticLambdaHandler:
     ):
         self.title = title
         self.version = version
-        if hooks:
-            PydanticLambdaHandler._hooks.extend(hooks)
+        self.hooks = hooks or ()
         self.logger = logger or logging.getLogger(__name__)
+
+    def __dir__(self):
+        res = dir(type(self)) + list(self.__dict__.keys())
+        res.extend(["dynamic1", "dynamic2"])
+        return res
 
     @classmethod
     def add_hook(cls, hook: type[BaseHook]):
