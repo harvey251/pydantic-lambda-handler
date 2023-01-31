@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.12.7 (2023-01-31)
+### Fix
+* Add pre return hook ([#94](https://github.com/harvey251/pydantic-lambda-handler/issues/94)) ([`19f889c`](https://github.com/harvey251/pydantic-lambda-handler/commit/19f889cd5a1623ab6a103a43e36c857eeac46194))
+
 ## v0.12.6 (2022-12-06)
 ### Fix
 * Add info about openapi-spec-validator to docs ([#93](https://github.com/harvey251/pydantic-lambda-handler/issues/93)) ([`bbbbe11`](https://github.com/harvey251/pydantic-lambda-handler/commit/bbbbe11047a8c98a280633d785754f9be53c74a6))
