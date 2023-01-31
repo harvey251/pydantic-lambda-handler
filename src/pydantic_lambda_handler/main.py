@@ -209,6 +209,9 @@ class PydanticLambdaHandler:
                     else:
                         base_output = BaseOutput(body=json.dumps(body), status_code=status_code)
 
+                    for hook in self._hooks:
+                        body = hook.pre_return(base_output)
+
                     response = loads(base_output.json())
                 except Exception as error:
                     traceback.print_exc(file=sys.stdout)
