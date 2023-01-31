@@ -2,6 +2,8 @@ from typing import Any
 
 from awslambdaric.lambda_context import LambdaContext
 
+from pydantic_lambda_handler.models import BaseOutput
+
 
 class BaseHook:
     @staticmethod
@@ -13,6 +15,10 @@ class BaseHook:
         return
 
     @staticmethod
+    def post_create_response(**kwargs) -> None:
+        return
+
+    @staticmethod
     def pre_func(event, context) -> tuple[dict, LambdaContext]:
         return event, context
 
@@ -21,5 +27,5 @@ class BaseHook:
         return body
 
     @staticmethod
-    def post_create_response(**kwargs) -> None:
-        return
+    def pre_return(output: BaseOutput) -> BaseOutput:
+        return output
