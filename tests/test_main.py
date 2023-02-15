@@ -14,3 +14,17 @@ def test_gen_event_model():
         body: Optional[dict[str, str]]
 
     PydanticLambdaHandler.parse_event_to_model({}, EventModel)
+
+
+def test_base_url():
+    url = PydanticLambdaHandler._generate_base_url(
+        {
+            "path": f"/resource/123/data",
+            "requestContext": {
+                "path": "/StageName/resource/123/data",
+                "domainName": "test.example.com",
+            },
+        }
+    )
+
+    assert url == "https://test.example.com/StageName"
