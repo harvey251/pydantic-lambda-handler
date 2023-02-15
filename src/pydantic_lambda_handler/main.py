@@ -8,10 +8,11 @@ import logging
 import re
 import sys
 import traceback
+from collections.abc import Iterable
 from decimal import Decimal
 from http import HTTPStatus
 from inspect import isclass, signature
-from typing import Any, Iterable, Optional, Union
+from typing import Any, Optional, Union
 
 from awslambdaric.lambda_context import LambdaContext
 from orjson import loads
@@ -132,6 +133,8 @@ class PydanticLambdaHandler:
             @functools.wraps(func)
             def wrapper_decorator(event, context: LambdaContext):
                 try:
+                    self.base_url = self._generate_base_url(event)
+
                     for hook in self._hooks:
                         event, context = hook.pre_func(event, context)
 
@@ -314,3 +317,10 @@ class PydanticLambdaHandler:
         return EventModel(
             path=path_parameters, query=query_parameters, multiquery=multiquery_parameters, body=body, headers=headers
         )
+
+    @staticmethod
+    def _generate_base_url(event):
+        """Returns the base url, including stage name"""
+        path_prefix = event.get("requestContext", {}).get("path", "")[: -len(event.get("path", ""))].rstrip("/")
+        domain = event.get("requestContext", {}).get("domainName", "")
+        return f"https://{domain}{path_prefix}"

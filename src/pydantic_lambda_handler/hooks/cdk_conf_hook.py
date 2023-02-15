@@ -46,7 +46,6 @@ class CDKConf(BaseHook):
 
     @classmethod
     def generate(cls):
-
         methods = ("GET", "POST")
 
         resource = []
