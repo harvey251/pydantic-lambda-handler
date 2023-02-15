@@ -78,7 +78,6 @@ class APIGenerationHook(BaseHook):
             )
 
         else:
-
             cls.paths[url] = PathItem(
                 **{cls.method: Operation(responses=responses)},
             )
@@ -91,7 +90,6 @@ class APIGenerationHook(BaseHook):
         sig = signature(kwargs["func"])
 
         if sig.parameters:
-
             url = kwargs["url"]
 
             path_model_dict = {}

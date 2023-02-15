@@ -36,7 +36,6 @@ def test_path_parameters_with_typehint_typeerror(requests_client, base_url):
 
 
 def test_path_parameters_with_path_default():
-
     # Fix me should only error on run otherwise we block
     # all the other handlers
     with pytest.raises(Exception):

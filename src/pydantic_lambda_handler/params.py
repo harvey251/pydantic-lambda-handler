@@ -1,5 +1,6 @@
+from collections.abc import Sequence
 from enum import Enum
-from typing import Any, Callable, Optional, Sequence
+from typing import Any, Callable, Optional
 
 from pydantic.fields import FieldInfo, Undefined
 
