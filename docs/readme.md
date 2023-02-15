@@ -100,8 +100,14 @@ def error():
 ```
 {: .language-python}
 
-## CLI commands
+## Base Url
+
+To get the base url of your lambda function
 
 ```commandline
-
+@app.get("/base_url")
+def error():
+    app.base_url
 ```
+
+The base url will include the stage name
