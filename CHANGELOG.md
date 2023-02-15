@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.0 (2023-02-15)
+### Feature
+* Add the base url ([#96](https://github.com/harvey251/pydantic-lambda-handler/issues/96)) ([`ee7fc60`](https://github.com/harvey251/pydantic-lambda-handler/commit/ee7fc6081016a86419ec54ea4f72353aee011c2d))
+
 ## v0.12.8 (2023-01-31)
 ### Fix
 * Add strings for ordering the hooks ([#95](https://github.com/harvey251/pydantic-lambda-handler/issues/95)) ([`e5f5c12`](https://github.com/harvey251/pydantic-lambda-handler/commit/e5f5c12a26454e1779c5ba1ee03bc9f042d40eff))
