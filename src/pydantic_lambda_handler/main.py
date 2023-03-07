@@ -153,7 +153,7 @@ class PydanticLambdaHandler:
                                 is_base_64_encoded=False,
                             )
                             return loads(response.json())
-                        except JSONDecodeError as e:
+                        except JSONDecodeError:
                             response = BaseOutput(
                                 body=json.dumps({"detail": "JSONDecodeError"}),
                                 status_code=HTTPStatus.BAD_REQUEST,
