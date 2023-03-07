@@ -150,6 +150,7 @@ class PydanticLambdaHandler:
                             response = BaseOutput(
                                 body=json.dumps({"detail": json.loads(e.json())}),
                                 status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
+                                is_base_64_encoded=False,
                             )
                             return loads(response.json())
 
@@ -195,8 +196,7 @@ class PydanticLambdaHandler:
                                             }
                                         )
                                     response = BaseOutput(
-                                        body=body,
-                                        status_code=e_status_code,
+                                        body=body, status_code=e_status_code, is_base_64_encoded=False
                                     )
                                     return loads(response.json())
                         raise
@@ -208,9 +208,11 @@ class PydanticLambdaHandler:
                         body = response_model.parse_obj(body)
 
                     if hasattr(body, "json"):
-                        base_output = BaseOutput(body=body.json(), status_code=status_code)
+                        base_output = BaseOutput(body=body.json(), status_code=status_code, is_base_64_encoded=False)
                     else:
-                        base_output = BaseOutput(body=json.dumps(body), status_code=status_code)
+                        base_output = BaseOutput(
+                            body=json.dumps(body), status_code=status_code, is_base_64_encoded=False
+                        )
 
                     for hook in self._hooks:
                         body = hook.pre_return(base_output)
@@ -312,8 +314,7 @@ class PydanticLambdaHandler:
         query_parameters = event.get("queryStringParameters", {}) or {}
         multiquery_parameters = event.get("multiValueQueryStringParameters", {}) or {}
         headers = event.get("headers", {}) or {}
-        body = loads(event["body"]) if event.get("body") is not None else None
-
+        body = loads(event["body"]) if event.get("body") else None
         return EventModel(
             path=path_parameters, query=query_parameters, multiquery=multiquery_parameters, body=body, headers=headers
         )

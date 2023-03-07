@@ -35,6 +35,20 @@ def test_post_invalid_body(requests_client, base_url):
     }
 
 
+def test_post_invalid_empty_json(requests_client, base_url):
+    """
+    test that the message is returned to the body
+    """
+    response = requests_client.post(f"{base_url}/hello", json="")
+    assert response.status_code == 422
+    assert response.json() == {
+        "detail": [
+            {"loc": ["body", "name"], "msg": "field required", "type": "value_error.missing"},
+            {"loc": ["body", "price"], "msg": "field required", "type": "value_error.missing"},
+        ]
+    }
+
+
 def test_inv(mock_lambda_context):
     event = {
         "resource": "/hello",
