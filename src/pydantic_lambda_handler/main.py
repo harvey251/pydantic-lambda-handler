@@ -312,8 +312,7 @@ class PydanticLambdaHandler:
         query_parameters = event.get("queryStringParameters", {}) or {}
         multiquery_parameters = event.get("multiValueQueryStringParameters", {}) or {}
         headers = event.get("headers", {}) or {}
-        body = loads(event["body"]) if event.get("body") is not None else None
-
+        body = loads(event["body"]) if event.get("body") else None
         return EventModel(
             path=path_parameters, query=query_parameters, multiquery=multiquery_parameters, body=body, headers=headers
         )
