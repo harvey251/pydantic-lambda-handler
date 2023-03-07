@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.2 (2023-03-07)
+### Fix
+* Handle jsondecode error ([#100](https://github.com/harvey251/pydantic-lambda-handler/issues/100)) ([`00044de`](https://github.com/harvey251/pydantic-lambda-handler/commit/00044de03f88b4087816ce65cf55b3da561314fa))
+
 ## v0.13.1 (2023-03-07)
 ### Fix
 * Avoid json decode error if no body, ([#98](https://github.com/harvey251/pydantic-lambda-handler/issues/98)) ([`99cf781`](https://github.com/harvey251/pydantic-lambda-handler/commit/99cf7812d6ded98fb41472e8b397b8f5e0c8f9eb))
