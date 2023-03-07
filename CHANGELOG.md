@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.13.1 (2023-03-07)
+### Fix
+* Avoid json decode error if no body, ([#98](https://github.com/harvey251/pydantic-lambda-handler/issues/98)) ([`99cf781`](https://github.com/harvey251/pydantic-lambda-handler/commit/99cf7812d6ded98fb41472e8b397b8f5e0c8f9eb))
+
 ## v0.13.0 (2023-02-15)
 ### Feature
 * Add the base url ([#96](https://github.com/harvey251/pydantic-lambda-handler/issues/96)) ([`ee7fc60`](https://github.com/harvey251/pydantic-lambda-handler/commit/ee7fc6081016a86419ec54ea4f72353aee011c2d))
