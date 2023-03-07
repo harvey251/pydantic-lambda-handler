@@ -111,3 +111,8 @@ def error():
 ```
 
 The base url will include the stage name
+
+# Hooks
+
+There is a hook class `BaseHook` which allows you to extend the functionality of
+the api.
