@@ -15,7 +15,7 @@ from inspect import isclass, signature
 from typing import Any, Optional, Union
 
 from awslambdaric.lambda_context import LambdaContext
-from orjson import loads
+from orjson import JSONDecodeError, loads
 from pydantic import BaseModel, ValidationError, create_model
 
 from pydantic_lambda_handler.middleware import BaseHook
@@ -150,6 +150,13 @@ class PydanticLambdaHandler:
                             response = BaseOutput(
                                 body=json.dumps({"detail": json.loads(e.json())}),
                                 status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
+                                is_base_64_encoded=False,
+                            )
+                            return loads(response.json())
+                        except JSONDecodeError as e:
+                            response = BaseOutput(
+                                body=json.dumps({"detail": "JSONDecodeError"}),
+                                status_code=HTTPStatus.BAD_REQUEST,
                                 is_base_64_encoded=False,
                             )
                             return loads(response.json())

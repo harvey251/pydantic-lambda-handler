@@ -1,3 +1,5 @@
+import json
+
 from demo_app_handlers import create_handler  # type: ignore
 
 
@@ -47,6 +49,15 @@ def test_post_invalid_empty_json(requests_client, base_url):
             {"loc": ["body", "price"], "msg": "field required", "type": "value_error.missing"},
         ]
     }
+
+
+def test_post_invalid_json(requests_client, base_url):
+    """
+    test that the message is returned to the body
+    """
+    response = create_handler({"path": f"{base_url}/hello", "body": "{"}, None)
+    assert response["statusCode"] == 400
+    assert json.loads(response["body"]) == {"detail": "JSONDecodeError"}
 
 
 def test_inv(mock_lambda_context):
