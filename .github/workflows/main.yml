@@ -41,7 +41,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Mypy
         run: |
-          pip install -r tests/requirements.txt
+          pip install '.[tests]'
           pip install mypy
           pip install types-requests
           mypy src
