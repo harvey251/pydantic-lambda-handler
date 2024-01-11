@@ -152,14 +152,14 @@ class PydanticLambdaHandler:
                                 status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
                                 is_base_64_encoded=False,
                             )
-                            return loads(response.json())
+                            return response.model_dump(mode="json")
                         except JSONDecodeError:
                             response = BaseOutput(
                                 body=json.dumps({"detail": "JSONDecodeError"}),
                                 status_code=HTTPStatus.BAD_REQUEST,
                                 is_base_64_encoded=False,
                             )
-                            return loads(response.json())
+                            return response.model_dump(mode="json")
 
                         # Do something before
                         func_kwargs = {
@@ -205,14 +205,14 @@ class PydanticLambdaHandler:
                                     response = BaseOutput(
                                         body=body, status_code=e_status_code, is_base_64_encoded=False
                                     )
-                                    return loads(response.json())
+                                    return response.model_dump(mode="json")
                         raise
 
                     for hook in reversed(self._hooks):
                         body = hook.post_func(body)
 
-                    if response_model:
-                        body = response_model.parse_obj(body)
+                    if response_model and not isinstance(body, response_model):
+                        body = response_model.model_validate(body, from_attributes=True)
 
                     if hasattr(body, "json"):
                         base_output = BaseOutput(body=body.json(), status_code=status_code, is_base_64_encoded=False)
@@ -222,9 +222,9 @@ class PydanticLambdaHandler:
                         )
 
                     for hook in self._hooks:
-                        body = hook.pre_return(base_output)
+                        hook.pre_return(base_output)
 
-                    response = loads(base_output.json())
+                    response = base_output.model_dump(mode="json")  # type: ignore
                 except Exception as error:
                     traceback.print_exc(file=sys.stdout)
                     self.logger.error(f"{type(error).__name__}: {error}")

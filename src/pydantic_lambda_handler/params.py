@@ -2,7 +2,9 @@ from collections.abc import Sequence
 from enum import Enum
 from typing import Any, Callable, Optional
 
-from pydantic.fields import FieldInfo, Undefined
+from pydantic.fields import FieldInfo
+
+Undefined = ...
 
 
 class ParamTypes(Enum):
@@ -37,9 +39,9 @@ class Param(FieldInfo):
     ):
         self.deprecated = deprecated
         self.example = example
-        self.examples = examples
+        self.examples = examples  # type: ignore
         self.include_in_schema = include_in_schema
-        super().__init__(
+        super().__init__(  # type: ignore
             default=default,
             alias=alias,
             title=title,
@@ -257,8 +259,8 @@ class Body(FieldInfo):
         self.embed = embed
         self.media_type = media_type
         self.example = example
-        self.examples = examples
-        super().__init__(
+        self.examples = examples  # type: ignore
+        super().__init__(  # type: ignore
             default=default,
             alias=alias,
             title=title,

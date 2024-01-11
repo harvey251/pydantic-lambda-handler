@@ -6,7 +6,7 @@ from inspect import signature
 from typing import Any
 
 from awslambdaric.lambda_context import LambdaContext
-from openapi_schema_pydantic.v3.v3_0_3 import (
+from openapi_pydantic import (
     Components,
     Info,
     OpenAPI,
@@ -15,10 +15,7 @@ from openapi_schema_pydantic.v3.v3_0_3 import (
     Response,
     Schema,
 )
-from openapi_schema_pydantic.v3.v3_0_3.util import (
-    PydanticSchema,
-    construct_open_api_with_schema_class,
-)
+from openapi_pydantic.util import PydanticSchema, construct_open_api_with_schema_class
 from pydantic import BaseModel, create_model
 
 from pydantic_lambda_handler.main import PydanticLambdaHandler
@@ -61,12 +58,12 @@ class APIGenerationHook(BaseHook):
         if kwargs.get("errors"):
             for e_status_code, errors in kwargs["errors"]:
                 if inspect.isclass(errors) and issubclass(errors, Exception):
-                    responses[int(e_status_code)] = Response(
+                    responses[str(int(e_status_code))] = Response(
                         description=getattr(errors, "description", None) or inspect.getdoc(errors),
                         content={"application/json": {}},
                     )
                 else:
-                    responses[int(e_status_code)] = Response(
+                    responses[str(int(e_status_code))] = Response(
                         description=client.responses[int(e_status_code)],
                         content={"application/json": {}},
                     )
