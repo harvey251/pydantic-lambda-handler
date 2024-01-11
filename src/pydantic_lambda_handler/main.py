@@ -15,6 +15,7 @@ from inspect import isclass, signature
 from typing import Any, Optional, Union
 
 from awslambdaric.lambda_context import LambdaContext
+from orjson import loads
 from pydantic import BaseModel, ValidationError, create_model
 
 from pydantic_lambda_handler.middleware import BaseHook
@@ -214,9 +215,9 @@ class PydanticLambdaHandler:
                         )
 
                     for hook in self._hooks:
-                        body = hook.pre_return(base_output)
+                        hook.pre_return(base_output)
 
-                    response = base_output.model_dump(mode="json")
+                    response = base_output.model_dump(mode="json")  # type: ignore
                 except Exception as error:
                     traceback.print_exc(file=sys.stdout)
                     self.logger.error(f"{type(error).__name__}: {error}")

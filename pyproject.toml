@@ -12,7 +12,8 @@ dynamic = ["version", "description"]
 
 dependencies = [
     "pydantic>=2.0.0",
-    "openapi-pydantic"
+    "openapi-pydantic",
+    "orjson>=3.7.5",
 ]
 
 [project.optional-dependencies]
