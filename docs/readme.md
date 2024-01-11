@@ -76,13 +76,10 @@ def with_context(lambda_context: LambdaContext):
 
 If response model needs to be a list, do need to adjust the model like so
 
+https://docs.pydantic.dev/latest/concepts/models/#rootmodel-and-custom-root-types
 ```
-class FunModel(BaseModel):
-    item_name: str
-    item_value: Optional[int]
-
-class ListFunModel(BaseModel):
-    __root__: list[FunModel]
+class ListFunModel(RootModel):
+    root: list[FunModel]
 ```
 {: .language-python}
 

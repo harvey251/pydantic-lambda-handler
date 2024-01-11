@@ -2,7 +2,9 @@ from collections.abc import Sequence
 from enum import Enum
 from typing import Any, Callable, Optional
 
-from pydantic.fields import FieldInfo, Undefined
+from pydantic.fields import FieldInfo
+
+Undefined = ...
 
 
 class ParamTypes(Enum):

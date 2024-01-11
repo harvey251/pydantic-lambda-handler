@@ -1,7 +1,7 @@
 from typing import Optional
 
 from handler_app import plh
-from pydantic import BaseModel
+from pydantic import BaseModel, RootModel
 
 
 class FunModel(BaseModel):
@@ -9,8 +9,14 @@ class FunModel(BaseModel):
     item_value: Optional[int]
 
 
-class ListFunModel(BaseModel):
-    __root__: list[FunModel]
+class ListFunModel(RootModel):
+    root: list[FunModel]
+
+    def __iter__(self):
+        return iter(self.root)
+
+    def __getitem__(self, item):
+        return self.root[item]
 
 
 @plh.get("/response_model", response_model=FunModel)

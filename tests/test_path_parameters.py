@@ -26,10 +26,12 @@ def test_path_parameters_with_typehint_typeerror(requests_client, base_url):
     assert response.json() == {
         "detail": [
             {
-                "ctx": {"enum_values": ["dog"]},
+                "ctx": {"expected": "'dog'"},
+                "input": "cat",
                 "loc": ["path", "item_id"],
-                "msg": "value is not a valid enumeration member; permitted: 'dog'",
-                "type": "type_error.enum",
+                "msg": "Input should be 'dog'",
+                "type": "enum",
+                "url": "https://errors.pydantic.dev/2.5/v/enum",
             }
         ]
     }
