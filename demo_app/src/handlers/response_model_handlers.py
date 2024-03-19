@@ -6,7 +6,7 @@ from pydantic import BaseModel, RootModel
 
 class FunModel(BaseModel):
     item_name: str
-    item_value: Optional[int]
+    item_value: Optional[int] = None
 
 
 class ListFunModel(RootModel):

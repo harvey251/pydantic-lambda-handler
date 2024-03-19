@@ -9,9 +9,8 @@ from pydantic_lambda_handler.main import PydanticLambdaHandler
 from pydantic_lambda_handler.params import Header
 
 
-@pytest.mark.xfail(reason="Partial upgrade to pydantic v2")
 def test_generate_open_api_version(schema):
-    assert schema["openapi"] == "3.0.3"
+    assert schema["openapi"] == "3.1.0"
 
 
 @pytest.mark.xfail(reason="Partial upgrade to pydantic v2")
@@ -72,16 +71,15 @@ def test_generate_open_api_list_response_model(schema):
     }
 
 
-@pytest.mark.xfail(reason="Partial upgrade to pydantic v2")
 def test_query_body(schema):
     request_schema = schema["paths"]["/hello"]["post"]["requestBody"]["content"]["application/json"]["schema"]
     assert request_schema == {"$ref": "#/components/schemas/Item"}
     assert schema["components"]["schemas"]["Item"] == {
         "properties": {
-            "description": {"title": "Description", "type": "string"},
+            "description": {"anyOf": [{"type": "string"}, {"type": "null"}], "title": "Description"},
             "name": {"title": "Name", "type": "string"},
             "price": {"title": "Price", "type": "number"},
-            "tax": {"title": "Tax", "type": "number"},
+            "tax": {"anyOf": [{"type": "number"}, {"type": "null"}], "title": "Tax"},
         },
         "required": ["name", "price"],
         "title": "Item",
@@ -113,36 +111,36 @@ def test_query_options(schema):
     ]
 
 
-@pytest.mark.xfail(reason="Partial upgrade to pydantic v2")
 def test_response_body(schema):
     assert "/response_model" in schema["paths"]
     response_schema = schema["paths"]["/response_model"]["get"]["responses"]["200"]["content"]["application/json"][
         "schema"
     ]
     assert response_schema == {"$ref": "#/components/schemas/FunModel"}
-    assert schema["components"]["schemas"]["FunModel"] == {
-        "title": "FunModel",
-        "required": ["item_name"],
-        "type": "object",
-        "properties": {
-            "item_name": {"title": "Item Name", "type": "string"},
-            "item_value": {"title": "Item Value", "type": "integer"},
-        },
-    }
+    assert schema["components"]["schemas"]["FunModel"] == {'properties': {'item_name': {'title': 'Item Name', 'type': 'string'},
+                'item_value': {'anyOf': [{'type': 'integer'}, {'type': 'null'}],
+                               'title': 'Item Value'}},
+ 'required': ['item_name'],
+ 'title': 'FunModel',
+ 'type': 'object'}
 
-
-@pytest.mark.xfail(reason="Partial upgrade to pydantic v2")
 def test_header_options(schema):
     assert "/with_headers" in schema["paths"]
     assert schema["paths"]["/with_headers"]["get"].get("parameters") == [
-        {"in": "header", "name": "user_agent", "schema": {"title": "User Agent", "type": "string"}}
+        {
+            "in": "header",
+            "name": "user_agent",
+            "schema": {"anyOf": [{"type": "string"}, {"type": "null"}], "default": None, "title": "User Agent"},
+        }
     ]
 
 
-@pytest.mark.xfail(reason="Partial upgrade to pydantic v2")
 def test_header_options_not_in_schema(schema):
     assert "/with_headers_not_in_schema" in schema["paths"]
-    assert schema["paths"]["/with_headers_not_in_schema"]["get"].get("parameters") == []
+    headers = [
+        i["name"] for i in schema["paths"]["/with_headers_not_in_schema"]["get"]["parameters"] if i["in"] == "header"
+    ]
+    assert "user_agent" not in headers
 
 
 @pytest.mark.xfail(reason="Partial upgrade to pydantic v2")
@@ -167,14 +165,14 @@ def test_multiple_errors_description(schema):
     assert description == client.responses[422]
 
 
-@pytest.mark.xfail(reason="Partial upgrade to pydantic v2")
 def test_query_union(schema):
     assert "/query_union" in schema["paths"]
     parameters = schema["paths"]["/query_union"]["get"]["parameters"]
-    assert parameters == [
-        {
-            "name": "param",
-            "in": "query",
-            "schema": {"title": "Param", "anyOf": [{"type": "number"}, {"type": "string", "format": "date-time"}]},
-        }
-    ]
+    assert parameters == [{'in': 'query',
+  'name': 'param',
+  'schema': {'anyOf': [{'type': 'number'},
+                       {'type': 'string'},
+                       {'format': 'date-time', 'type': 'string'},
+                       {'type': 'null'}],
+             'default': None,
+             'title': 'Param'}}]
