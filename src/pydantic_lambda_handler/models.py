@@ -1,6 +1,7 @@
 """
 location of base models
 """
+
 from http import HTTPStatus
 from typing import Union
 

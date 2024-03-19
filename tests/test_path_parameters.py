@@ -31,7 +31,7 @@ def test_path_parameters_with_typehint_typeerror(requests_client, base_url):
                 "loc": ["path", "item_id"],
                 "msg": "Input should be 'dog'",
                 "type": "enum",
-                "url": "https://errors.pydantic.dev/2.5/v/enum",
+                "url": "https://errors.pydantic.dev/2.6/v/enum",
             }
         ]
     }

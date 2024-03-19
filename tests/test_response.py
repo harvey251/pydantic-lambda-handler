@@ -40,7 +40,7 @@ def test_post_invalid_body(requests_client, base_url):
                 "loc": ["body", "name"],
                 "msg": "Field required",
                 "type": "missing",
-                "url": "https://errors.pydantic.dev/2.5/v/missing",
+                "url": "https://errors.pydantic.dev/2.6/v/missing",
             }
         ]
     }
@@ -60,7 +60,7 @@ def test_post_invalid_empty_json(requests_client, base_url):
                 "loc": ["body"],
                 "msg": "Input should be a valid dictionary or instance of Item",
                 "type": "model_type",
-                "url": "https://errors.pydantic.dev/2.5/v/model_type",
+                "url": "https://errors.pydantic.dev/2.6/v/model_type",
             }
         ]
     }

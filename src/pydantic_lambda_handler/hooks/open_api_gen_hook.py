@@ -144,11 +144,10 @@ class APIGenerationHook(BaseHook):
 
             APIPathModel = create_model("APIPathModel", **path_model_dict, **query_model_dict, **headers)  # type: ignore
 
-            path_schema_initial = APIPathModel.schema()
+            path_schema_initial = APIPathModel.schema(ref_template="#/components/schemas/{model}")
             properties = []
             for name, property_info in path_schema_initial.get("properties", {}).items():
                 if "$ref" in property_info:
-                    property_info["$ref"] = property_info["$ref"].replace("#/definitions/", "#/components/schemas/")
                     for key, value in path_schema_initial.get("definitions", {}).items():
                         cls.schemas[key] = Schema.parse_obj(value)
 
