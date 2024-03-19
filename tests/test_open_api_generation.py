@@ -117,12 +117,16 @@ def test_response_body(schema):
         "schema"
     ]
     assert response_schema == {"$ref": "#/components/schemas/FunModel"}
-    assert schema["components"]["schemas"]["FunModel"] == {'properties': {'item_name': {'title': 'Item Name', 'type': 'string'},
-                'item_value': {'anyOf': [{'type': 'integer'}, {'type': 'null'}],
-                               'title': 'Item Value'}},
- 'required': ['item_name'],
- 'title': 'FunModel',
- 'type': 'object'}
+    assert schema["components"]["schemas"]["FunModel"] == {
+        "properties": {
+            "item_name": {"title": "Item Name", "type": "string"},
+            "item_value": {"anyOf": [{"type": "integer"}, {"type": "null"}], "title": "Item Value"},
+        },
+        "required": ["item_name"],
+        "title": "FunModel",
+        "type": "object",
+    }
+
 
 def test_header_options(schema):
     assert "/with_headers" in schema["paths"]
@@ -168,11 +172,19 @@ def test_multiple_errors_description(schema):
 def test_query_union(schema):
     assert "/query_union" in schema["paths"]
     parameters = schema["paths"]["/query_union"]["get"]["parameters"]
-    assert parameters == [{'in': 'query',
-  'name': 'param',
-  'schema': {'anyOf': [{'type': 'number'},
-                       {'type': 'string'},
-                       {'format': 'date-time', 'type': 'string'},
-                       {'type': 'null'}],
-             'default': None,
-             'title': 'Param'}}]
+    assert parameters == [
+        {
+            "in": "query",
+            "name": "param",
+            "schema": {
+                "anyOf": [
+                    {"type": "number"},
+                    {"type": "string"},
+                    {"format": "date-time", "type": "string"},
+                    {"type": "null"},
+                ],
+                "default": None,
+                "title": "Param",
+            },
+        }
+    ]

@@ -23,7 +23,7 @@ def test_missing_query(requests_client, base_url):
                 "loc": ["query", "secret"],
                 "msg": "Field required",
                 "type": "missing",
-                "url": "https://errors.pydantic.dev/2.5/v/missing",
+                "url": "https://errors.pydantic.dev/2.6/v/missing",
             }
         ]
     }
