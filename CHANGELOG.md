@@ -2,6 +2,21 @@
 
 
 
+## v1.0.1 (2024-03-19)
+
+### Fix
+
+* fix: bug with ref not in correct place (#102)
+
+* fix: bug with ref not in correct place
+
+* fix: update black
+
+---------
+
+Co-authored-by: Mark Harvey &lt;i31889@verisk.com&gt; ([`a93ad61`](https://github.com/harvey251/pydantic-lambda-handler/commit/a93ad61e3a7a817323239a076b023865cba74c31))
+
+
 ## v1.0.0 (2024-01-11)
 
 ### Breaking
